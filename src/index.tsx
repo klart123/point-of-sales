@@ -1,5 +1,5 @@
-import HomeScreen from "./screens/Home";
+import HomeScreen from './screens/Home';
+import DetailsScreen from './screens/Details';
+import LandingScreen from './screens/Landing';
 
-export {
-    HomeScreen as Home
-}
+export {HomeScreen, DetailsScreen, LandingScreen};
