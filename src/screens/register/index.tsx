@@ -1,71 +1,97 @@
-import React, {Component} from 'react';
+import React, {useState} from 'react';
 import {View, Text, TextInput, Button, Alert} from 'react-native';
 import styles from './styles';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState, AppDispatch} from '../../redux/store';
+import {
+  registerStart,
+  registerSuccess,
+  registerFailure,
+} from '../../redux/slices/authSlice';
+import {registerUser} from '../../Api/authService';
 
-type State = {
-  name: string;
-  email: string;
-  password: string;
-};
+const RegisterScreen: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const {loading, error} = useSelector((state: RootState) => state.auth);
 
-class RegisterScreen extends Component<{}, State> {
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      name: '',
-      email: '',
-      password: '',
-    };
-  }
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errors, setError] = useState<string | null>(null);
 
-  handleRegister = () => {
-    const {name, email, password} = this.state;
-
+  const handleRegister = async () => {
+    setError(null);
     if (!name || !email || !password) {
       Alert.alert('Error', 'Please fill out all fields');
       return;
     }
 
-    // You can integrate API calls here
-    console.log('Registering:', {name, email, password});
-    Alert.alert('Success', 'Account created successfully!');
+    dispatch(registerStart());
+
+    try {
+      const userData = await registerUser({
+        name,
+        email,
+        password,
+        password_confirmation: confirmPassword,
+      });
+      console.log('userData', userData);
+      dispatch(registerSuccess(userData)); // Assuming backend returns name & email
+      Alert.alert('Success', 'Account created successfully!');
+    } catch (error: any) {
+      dispatch(registerFailure(error));
+      if (error?.password) {
+        setError(error.password[0]); // Access the first error from the array
+      }
+      Alert.alert('Error', 'Something went wrong');
+    }
   };
 
-  render() {
-    const {name, email, password} = this.state;
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Register</Text>
 
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Register</Text>
+      <TextInput
+        placeholder="Full Name"
+        style={styles.input}
+        value={name}
+        onChangeText={setName}
+      />
 
-        <TextInput
-          placeholder="Full Name"
-          style={styles.input}
-          value={name}
-          onChangeText={text => this.setState({name: text})}
-        />
+      <TextInput
+        placeholder="Email"
+        style={styles.input}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        value={email}
+        onChangeText={setEmail}
+      />
 
-        <TextInput
-          placeholder="Email"
-          style={styles.input}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={text => this.setState({email: text})}
-        />
+      <TextInput
+        placeholder="Password"
+        style={styles.input}
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
+      <TextInput
+        placeholder="Confirm Password"
+        style={styles.input}
+        secureTextEntry
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+      />
 
-        <TextInput
-          placeholder="Password"
-          style={styles.input}
-          secureTextEntry
-          value={password}
-          onChangeText={text => this.setState({password: text})}
-        />
+      <Button
+        title={loading ? 'Registering...' : 'Register'}
+        onPress={handleRegister}
+        disabled={loading}
+      />
 
-        <Button title="Register" onPress={this.handleRegister} />
-      </View>
-    );
-  }
-}
+      {errors && <Text style={{color: 'red', marginTop: 10}}>{errors}</Text>}
+    </View>
+  );
+};
 
 export default RegisterScreen;
