@@ -1,27 +1,31 @@
 import React from 'react';
-import {View, Text, Button} from 'react-native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {Text, FlatList, TouchableOpacity} from 'react-native';
 import styles from './styles';
+import {HomeScreenProps, MenuItem} from './types';
 
-// Define navigation types
-export type RootStackParamList = {
-  Home: undefined;
-  Details: {message: string};
-};
-
-type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
+const menuItems = [
+  {label: 'Orders', screen: 'Orders', style: {backgroundColor: 'red'}},
+  {label: 'Store', screen: 'Store'},
+  {label: 'Products', screen: 'Products'},
+];
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
+  const renderItem = ({item}: {item: MenuItem}) => (
+    <TouchableOpacity
+      style={[styles.card, item.style]}
+      onPress={() => navigation.navigate(item.screen as never)}>
+      <Text style={styles.label}>{item.label}</Text>
+    </TouchableOpacity>
+  );
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Home Screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() =>
-          navigation.navigate('Details', {message: 'Hello from Home!'})
-        }
-      />
-    </View>
+    <FlatList
+      data={menuItems}
+      keyExtractor={(item, index) => index.toString()}
+      numColumns={2}
+      contentContainerStyle={styles.list}
+      renderItem={renderItem}
+    />
   );
 };
 
