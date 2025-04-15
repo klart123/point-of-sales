@@ -16,6 +16,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Home" component={screens.HomeScreen} />
         <Stack.Screen name="Details" component={screens.DetailsScreen} />
         <Stack.Screen name="Register" component={screens.RegisterScreen} />
+        <Stack.Screen name="Orders" component={screens.OrderListScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
