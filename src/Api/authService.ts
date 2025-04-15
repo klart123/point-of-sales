@@ -9,5 +9,5 @@ export const registerUser = async (data: types.auth.RegisterPayload) => {
 
 export const loginUser = async (data: types.auth.LoginPayload) => {
   const response = await axiosInstance.post('/login', data);
-  return response.data;
+  return response;
 };
