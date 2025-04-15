@@ -5,11 +5,13 @@ import {
   Text,
   ActivityIndicator,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from './services'; // Replace with your actual import
 import {AppDispatch, RootState} from '../../redux/store'; // Adjust the import according to your setup
 import styles from './styles';
+import MenuModal from './components/menuModal';
 
 const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -19,6 +21,8 @@ const MenuScreen = () => {
   const [list, setList] = useState([]);
   const [refreshing, setRefreshing] = useState(false); // State to track refreshing status
   const [page, setPage] = useState(1); // Track current page
+  const [viewModal, setViewModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   // Function to load products
   const loadProducts = (pageNumber: number) => {
@@ -60,32 +64,49 @@ const MenuScreen = () => {
     }
   };
 
+  const handleEditItem = (item: any) => {
+    console.log('item', item);
+  };
+
+  const handleOpenModal = (item: any) => {
+    setSelectedItem(item);
+    setViewModal(true);
+  };
+
   const renderItem = ({item}: {item: any}) => (
-    <View style={styles.item}>
+    <TouchableOpacity style={styles.item} onPress={() => handleOpenModal(item)}>
       <Text>{item.name}</Text>
       <Text>₱{item.price}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🧾 Shop</Text>
-      <FlatList
-        data={list}
-        keyExtractor={item => item.id.toString()}
-        renderItem={renderItem}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.3}
-        ListFooterComponent={
-          loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
-        }
-        numColumns={2}
-        contentContainerStyle={styles.list}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+    <>
+      <View style={styles.container}>
+        <Text style={styles.title}>🧾 Shop</Text>
+        <FlatList
+          data={list}
+          keyExtractor={item => item.id.toString()}
+          renderItem={renderItem}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.3}
+          ListFooterComponent={
+            loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
+          }
+          numColumns={2}
+          contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      </View>
+      <MenuModal
+        visible={viewModal}
+        item={selectedItem}
+        onClose={() => setViewModal(false)}
+        onSubmit={handleEditItem}
       />
-    </View>
+    </>
   );
 };
 

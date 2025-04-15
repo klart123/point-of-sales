@@ -5,11 +5,14 @@ import {
   Text,
   ActivityIndicator,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from './services'; // Replace with your actual import
 import {AppDispatch, RootState} from '../../redux/store'; // Adjust the import according to your setup
 import styles from './styles';
+import ProductItem from './components/productItem';
+import ProductModal from './components/productModal';
 
 const ProductScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -19,6 +22,7 @@ const ProductScreen = () => {
   const [list, setList] = useState([]);
   const [refreshing, setRefreshing] = useState(false); // State to track refreshing status
   const [page, setPage] = useState(1); // Track current page
+  const [addModal, setAddModal] = useState(false);
 
   // Function to load products
   const loadProducts = (pageNumber: number) => {
@@ -32,7 +36,7 @@ const ProductScreen = () => {
   }, []);
 
   useEffect(() => {
-    loadProducts(page); // Fetch products when the component mounts
+    loadProducts(page);
   }, [page]);
 
   useEffect(() => {
@@ -43,12 +47,8 @@ const ProductScreen = () => {
           : [...prevList, ...products?.data?.data],
       );
     }
-    // if (products) {
-    //   setList(products);
-    // }
   }, [products]);
 
-  // Handle pull-to-refresh
   const onRefresh = () => {
     setRefreshing(true);
     setPage(1);
@@ -57,40 +57,53 @@ const ProductScreen = () => {
     setRefreshing(false);
   };
 
-  // Handle when the end of the list is reached
   const handleLoadMore = () => {
     if (hasMore && !loading) {
-      // Check if there's more data to load
-      setPage(prevPage => prevPage + 1); // Increment the page number to fetch the next set of products
+      setPage(prevPage => prevPage + 1);
     }
   };
 
-  const renderItem = ({item}: {item: any}) => (
-    <View style={styles.item}>
-      <Text>{item.name}</Text>
-      <Text>₱{item.price}</Text>
-    </View>
-  );
+  const handleAddModal = () => {
+    setAddModal(true);
+  };
+
+  const handleAddSubmit = (data: any) => {
+    console.log(data);
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🧾 Products</Text>
-      <FlatList
-        data={list}
-        keyExtractor={item => item.id.toString()}
-        renderItem={renderItem}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.3}
-        ListFooterComponent={
-          loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
-        }
-        numColumns={2}
-        contentContainerStyle={styles.list}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+    <>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>🧾 Products</Text>
+          <TouchableOpacity onPress={handleAddModal}>
+            <Text style={styles.addButton}>+ Add</Text>
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={list}
+          keyExtractor={item => item.id.toString()}
+          renderItem={({item}) => <ProductItem item={item} />}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.3}
+          ListFooterComponent={
+            loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
+          }
+          numColumns={2}
+          contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      </View>
+      <ProductModal
+        visible={addModal}
+        onClose={() => {
+          setAddModal(false);
+        }}
+        onSubmit={handleAddSubmit}
       />
-    </View>
+    </>
   );
 };
 

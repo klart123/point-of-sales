@@ -22,7 +22,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     <FlatList
       data={menuItems}
       keyExtractor={(item, index) => index.toString()}
-      numColumns={2}
+      numColumns={1}
       contentContainerStyle={styles.list}
       renderItem={renderItem}
     />

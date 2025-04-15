@@ -1,16 +1,8 @@
 // src/redux/slices/authSlice.ts
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {products} from '../../types';
 
-type ErrorPayload = string | Record<string, any>;
-
-type AuthState = {
-  products: null | object;
-  loading: boolean;
-  error: string | null | Record<string, any>;
-  hasMore: boolean;
-};
-
-const initialState: AuthState = {
+const initialState: products.ProductState = {
   products: null,
   loading: false,
   error: null,
@@ -40,7 +32,7 @@ const productSlice = createSlice({
       state.hasMore = hasMore;
       state.loading = false;
     },
-    productFailed: (state, action: PayloadAction<ErrorPayload>) => {
+    productFailed: (state, action: PayloadAction<products.ErrorPayload>) => {
       state.loading = false;
       state.error = action.payload;
     },

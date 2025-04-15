@@ -5,5 +5,5 @@ export type RootStackParamList = {
   Register: undefined;
   Orders: undefined;
   Store: undefined;
-  ProductScreen: undefined;
+  Products: undefined;
 };
