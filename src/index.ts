@@ -4,6 +4,8 @@ import LandingScreen from './screens/Landing';
 import RegisterScreen from './screens/Register';
 import LoginScreen from './screens/Login';
 import OrderListScreen from './screens/OrderList';
+import MenuScreen from './screens/Menu';
+import ProductScreen from './screens/Products';
 
 export {
   HomeScreen,
@@ -12,4 +14,6 @@ export {
   RegisterScreen,
   LoginScreen,
   OrderListScreen,
+  MenuScreen,
+  ProductScreen,
 };

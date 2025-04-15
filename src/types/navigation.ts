@@ -4,4 +4,6 @@ export type RootStackParamList = {
   Details: {message: string};
   Register: undefined;
   Orders: undefined;
+  Store: undefined;
+  ProductScreen: undefined;
 };
