@@ -1,24 +1,28 @@
 import {AppDispatch} from '../../redux/store'; // adjust path if needed
-import * as productSlice from '../../redux/slices/productSlice';
-import * as productService from '../../Api/productService';
+import * as menuSlice from '../../redux/slices/menuSlice';
 import axiosInstance from '../../Api/axiosInstance';
 
-export const getProducts = (page: number) => {
-  return async (dispatch: AppDispatch) => {
-    dispatch(productSlice.productStart());
+export const getMenu = (page: number) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(menuSlice.menuStart());
 
     axiosInstance
-      .get('/products')
+      .get('/products', {params: {page}})
       .then(response => {
         if (response?.status === 200) {
-          console.log('response service', response.data);
-          return dispatch(productSlice.productSuccess(response.data));
+          return dispatch(menuSlice.menuSuccess(response.data));
         }
 
-        return dispatch(productSlice.productFailed(response.data.error));
+        return dispatch(menuSlice.menuFailed(response.data.error));
       })
       .catch(error => {
-        return dispatch(productSlice.productFailed(error.data.error));
+        return dispatch(menuSlice.menuFailed(error.data.error));
       });
+  };
+};
+
+export const resetMenu = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(menuSlice.resetMenu());
   };
 };

@@ -13,8 +13,8 @@ import styles from './styles';
 
 const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const {loading, products, hasMore} = useSelector(
-    (state: RootState) => state.products,
+  const {loading, menu, hasMore} = useSelector(
+    (state: RootState) => state.menu,
   );
   const [list, setList] = useState([]);
   const [refreshing, setRefreshing] = useState(false); // State to track refreshing status
@@ -22,28 +22,34 @@ const MenuScreen = () => {
 
   // Function to load products
   const loadProducts = (pageNumber: number) => {
-    dispatch(services.getProducts(pageNumber)); // Pass page number for pagination
+    dispatch(services.getMenu(pageNumber)); // Pass page number for pagination
   };
+
+  useEffect(() => {
+    return () => {
+      dispatch(services.resetMenu());
+    };
+  }, []);
 
   useEffect(() => {
     loadProducts(page); // Fetch products when the component mounts
   }, [page]);
 
   useEffect(() => {
-    console.log('products', products?.data?.data);
-    if (Array.isArray(products?.data?.data)) {
-      setList(prevList => [...prevList, ...products?.data?.data]);
+    if (Array.isArray(menu?.data?.data)) {
+      setList(prevList =>
+        page === 1 ? menu?.data?.data : [...prevList, ...menu?.data?.data],
+      );
     }
-  }, [products]);
+  }, [menu]);
 
   // Handle pull-to-refresh
   const onRefresh = () => {
-    setRefreshing(true); // Set refreshing to true to show the loading indicator
-    setPage(1); // Reset to the first page
+    setRefreshing(true);
+    setPage(1);
     setList([]);
-    loadProducts(1); // Fetch the first page of products
-
-    setRefreshing(false); // Once the fetch is complete, set refreshing to false
+    loadProducts(1);
+    setRefreshing(false);
   };
 
   // Handle when the end of the list is reached
@@ -69,7 +75,7 @@ const MenuScreen = () => {
         keyExtractor={item => item.id.toString()}
         renderItem={renderItem}
         onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0.3}
         ListFooterComponent={
           loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
         }

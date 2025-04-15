@@ -4,55 +4,55 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 type ErrorPayload = string | Record<string, any>;
 
 type AuthState = {
-  products: null | object;
+  menu: null | object;
   loading: boolean;
   error: string | null | Record<string, any>;
   hasMore: boolean;
 };
 
 const initialState: AuthState = {
-  products: null,
+  menu: null,
   loading: false,
   error: null,
   hasMore: false,
 };
 
-const productSlice = createSlice({
+const menuSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    productStart: state => {
+    menuStart: state => {
       state.loading = true;
-      state.products = [];
+      state.menu = null;
     },
-    productSuccess: (state, action: PayloadAction<object>) => {
+    menuSuccess: (state, action: PayloadAction<object>) => {
       const newProducts = action.payload?.data;
       const hasMore = newProducts?.current_page < newProducts?.last_page;
 
-      state.products = {
-        ...state.products,
+      state.menu = {
+        ...state.menu,
         data: {
-          ...state.products,
-          data: [...(state.products || []), ...newProducts?.data],
+          ...state.menu,
+          data: [...(state.menu || []), ...newProducts?.data],
         },
       };
 
       state.hasMore = hasMore;
       state.loading = false;
     },
-    productFailed: (state, action: PayloadAction<ErrorPayload>) => {
+    menuFailed: (state, action: PayloadAction<ErrorPayload>) => {
       state.loading = false;
       state.error = action.payload;
     },
-    resetProducts: state => {
-      state.products = null;
+    resetMenu: state => {
+      state.menu = null;
       state.hasMore = true;
       state.loading = false;
     },
   },
 });
 
-export const {productStart, productSuccess, productFailed, resetProducts} =
-  productSlice.actions;
+export const {menuStart, menuSuccess, menuFailed, resetMenu} =
+  menuSlice.actions;
 
-export default productSlice.reducer;
+export default menuSlice.reducer;
