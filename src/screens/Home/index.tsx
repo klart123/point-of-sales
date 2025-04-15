@@ -4,9 +4,9 @@ import styles from './styles';
 import {HomeScreenProps, MenuItem} from './types';
 
 const menuItems = [
-  {label: 'Orders', screen: 'Orders', style: {backgroundColor: 'red'}},
   {label: 'Store', screen: 'Store'},
   {label: 'Products', screen: 'Products'},
+  {label: 'Orders', screen: 'Orders', style: {backgroundColor: 'red'}},
 ];
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
