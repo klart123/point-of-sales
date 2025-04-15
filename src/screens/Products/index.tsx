@@ -5,12 +5,14 @@ import {
   Text,
   ActivityIndicator,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from './services'; // Replace with your actual import
 import {AppDispatch, RootState} from '../../redux/store'; // Adjust the import according to your setup
 import styles from './styles';
 import ProductItem from './components/productItem';
+import ProductModal from './components/productModal';
 
 const ProductScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,6 +22,7 @@ const ProductScreen = () => {
   const [list, setList] = useState([]);
   const [refreshing, setRefreshing] = useState(false); // State to track refreshing status
   const [page, setPage] = useState(1); // Track current page
+  const [addModal, setAddModal] = useState(false);
 
   // Function to load products
   const loadProducts = (pageNumber: number) => {
@@ -60,25 +63,47 @@ const ProductScreen = () => {
     }
   };
 
+  const handleAddModal = () => {
+    setAddModal(true);
+  };
+
+  const handleAddSubmit = (data: any) => {
+    console.log(data);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🧾 Products</Text>
-      <FlatList
-        data={list}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({item}) => <ProductItem item={item} />}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.3}
-        ListFooterComponent={
-          loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
-        }
-        numColumns={2}
-        contentContainerStyle={styles.list}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+    <>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>🧾 Products</Text>
+          <TouchableOpacity onPress={handleAddModal}>
+            <Text style={styles.addButton}>+ Add</Text>
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={list}
+          keyExtractor={item => item.id.toString()}
+          renderItem={({item}) => <ProductItem item={item} />}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.3}
+          ListFooterComponent={
+            loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
+          }
+          numColumns={2}
+          contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      </View>
+      <ProductModal
+        visible={addModal}
+        onClose={() => {
+          setAddModal(false);
+        }}
+        onSubmit={handleAddSubmit}
       />
-    </View>
+    </>
   );
 };
 
