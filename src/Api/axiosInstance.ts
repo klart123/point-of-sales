@@ -30,6 +30,7 @@ axiosInstance.interceptors.request.use(
 // 📥 Log responses
 axiosInstance.interceptors.response.use(
   response => {
+    console.log('response', response);
     console.log(
       '[Axios Response]',
       response.status,
@@ -43,7 +44,7 @@ axiosInstance.interceptors.response.use(
       const {status, data, config} = error.response;
 
       console.log(`[Axios Response Error] ${status}`, {
-        url: config.url,
+        url: API_BASE_URL + config.url,
         method: config.method,
         data,
       });

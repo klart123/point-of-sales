@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, TextInput, Button, Alert} from 'react-native';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {loginSuccess} from '../../redux/slices/authSlice';
 import styles from './styles'; // assuming you have a shared style
 import {navigation} from '../../types';
-import {loginUser} from '../../Api/authService';
+import {loginUser} from './service';
+import {RootState, AppDispatch} from '../../redux/store';
 
 type RootStackParamList = {
   Home: undefined;
@@ -23,6 +23,9 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const navigation = useNavigation<LoginScreenNavigationProp>();
+  const {loading, isAuthenticated} = useSelector(
+    (state: RootState) => state.auth,
+  );
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -30,21 +33,22 @@ const LoginScreen = () => {
       return;
     }
 
-    try {
-      const userData = await loginUser({
-        email,
-        password,
-      });
-      console.log('loginData', userData);
-      dispatch(loginSuccess());
+    const userData = {
+      email,
+      password,
+    };
+
+    dispatch(loginUser(userData));
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
       navigation.reset({
         index: 0,
         routes: [{name: 'Home'}],
       });
-    } catch (error) {
-      Alert.alert('Login Failed', 'Invalid email or password');
     }
-  };
+  }, [isAuthenticated]);
 
   return (
     <View style={styles.container}>
