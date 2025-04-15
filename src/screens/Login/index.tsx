@@ -43,10 +43,7 @@ const LoginScreen = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Home'}],
-      });
+      navigation.replace('Home');
     }
   }, [isAuthenticated]);
 
