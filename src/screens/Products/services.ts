@@ -1,6 +1,5 @@
 import {AppDispatch} from '../../redux/store'; // adjust path if needed
 import * as productSlice from '../../redux/slices/productSlice';
-import * as productService from '../../Api/productService';
 import axiosInstance from '../../Api/axiosInstance';
 
 export const getProducts = (page: number) => {
@@ -8,10 +7,9 @@ export const getProducts = (page: number) => {
     dispatch(productSlice.productStart());
 
     axiosInstance
-      .get('/products')
+      .get('/products', {params: {page}})
       .then(response => {
         if (response?.status === 200) {
-          console.log('response service', response.data);
           return dispatch(productSlice.productSuccess(response.data));
         }
 
@@ -20,5 +18,11 @@ export const getProducts = (page: number) => {
       .catch(error => {
         return dispatch(productSlice.productFailed(error.data.error));
       });
+  };
+};
+
+export const resetProducts = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productSlice.resetProducts());
   };
 };

@@ -26,24 +26,35 @@ const ProductScreen = () => {
   };
 
   useEffect(() => {
+    return () => {
+      dispatch(services.resetProducts());
+    };
+  }, []);
+
+  useEffect(() => {
     loadProducts(page); // Fetch products when the component mounts
   }, [page]);
 
   useEffect(() => {
-    console.log('products', products?.data?.data);
     if (Array.isArray(products?.data?.data)) {
-      setList(prevList => [...prevList, ...products?.data?.data]);
+      setList(prevList =>
+        page === 1
+          ? products?.data?.data
+          : [...prevList, ...products?.data?.data],
+      );
     }
+    // if (products) {
+    //   setList(products);
+    // }
   }, [products]);
 
   // Handle pull-to-refresh
   const onRefresh = () => {
-    setRefreshing(true); // Set refreshing to true to show the loading indicator
-    setPage(1); // Reset to the first page
+    setRefreshing(true);
+    setPage(1);
     setList([]);
-    loadProducts(1); // Fetch the first page of products
-
-    setRefreshing(false); // Once the fetch is complete, set refreshing to false
+    loadProducts(1);
+    setRefreshing(false);
   };
 
   // Handle when the end of the list is reached
@@ -69,7 +80,7 @@ const ProductScreen = () => {
         keyExtractor={item => item.id.toString()}
         renderItem={renderItem}
         onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0.3}
         ListFooterComponent={
           loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
         }

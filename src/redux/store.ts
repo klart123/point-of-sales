@@ -4,6 +4,7 @@ import {persistStore, persistReducer} from 'redux-persist';
 import {combineReducers} from 'redux';
 import authReducer from './slices/authSlice';
 import productReducer from './slices/productSlice';
+import menuSlice from './slices/menuSlice';
 
 const persistConfig = {
   key: 'root',
@@ -14,6 +15,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   products: productReducer,
+  menu: menuSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
