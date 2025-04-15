@@ -1,17 +1,8 @@
 // src/redux/slices/authSlice.ts
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {auth} from '../../types';
 
-type ErrorPayload = string | Record<string, any>;
-
-type AuthState = {
-  isAuthenticated: boolean;
-  token: string | null;
-  user: {name: string; email: string} | null;
-  loading: boolean;
-  error: string | null | Record<string, any>;
-};
-
-const initialState: AuthState = {
+const initialState: auth.AuthState = {
   isAuthenticated: false,
   token: null,
   user: null,
@@ -51,7 +42,7 @@ const authSlice = createSlice({
       state.user = action.payload;
       state.loading = false;
     },
-    registerFailure: (state, action: PayloadAction<ErrorPayload>) => {
+    registerFailure: (state, action: PayloadAction<auth.ErrorPayload>) => {
       state.loading = false;
       state.error = action.payload;
     },

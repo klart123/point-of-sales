@@ -22,17 +22,18 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
     justifyContent: 'flex-start',
-    padding: 16,
+    padding: 5,
   },
   card: {
     flex: 1,
     margin: 8,
     backgroundColor: 'white',
     borderRadius: 12,
-    padding: 20,
+    padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 100,
+    marginBottom: 80,
   },
   label: {
     fontSize: 18,

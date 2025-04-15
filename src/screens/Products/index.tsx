@@ -10,6 +10,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import * as services from './services'; // Replace with your actual import
 import {AppDispatch, RootState} from '../../redux/store'; // Adjust the import according to your setup
 import styles from './styles';
+import ProductItem from './components/productItem';
 
 const ProductScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -32,7 +33,7 @@ const ProductScreen = () => {
   }, []);
 
   useEffect(() => {
-    loadProducts(page); // Fetch products when the component mounts
+    loadProducts(page);
   }, [page]);
 
   useEffect(() => {
@@ -43,12 +44,8 @@ const ProductScreen = () => {
           : [...prevList, ...products?.data?.data],
       );
     }
-    // if (products) {
-    //   setList(products);
-    // }
   }, [products]);
 
-  // Handle pull-to-refresh
   const onRefresh = () => {
     setRefreshing(true);
     setPage(1);
@@ -57,20 +54,11 @@ const ProductScreen = () => {
     setRefreshing(false);
   };
 
-  // Handle when the end of the list is reached
   const handleLoadMore = () => {
     if (hasMore && !loading) {
-      // Check if there's more data to load
-      setPage(prevPage => prevPage + 1); // Increment the page number to fetch the next set of products
+      setPage(prevPage => prevPage + 1);
     }
   };
-
-  const renderItem = ({item}: {item: any}) => (
-    <View style={styles.item}>
-      <Text>{item.name}</Text>
-      <Text>₱{item.price}</Text>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
@@ -78,7 +66,7 @@ const ProductScreen = () => {
       <FlatList
         data={list}
         keyExtractor={item => item.id.toString()}
-        renderItem={renderItem}
+        renderItem={({item}) => <ProductItem item={item} />}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
         ListFooterComponent={
