@@ -5,20 +5,30 @@ import styles from '../styles';
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (data: {name: string; price: string; size: string}) => void;
+  onSubmit: (data: {
+    name: string;
+    price: string;
+    size: string;
+    description: string;
+    category: string;
+  }) => void;
 };
 
 const ProductModal: React.FC<Props> = ({visible, onClose, onSubmit}) => {
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
+  const [name, setName] = useState<string>('');
+  const [price, setPrice] = useState<string>('');
   const [size, setSize] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
 
   const handleSubmit = () => {
-    onSubmit({name, price, size});
-    onClose(); // optional: close after submit
-    setName('');
-    setPrice('');
-    setSize('');
+    onSubmit({name, price, description, category});
+    // onClose(); // optional: close after submit
+    // setName('');
+    // setPrice('');
+    // setSize('');
+    // setDescription('');
+    // setCategory('');
   };
 
   return (
@@ -39,6 +49,13 @@ const ProductModal: React.FC<Props> = ({visible, onClose, onSubmit}) => {
             onChangeText={setName}
           />
           <TextInput
+            placeholder="Description"
+            style={styles.input}
+            keyboardType="numeric"
+            value={description}
+            onChangeText={setDescription}
+          />
+          <TextInput
             placeholder="Price"
             style={styles.input}
             keyboardType="numeric"
@@ -46,10 +63,11 @@ const ProductModal: React.FC<Props> = ({visible, onClose, onSubmit}) => {
             onChangeText={setPrice}
           />
           <TextInput
-            placeholder="Size"
+            placeholder="Category"
             style={styles.input}
-            value={size}
-            onChangeText={setSize}
+            keyboardType="numeric"
+            value={category}
+            onChangeText={setCategory}
           />
 
           <View style={styles.buttons}>
