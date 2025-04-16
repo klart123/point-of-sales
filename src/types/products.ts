@@ -5,6 +5,7 @@ export type ProductState = {
   loading: boolean;
   error: string | null | Record<string, any>;
   hasMore: boolean;
+  isSuccess: boolean;
 };
 
 export type ProductItemProps = {

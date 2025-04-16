@@ -8,8 +8,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import * as services from './services'; // Replace with your actual import
-import {AppDispatch, RootState} from '../../redux/store'; // Adjust the import according to your setup
+import * as services from './services';
+import {AppDispatch, RootState} from '../../redux/store';
 import styles from './styles';
 import ProductItem from './components/productItem';
 import ProductModal from './components/productModal';
@@ -20,8 +20,8 @@ const ProductScreen = () => {
     (state: RootState) => state.products,
   );
   const [list, setList] = useState([]);
-  const [refreshing, setRefreshing] = useState(false); // State to track refreshing status
-  const [page, setPage] = useState(1); // Track current page
+  const [refreshing, setRefreshing] = useState(false);
+  const [page, setPage] = useState(1);
   const [addModal, setAddModal] = useState(false);
 
   // Function to load products
@@ -68,7 +68,7 @@ const ProductScreen = () => {
   };
 
   const handleAddSubmit = (data: any) => {
-    console.log(data);
+    dispatch(services.addProducts(data));
   };
 
   return (
