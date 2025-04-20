@@ -16,11 +16,17 @@ export default StyleSheet.create({
     flex: 1,
     margin: 3,
     padding: 10,
+    paddingVertical: 20,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
   },
+  textCenter: {
+    textAlign: 'center',
+    padding: 5,
+  },
+
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -99,5 +105,10 @@ export default StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
+  },
+  selectedPrice: {
+    marginTop: 16,
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

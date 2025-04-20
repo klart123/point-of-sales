@@ -3,15 +3,22 @@ import {
   FlatList,
   View,
   Text,
-  ActivityIndicator,
+  // ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import * as services from './services'; // Replace with your actual import
-import {AppDispatch, RootState} from '../../redux/store'; // Adjust the import according to your setup
+import * as services from './services';
+import {AppDispatch, RootState} from '../../redux/store';
 import styles from './styles';
 import MenuModal from './components/menuModal';
+
+const screenWidth = Dimensions.get('window').width;
+const itemWidth = 160;
+const spacing = 16;
+
+const numColumns = Math.floor(screenWidth / (itemWidth + spacing));
 
 const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -19,14 +26,14 @@ const MenuScreen = () => {
     (state: RootState) => state.menu,
   );
   const [list, setList] = useState([]);
-  const [refreshing, setRefreshing] = useState(false); // State to track refreshing status
-  const [page, setPage] = useState(1); // Track current page
+  const [refreshing, setRefreshing] = useState(false);
   const [viewModal, setViewModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  // Function to load products
+  const numColumns = Math.floor(screenWidth / (itemWidth + spacing));
+
   const loadProducts = () => {
-    dispatch(services.getMenu()); // Pass page number for pagination
+    dispatch(services.getMenu());
   };
 
   useEffect(() => {
@@ -44,15 +51,7 @@ const MenuScreen = () => {
 
   // Handle pull-to-refresh
   const onRefresh = () => {
-    setRefreshing(true);
-  };
-
-  // Handle when the end of the list is reached
-  const handleLoadMore = () => {
-    if (hasMore && !loading) {
-      // Check if there's more data to load
-      setPage(prevPage => prevPage + 1); // Increment the page number to fetch the next set of products
-    }
+    loadProducts();
   };
 
   const handleEditItem = (item: any) => {
@@ -66,8 +65,7 @@ const MenuScreen = () => {
 
   const renderItem = ({item}: {item: any}) => (
     <TouchableOpacity style={styles.item} onPress={() => handleOpenModal(item)}>
-      <Text>{item.name}</Text>
-      <Text>₱{item.price}</Text>
+      <Text style={styles.textCenter}>{item.name}</Text>
     </TouchableOpacity>
   );
 
@@ -79,15 +77,13 @@ const MenuScreen = () => {
           data={list}
           keyExtractor={item => item.id.toString()}
           renderItem={renderItem}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.3}
-          ListFooterComponent={
-            loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
-          }
-          numColumns={2}
+          // ListFooterComponent={
+          //   loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
+          // }
+          numColumns={numColumns}
           contentContainerStyle={styles.list}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl refreshing={loading} onRefresh={onRefresh} />
           }
         />
       </View>
