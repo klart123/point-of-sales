@@ -32,8 +32,6 @@ const MenuScreen = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [orderModal, setOrderModal] = useState(false);
 
-  const numColumns = Math.floor(screenWidth / (itemWidth + spacing));
-
   const loadProducts = () => {
     dispatch(services.getMenu());
   };
@@ -58,14 +56,12 @@ const MenuScreen = () => {
 
   const handleEditItem = (item: any) => {
     dispatch(orderActions.addOrder(item));
-    console.log('add order', orders);
   };
 
-  const handleSubmitOrder = () => {
-    console.log('orderList', orders);
+  const handleSubmitOrder = data => {
     dispatch(
       services.submitOrders({
-        customer_name: '',
+        customer_name: data,
         items: orders,
         notes: '',
         is_paid: true,

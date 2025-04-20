@@ -1,5 +1,4 @@
-// components/OrderListModal.tsx
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Modal,
   View,
@@ -8,6 +7,7 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {RootState} from '../store';
@@ -21,13 +21,25 @@ const OrderListModal = ({
 }: {
   visible: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (customerName: string) => void; // Modify onSubmit to accept customer name
 }) => {
   const orders = useSelector((state: RootState) => state.orders.orders);
   const dispatch = useDispatch();
+  const [customerName, setCustomerName] = useState(''); // State for customer name
 
   // ✅ Calculate total
   const total = orders.reduce((sum, order) => sum + Number(order.price), 0);
+
+  const handleSubmit = () => {
+    if (customerName.trim() === '') {
+      Alert.alert('Please enter a customer name');
+      return;
+    }
+
+    // Submit the order with customer name
+    onSubmit(customerName);
+    onClose(); // Close modal after submit
+  };
 
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -80,7 +92,6 @@ const OrderListModal = ({
                 )}
               />
 
-              {/* ✅ Total Section */}
               <View style={styles.totalSection}>
                 <Text style={styles.totalLabel}>Total:</Text>
                 <Text style={styles.totalAmount}>₱{total.toFixed(2)}</Text>
@@ -88,28 +99,31 @@ const OrderListModal = ({
             </>
           )}
 
+          <View style={styles.optionGroup}>
+            <Text style={styles.optionLabel}>Customer Name:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter customer name"
+              value={customerName}
+              onChangeText={setCustomerName}
+            />
+          </View>
+
           <View style={styles.actions}>
             <View style={{flex: 1}} />
             <Pressable style={styles.orderListButton} onPress={onClose}>
               <Text style={styles.buttonText}>Close</Text>
             </Pressable>
             <TouchableOpacity
-              disabled={orders.length <= 0}
+              disabled={orders.length <= 0 || !customerName}
               style={[
                 styles.orderListAddButton,
-                orders.length <= 0 ? styles.buttonDisabled : null,
+                orders.length <= 0 || !customerName
+                  ? styles.buttonDisabled
+                  : null,
               ]}
-              onPress={() => {
-                Alert.alert('Submit Orders', '', [
-                  {text: 'Cancel', style: 'cancel'},
-                  {
-                    text: 'Submit',
-                    style: 'Accept',
-                    onPress: onSubmit,
-                  },
-                ]);
-              }}>
-              <Text style={styles.buttonText}>Add Order</Text>
+              onPress={handleSubmit}>
+              <Text style={styles.buttonText}>Submit Order</Text>
             </TouchableOpacity>
           </View>
         </View>

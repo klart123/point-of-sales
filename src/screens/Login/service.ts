@@ -9,7 +9,7 @@ export const loginUser = (data: {email: string; password: string}) => {
     authService
       .loginUser(data)
       .then(response => {
-        if (response?.status) {
+        if (response?.status === 200 || response?.status === 201) {
           return dispatch(authSlice.loginSuccess(response.data));
         }
 
