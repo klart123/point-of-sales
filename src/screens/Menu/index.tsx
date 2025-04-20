@@ -3,7 +3,6 @@ import {
   FlatList,
   View,
   Text,
-  // ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
   Dimensions,
@@ -13,6 +12,8 @@ import * as services from './services';
 import {AppDispatch, RootState} from '../../redux/store';
 import styles from './styles';
 import MenuModal from './components/menuModal';
+import {orderActions} from '../../redux/slices/orderSlice';
+import OrderListModal from './components/ordersListModal';
 
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = 160;
@@ -25,10 +26,11 @@ const MenuScreen = () => {
   const {loading, menu, hasMore} = useSelector(
     (state: RootState) => state.menu,
   );
+  const {orders} = useSelector((state: RootState) => state.orders);
   const [list, setList] = useState([]);
-  const [refreshing, setRefreshing] = useState(false);
   const [viewModal, setViewModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [orderModal, setOrderModal] = useState(false);
 
   const numColumns = Math.floor(screenWidth / (itemWidth + spacing));
 
@@ -55,7 +57,20 @@ const MenuScreen = () => {
   };
 
   const handleEditItem = (item: any) => {
-    console.log('item', item);
+    dispatch(orderActions.addOrder(item));
+    console.log('add order', orders);
+  };
+
+  const handleSubmitOrder = () => {
+    console.log('orderList', orders);
+    dispatch(
+      services.submitOrders({
+        customer_name: '',
+        items: orders,
+        notes: '',
+        is_paid: true,
+      }),
+    );
   };
 
   const handleOpenModal = (item: any) => {
@@ -72,14 +87,16 @@ const MenuScreen = () => {
   return (
     <>
       <View style={styles.container}>
-        <Text style={styles.title}>🧾 Shop</Text>
+        <View style={styles.header}>
+          <Text style={styles.title}>🧾 Shop</Text>
+          <TouchableOpacity onPress={() => setOrderModal(true)}>
+            <Text style={styles.addButton}>Orders</Text>
+          </TouchableOpacity>
+        </View>
         <FlatList
           data={list}
           keyExtractor={item => item.id.toString()}
           renderItem={renderItem}
-          // ListFooterComponent={
-          //   loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
-          // }
           numColumns={numColumns}
           contentContainerStyle={styles.list}
           refreshControl={
@@ -92,6 +109,11 @@ const MenuScreen = () => {
         item={selectedItem}
         onClose={() => setViewModal(false)}
         onSubmit={handleEditItem}
+      />
+      <OrderListModal
+        visible={orderModal}
+        onClose={() => setOrderModal(false)}
+        onSubmit={handleSubmitOrder}
       />
     </>
   );

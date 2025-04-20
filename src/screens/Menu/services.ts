@@ -1,5 +1,6 @@
 import {AppDispatch} from '../../redux/store'; // adjust path if needed
 import * as menuSlice from '../../redux/slices/menuSlice';
+import {orderActions} from '../../redux/slices/orderSlice';
 import axiosInstance from '../../Api/axiosInstance';
 
 export const getMenu = () => {
@@ -17,6 +18,27 @@ export const getMenu = () => {
       })
       .catch(error => {
         return dispatch(menuSlice.menuFailed(error.data.error));
+      });
+  };
+};
+
+export const submitOrders = (payload: any) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(orderActions.orderStart());
+
+    axiosInstance
+      .post('/orders', payload)
+      .then(response => {
+        console.log('submitOrder response', response);
+        if (response?.status === 200 || response?.status === 201) {
+          return dispatch(orderActions.orderSuccess(response.data));
+        }
+
+        return dispatch(orderActions.orderFailed(response.data));
+      })
+      .catch(error => {
+        console.log('submitOrder error', error);
+        return dispatch(orderActions.orderFailed(error.data));
       });
   };
 };
