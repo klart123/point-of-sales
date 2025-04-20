@@ -25,27 +25,23 @@ const ProductScreen = () => {
   const [addModal, setAddModal] = useState(false);
 
   // Function to load products
-  const loadProducts = (pageNumber: number) => {
-    dispatch(services.getProducts(pageNumber)); // Pass page number for pagination
+  const loadProducts = () => {
+    dispatch(services.getProducts()); // Pass page number for pagination
   };
 
   useEffect(() => {
+    loadProducts();
     return () => {
       dispatch(services.resetProducts());
     };
   }, []);
 
   useEffect(() => {
-    loadProducts(page);
-  }, [page]);
-
-  useEffect(() => {
-    if (Array.isArray(products?.data?.data)) {
-      setList(prevList =>
-        page === 1
-          ? products?.data?.data
-          : [...prevList, ...products?.data?.data],
-      );
+    if (products?.data) {
+      setList(products?.data);
+    }
+    if (Array.isArray(products?.data)) {
+      setList(products?.data);
     }
   }, [products]);
 
@@ -82,10 +78,8 @@ const ProductScreen = () => {
         </View>
         <FlatList
           data={list}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => item?.id.toString()}
           renderItem={({item}) => <ProductItem item={item} />}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.3}
           ListFooterComponent={
             loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
           }

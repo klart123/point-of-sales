@@ -15,6 +15,7 @@ export default StyleSheet.create({
     flex: 1,
     margin: 3,
     padding: 10,
+    paddingVertical: 20,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
@@ -44,10 +45,6 @@ export default StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: '#007bff',
     borderRadius: 5,
-  },
-  modalCloseText: {
-    color: 'white',
-    fontWeight: 'bold',
   },
   header: {
     flexDirection: 'row',
@@ -98,5 +95,48 @@ export default StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
+  },
+
+  modalRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  modalLabel: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginRight: 4,
+  },
+  modalValue: {
+    fontSize: 16,
+  },
+  modalPrice: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  variantGroup: {
+    marginBottom: 16,
+  },
+  variantTitle: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+    fontSize: 16,
+  },
+  variantText: {
+    paddingLeft: 8,
+    fontSize: 14,
+  },
+  // modalCloseButton: {
+  //   marginTop: 20,
+  //   alignSelf: 'flex-end',
+  //   backgroundColor: '#333',
+  //   paddingHorizontal: 16,
+  //   paddingVertical: 8,
+  //   borderRadius: 8,
+  // },
+  modalCloseText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });

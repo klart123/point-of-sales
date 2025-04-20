@@ -19,19 +19,8 @@ const productSlice = createSlice({
       state.products = [];
     },
     productSuccess: (state, action: PayloadAction<object>) => {
-      const newProducts = action.payload?.data;
-      const hasMore = newProducts?.current_page < newProducts?.last_page;
-
-      state.products = {
-        ...state.products,
-        data: {
-          ...state.products,
-          data: [...(state.products || []), ...newProducts?.data],
-        },
-      };
-
-      state.hasMore = hasMore;
       state.loading = false;
+      state.products = action.payload;
     },
     productFailed: (state, action: PayloadAction<products.ErrorPayload>) => {
       state.loading = false;
