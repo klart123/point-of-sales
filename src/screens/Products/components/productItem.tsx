@@ -5,6 +5,7 @@ import {products} from '../../../types';
 
 const ProductItem: React.FC<products.ProductItemProps> = ({item}) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const {name, variants} = item;
 
   const handlePress = () => {
     setModalVisible(true);
@@ -13,8 +14,7 @@ const ProductItem: React.FC<products.ProductItemProps> = ({item}) => {
   return (
     <>
       <TouchableOpacity style={styles.item} onPress={handlePress}>
-        <Text>{item.name}</Text>
-        <Text>₱{item.price}</Text>
+        <Text>{name}</Text>
       </TouchableOpacity>
 
       <Modal
@@ -25,8 +25,26 @@ const ProductItem: React.FC<products.ProductItemProps> = ({item}) => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>{item.name}</Text>
-            <Text>Price: ₱{item.price}</Text>
-            <Text>Description: {item.description ?? 'No description'}</Text>
+
+            <View style={styles.modalRow}>
+              <Text style={styles.modalLabel}>Category </Text>
+              <Text style={styles.modalValue}>{item.category}</Text>
+            </View>
+
+            {variants &&
+              Object.entries(variants).map(([temperature, variantList]) => (
+                <View key={temperature} style={styles.variantGroup}>
+                  <Text style={styles.variantTitle}>
+                    {temperature.toUpperCase()}
+                  </Text>
+
+                  {variantList.map((variant, index) => (
+                    <Text key={index} style={styles.variantText}>
+                      {variant.size} - ₱{variant.price}
+                    </Text>
+                  ))}
+                </View>
+              ))}
 
             <Pressable
               style={styles.modalCloseButton}

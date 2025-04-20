@@ -23,12 +23,6 @@ const ProductModal: React.FC<Props> = ({visible, onClose, onSubmit}) => {
 
   const handleSubmit = () => {
     onSubmit({name, price, description, category});
-    // onClose(); // optional: close after submit
-    // setName('');
-    // setPrice('');
-    // setSize('');
-    // setDescription('');
-    // setCategory('');
   };
 
   return (
