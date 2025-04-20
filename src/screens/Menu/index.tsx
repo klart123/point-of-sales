@@ -25,35 +25,26 @@ const MenuScreen = () => {
   const [selectedItem, setSelectedItem] = useState(null);
 
   // Function to load products
-  const loadProducts = (pageNumber: number) => {
-    dispatch(services.getMenu(pageNumber)); // Pass page number for pagination
+  const loadProducts = () => {
+    dispatch(services.getMenu()); // Pass page number for pagination
   };
 
   useEffect(() => {
+    loadProducts();
     return () => {
       dispatch(services.resetMenu());
     };
   }, []);
 
   useEffect(() => {
-    loadProducts(page); // Fetch products when the component mounts
-  }, [page]);
-
-  useEffect(() => {
-    if (Array.isArray(menu?.data?.data)) {
-      setList(prevList =>
-        page === 1 ? menu?.data?.data : [...prevList, ...menu?.data?.data],
-      );
+    if (Array.isArray(menu?.data)) {
+      setList(menu?.data);
     }
   }, [menu]);
 
   // Handle pull-to-refresh
   const onRefresh = () => {
     setRefreshing(true);
-    setPage(1);
-    setList([]);
-    loadProducts(1);
-    setRefreshing(false);
   };
 
   // Handle when the end of the list is reached

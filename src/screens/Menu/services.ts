@@ -2,12 +2,12 @@ import {AppDispatch} from '../../redux/store'; // adjust path if needed
 import * as menuSlice from '../../redux/slices/menuSlice';
 import axiosInstance from '../../Api/axiosInstance';
 
-export const getMenu = (page: number) => {
+export const getMenu = () => {
   return (dispatch: AppDispatch) => {
     dispatch(menuSlice.menuStart());
 
     axiosInstance
-      .get('/products', {params: {page}})
+      .get('/products')
       .then(response => {
         if (response?.status === 200) {
           return dispatch(menuSlice.menuSuccess(response.data));
