@@ -80,9 +80,6 @@ const ProductScreen = () => {
           data={list}
           keyExtractor={item => item?.id.toString()}
           renderItem={({item}) => <ProductItem item={item} />}
-          // ListFooterComponent={
-          //   loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
-          // }
           numColumns={2}
           contentContainerStyle={styles.list}
           refreshControl={

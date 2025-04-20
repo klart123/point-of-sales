@@ -5,6 +5,7 @@ import {combineReducers} from 'redux';
 import authReducer from './slices/authSlice';
 import productReducer from './slices/productSlice';
 import menuSlice from './slices/menuSlice';
+import orderSlice from './slices/orderSlice';
 
 const persistConfig = {
   key: 'root',
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   products: productReducer,
   menu: menuSlice,
+  orders: orderSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

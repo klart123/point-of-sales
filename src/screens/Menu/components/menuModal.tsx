@@ -23,7 +23,7 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
     onSubmit({
       id: item?.id,
       sku: item?.sku,
-      name,
+      name: item?.name,
       price: selectedPrice,
       size: selectedSize,
     });
@@ -63,35 +63,67 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
           <Text style={[styles.title, {paddingBottom: 16}]}>
             Add {item?.name.charAt(0).toUpperCase() + item?.name.slice(1)}
           </Text>
+
+          {/* Temperature Buttons */}
           {item?.variants && (
-            <Picker
-              selectedValue={selectedTemp}
-              onValueChange={handleTempChange}>
-              <Picker.Item label="Select Temperature" value="" />
-              {Object.entries(item?.variants).map(([temp]) => (
-                <Picker.Item
-                  key={temp}
-                  label={temp.charAt(0).toUpperCase() + temp.slice(1)}
-                  value={temp}
-                />
-              ))}
-            </Picker>
+            <View style={styles.optionGroup}>
+              <Text style={styles.optionLabel}>Select Temperature:</Text>
+              <View style={styles.buttonGroup}>
+                {Object.entries(item.variants).map(([temp]) => (
+                  <TouchableOpacity
+                    key={temp}
+                    style={[
+                      styles.optionButton,
+                      selectedTemp === temp && styles.optionButtonSelected,
+                    ]}
+                    onPress={() => {
+                      setSelectedTemp(temp);
+                      setSelectedSize('');
+                      setSelectedPrice('');
+                    }}>
+                    <Text
+                      style={[
+                        styles.optionButtonText,
+                        selectedTemp === temp &&
+                          styles.optionButtonTextSelected,
+                      ]}>
+                      {temp.charAt(0).toUpperCase() + temp.slice(1)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
           )}
 
-          {/* Size Picker */}
+          {/* Size Buttons */}
           {item?.variants && selectedTemp !== '' && (
-            <Picker
-              selectedValue={selectedSize}
-              onValueChange={handleSizeChange}>
-              <Picker.Item label="Select Size" value="" />
-              {item?.variants[selectedTemp]?.map((variant, index) => (
-                <Picker.Item
-                  key={index}
-                  label={variant.size}
-                  value={variant.size}
-                />
-              ))}
-            </Picker>
+            <View style={styles.optionGroup}>
+              <Text style={styles.optionLabel}>Select Size:</Text>
+              <View style={styles.buttonGroup}>
+                {item.variants[selectedTemp].map((variant, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.optionButton,
+                      selectedSize === variant.size &&
+                        styles.optionButtonSelected,
+                    ]}
+                    onPress={() => {
+                      setSelectedSize(variant.size);
+                      setSelectedPrice(variant.price);
+                    }}>
+                    <Text
+                      style={[
+                        styles.optionButtonText,
+                        selectedSize === variant.size &&
+                          styles.optionButtonTextSelected,
+                      ]}>
+                      {variant.size}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
           )}
 
           {/* Display Price */}
@@ -103,7 +135,13 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
             <TouchableOpacity onPress={handleClose} style={styles.buttonCancel}>
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleSubmit} style={styles.buttonAdd}>
+            <TouchableOpacity
+              onPress={handleSubmit}
+              style={[
+                styles.buttonAdd,
+                !selectedTemp || !selectedSize ? styles.buttonDisabled : null,
+              ]}
+              disabled={!selectedTemp || !selectedSize}>
               <Text style={styles.buttonText}>Save</Text>
             </TouchableOpacity>
           </View>

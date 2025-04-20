@@ -9,7 +9,6 @@ export default StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
   },
   list: {},
   item: {
@@ -61,6 +60,7 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
+    paddingVertical: 10,
     // paddingHorizontal: 16,
   },
   addButton: {
@@ -110,5 +110,131 @@ export default StyleSheet.create({
     marginTop: 16,
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  emptyText: {
+    fontStyle: 'italic',
+    color: '#666',
+  },
+  orderItem: {
+    paddingVertical: 8,
+  },
+  itemText: {
+    fontSize: 16,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  button: {
+    backgroundColor: '#222',
+    padding: 10,
+    borderRadius: 8,
+    marginLeft: 10,
+  },
+  clearButton: {
+    backgroundColor: '#f44336',
+    padding: 10,
+    borderRadius: 8,
+    flex: 1,
+    marginRight: 8,
+  },
+  totalSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+  },
+  totalLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  totalAmount: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#00a86b',
+  },
+  itemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+
+  itemTextContainer: {
+    flex: 1,
+  },
+
+  removeButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: '#ff4d4d',
+    borderRadius: 6,
+  },
+
+  removeText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  optionGroup: {
+    marginBottom: 12,
+  },
+
+  optionLabel: {
+    fontWeight: 'bold',
+    marginBottom: 6,
+  },
+
+  buttonGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+
+  optionButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: '#fff',
+    width: '30%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  optionButtonSelected: {
+    backgroundColor: '#333',
+    borderColor: '#333',
+  },
+
+  optionButtonText: {
+    color: '#333',
+  },
+
+  optionButtonTextSelected: {
+    color: '#fff',
+  },
+  buttonDisabled: {
+    backgroundColor: '#ccc',
+    borderColor: '#999',
+  },
+  orderListButton: {
+    backgroundColor: '#777',
+    padding: 10,
+    borderRadius: 8,
+    marginRight: 8,
+  },
+  orderListAddButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 8,
+  },
+  orderListClearBtn: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
   },
 });
