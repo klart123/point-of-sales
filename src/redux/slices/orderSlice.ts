@@ -14,6 +14,9 @@ interface OrderState {
   isSubmitted: boolean;
   loading: boolean;
   error: string;
+  ordersList: [];
+  isUpdating: boolean;
+  isUpdated: boolean;
 }
 
 const initialState: OrderState = {
@@ -21,6 +24,9 @@ const initialState: OrderState = {
   isSubmitted: false,
   loading: false,
   error: '',
+  ordersList: [],
+  isUpdating: false,
+  isUpdated: false,
 };
 
 const orderSlice = createSlice({
@@ -49,6 +55,42 @@ const orderSlice = createSlice({
       state.loading = false;
       state.isSubmitted = false;
       state.error = action.payload;
+    },
+    getOrderStart: state => {
+      state.loading = true;
+      state.ordersList = [];
+    },
+    getOrderSuccess: (state, action: PayloadAction<OrderItem>) => {
+      state.loading = false;
+      state.ordersList = action.payload;
+    },
+    getOrderFailed: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.ordersList = [];
+      state.error = action.payload;
+    },
+    updateOrderStart: state => {
+      state.isUpdating = true;
+      state.isUpdated = false;
+    },
+    updateOrderSuccess: (state, action: PayloadAction<OrderItem>) => {
+      state.isUpdating = false;
+      state.isUpdated = true;
+    },
+    updateOrderFailed: (state, action: PayloadAction<string>) => {
+      state.isUpdating = false;
+      state.isUpdated = false;
+      state.error = action.payload;
+    },
+    resetOrders: state => {
+      state.ordersList = [];
+      state.loading = false;
+      state.isUpdated = false;
+      state.isUpdating = false;
+    },
+    resetUpdateOrder: state => {
+      state.isUpdated = false;
+      state.isUpdating = false;
     },
   },
 });

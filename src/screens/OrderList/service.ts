@@ -1,22 +1,52 @@
 import {AppDispatch} from '../../redux/store'; // adjust path if needed
-import * as authSlice from '../../redux/slices/authSlice';
-import * as authService from '../../Api/authService';
+import {orderActions} from '../../redux/slices/orderSlice';
+import axiosInstance from '../../Api/axiosInstance';
 
-export const loginUser = (data: {email: string; password: string}) => {
+export const getOrders = () => {
   return async (dispatch: AppDispatch) => {
-    dispatch(authSlice.loginStart());
+    dispatch(orderActions.getOrderStart());
 
-    authService
-      .loginUser(data)
+    axiosInstance
+      .get('/orders')
       .then(response => {
-        if (response?.status) {
-          return dispatch(authSlice.loginSuccess(response.data));
+        if (response?.status === 200) {
+          return dispatch(orderActions.getOrderSuccess(response?.data));
         }
 
-        return dispatch(authSlice.loginFailed(response.data.error));
+        return dispatch(orderActions.getOrderStart(response.data.error));
       })
       .catch(error => {
-        return dispatch(authSlice.loginFailed(error.data.error));
+        return dispatch(orderActions.getOrderStart(error.data.error));
       });
+  };
+};
+
+export const completeOrder = (data: any) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(orderActions.updateOrderStart());
+    axiosInstance
+      .put(`/orders/${data.id}/status`, {status: data.status})
+      .then(response => {
+        if (response.status === 200 || response.status === 201) {
+          return dispatch(orderActions.updateOrderSuccess(response.data));
+        }
+
+        return dispatch(orderActions.updateOrderFailed(response.data.message));
+      })
+      .catch(error => {
+        return dispatch(orderActions.updateOrderFailed(error.data.message));
+      });
+  };
+};
+
+export const resetOrders = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(orderActions.resetOrders());
+  };
+};
+
+export const resetUpdateOrders = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(orderActions.resetUpdateOrder());
   };
 };

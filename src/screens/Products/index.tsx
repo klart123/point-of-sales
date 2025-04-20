@@ -37,9 +37,6 @@ const ProductScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (products?.data) {
-      setList(products?.data);
-    }
     if (Array.isArray(products?.data)) {
       setList(products?.data);
     }
