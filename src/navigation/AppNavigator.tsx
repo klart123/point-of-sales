@@ -1,12 +1,17 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import * as screens from '../index';
 import {navigation} from '../types';
+import SplashScreen from 'react-native-splash-screen';
 
 const Stack = createNativeStackNavigator<navigation.RootStackParamList>();
 
 const AppNavigator = () => {
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
