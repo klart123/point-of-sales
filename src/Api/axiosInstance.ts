@@ -16,7 +16,7 @@ axiosInstance.interceptors.request.use(
     console.log(
       '[Axios Request]',
       config.method?.toUpperCase(),
-      config.url,
+      `${API_BASE_URL} ${config.url}`,
       config.data,
     );
     return config;

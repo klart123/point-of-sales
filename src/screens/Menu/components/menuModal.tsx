@@ -17,7 +17,24 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
   const [size, setSize] = useState(item?.size || '');
   const [selectedTemp, setSelectedTemp] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedPrice, setSelectedPrice] = useState('');
+  const [selectedPrice, setSelectedPrice] = useState<number>(0);
+  const [selectedAddOns, setSelectedAddOns] = useState<
+    {name: string; price: string}[]
+  >([]);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+
+  useEffect(() => {
+    const base = parseFloat(selectedPrice.toString()) || 0;
+
+    const addOnTotal =
+      item?.addOns?.reduce((sum, addOn) => {
+        return selectedAddOns.some(a => a.name === addOn.name)
+          ? sum + parseFloat(addOn.price)
+          : sum;
+      }, 0) || 0;
+
+    setTotalPrice(base + addOnTotal);
+  }, [selectedPrice, selectedAddOns]);
 
   const handleSubmit = () => {
     onSubmit({
@@ -26,6 +43,8 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
       name: item?.name,
       price: selectedPrice,
       size: selectedSize,
+      addOns: selectedAddOns,
+      totalPrice: totalPrice,
     });
     handleClose(); // optional: close after submit
   };
@@ -33,22 +52,18 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
   const handleClose = () => {
     setSelectedTemp('');
     setSelectedSize('');
-    setSelectedPrice('');
+    setSelectedPrice(0);
+    setSelectedAddOns([]);
+    setTotalPrice(0);
     onClose();
   };
 
-  const handleTempChange = temp => {
-    setSelectedTemp(temp);
-    setSelectedSize('');
-    setSelectedPrice('');
-  };
-
-  const handleSizeChange = size => {
-    setSelectedSize(size);
-    const variant = item?.variants[selectedTemp]?.find(v => v.size === size);
-    if (variant) {
-      setSelectedPrice(variant.price);
-    }
+  const toggleAddOn = (addOn: {name: string; price: string}) => {
+    setSelectedAddOns(prev =>
+      prev.some(a => a.name === addOn.name)
+        ? prev.filter(a => a.name !== addOn.name)
+        : [...prev, addOn],
+    );
   };
 
   return (
@@ -126,10 +141,36 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
             </View>
           )}
 
-          {/* Display Price */}
-          {selectedPrice !== '' && (
-            <Text style={styles.selectedPrice}>Price: ₱{selectedPrice}</Text>
+          {item?.addOns && item.addOns.length > 0 && (
+            <View style={styles.optionGroup}>
+              <Text style={styles.optionLabel}>Select Add-Ons:</Text>
+              <View style={styles.buttonGroup}>
+                {item.addOns.map((addOn, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.optionButton,
+                      selectedAddOns.some(a => a.name === addOn.name) &&
+                        styles.optionButtonSelected,
+                    ]}
+                    onPress={() => toggleAddOn(addOn)}>
+                    <Text
+                      style={[
+                        styles.optionButtonText,
+                        selectedAddOns.includes(addOn.name) &&
+                          styles.optionButtonTextSelected,
+                      ]}>
+                      {addOn.name} (+₱{addOn.price})
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
           )}
+
+          {/* Display Price */}
+
+          <Text style={styles.selectedPrice}>Price: ₱{totalPrice}</Text>
 
           <View style={styles.buttons}>
             <TouchableOpacity onPress={handleClose} style={styles.buttonCancel}>

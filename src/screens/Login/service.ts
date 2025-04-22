@@ -13,10 +13,13 @@ export const loginUser = (data: {email: string; password: string}) => {
           return dispatch(authSlice.loginSuccess(response.data));
         }
 
-        return dispatch(authSlice.loginFailed(response.data.error));
+        console.log('response', response);
+
+        return dispatch(authSlice.loginFailed(response.data.message));
       })
       .catch(error => {
-        return dispatch(authSlice.loginFailed(error.data.error));
+        console.log('error', error);
+        return dispatch(authSlice.loginFailed(error.message));
       });
   };
 };

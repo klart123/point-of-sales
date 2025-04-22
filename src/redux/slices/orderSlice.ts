@@ -7,6 +7,7 @@ interface OrderItem {
   name: string;
   price: number;
   size: string;
+  totalPrice: number;
 }
 
 interface OrderState {
@@ -34,7 +35,6 @@ const orderSlice = createSlice({
   initialState,
   reducers: {
     addOrder: (state, action: PayloadAction<OrderItem>) => {
-      console.log('state orders', action.payload);
       state.orders.push(action.payload);
     },
     removeOrder: (state, action: PayloadAction<number>) => {

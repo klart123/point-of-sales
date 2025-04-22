@@ -21,24 +21,26 @@ const OrderListModal = ({
 }: {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (customerName: string) => void; // Modify onSubmit to accept customer name
+  onSubmit: (customerName: string) => void;
 }) => {
   const orders = useSelector((state: RootState) => state.orders.orders);
   const dispatch = useDispatch();
-  const [customerName, setCustomerName] = useState(''); // State for customer name
+  const [customerName, setCustomerName] = useState('');
 
-  // ✅ Calculate total
-  const total = orders.reduce((sum, order) => sum + Number(order.price), 0);
+  const total = orders.reduce((sum, order) => {
+    const basePrice = parseFloat(order.price) || 0;
+    const addOnsTotal =
+      order.addOns?.reduce((s, a) => s + parseFloat(a.price), 0) || 0;
+    return sum + basePrice + addOnsTotal;
+  }, 0);
 
   const handleSubmit = () => {
     if (customerName.trim() === '') {
       Alert.alert('Please enter a customer name');
       return;
     }
-
-    // Submit the order with customer name
     onSubmit(customerName);
-    onClose(); // Close modal after submit
+    onClose();
   };
 
   return (
@@ -80,9 +82,21 @@ const OrderListModal = ({
                   <View style={styles.itemRow}>
                     <View style={styles.itemTextContainer}>
                       <Text style={styles.itemText}>
-                        {item.name} ({item.size}) - ₱{item.price}
+                        {item.name} ({item.size}) - ₱{item.totalPrice}
                       </Text>
+
+                      {/* Show add-ons if they exist */}
+                      {item.addOns && item.addOns.length > 0 && (
+                        <View style={styles.addOnContainer}>
+                          {item.addOns.map((addOn, idx) => (
+                            <Text key={idx} style={styles.addOnText}>
+                              + {addOn.name} (₱{addOn.price})
+                            </Text>
+                          ))}
+                        </View>
+                      )}
                     </View>
+
                     <Pressable
                       onPress={() => dispatch(orderActions.removeOrder(index))}
                       style={styles.removeButton}>
