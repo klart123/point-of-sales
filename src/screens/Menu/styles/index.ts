@@ -181,6 +181,7 @@ export default StyleSheet.create({
   },
   optionGroup: {
     marginBottom: 12,
+    width: '100%',
   },
 
   optionLabel: {
@@ -191,19 +192,19 @@ export default StyleSheet.create({
   buttonGroup: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'space-between',
     gap: 8,
   },
 
   optionButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 12,
+    width: '48%',
+    padding: 12,
+    paddingVertical: 20,
+    backgroundColor: '#eee',
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#fff',
-    width: '30%',
-    justifyContent: 'center',
+    marginBottom: 10,
     alignItems: 'center',
+    textAlign: 'center',
   },
 
   optionButtonSelected: {
@@ -216,6 +217,7 @@ export default StyleSheet.create({
   },
 
   optionButtonTextSelected: {
+    textAlign: 'center',
     color: '#fff',
   },
   buttonDisabled: {
@@ -236,5 +238,14 @@ export default StyleSheet.create({
   orderListClearBtn: {
     backgroundColor: '#4CAF50',
     padding: 10,
+  },
+  addOnText: {
+    fontSize: 12,
+    color: '#666',
+    marginLeft: 8,
+  },
+  addOnContainer: {
+    marginTop: 4,
+    paddingLeft: 10,
   },
 });

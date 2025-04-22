@@ -81,9 +81,20 @@ const OrderListScreen = () => {
         <Text style={styles.status}>📌 Status: {item.status}</Text>
 
         {item.items?.map((orderItem, index) => (
-          <Text key={index} style={styles.itemText}>
-            • {orderItem.name} ({orderItem.size}) - ₱{orderItem.price}
-          </Text>
+          <View style={styles.orerItemContainer}>
+            <Text key={index} style={styles.itemText}>
+              • {orderItem.name} ({orderItem.size}) - ₱{orderItem.price}
+            </Text>
+            {orderItem.addOns && orderItem.addOns.length > 0 && (
+              <View style={styles.addOnContainer}>
+                {orderItem.addOns.map((addOn, idx) => (
+                  <Text key={idx} style={styles.addOnText}>
+                    + {addOn.name} (₱{addOn.price})
+                  </Text>
+                ))}
+              </View>
+            )}
+          </View>
         ))}
 
         <Text style={styles.total}>💰 Total: ₱{item.total_price ?? '—'}</Text>

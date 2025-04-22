@@ -52,4 +52,15 @@ export default StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
   },
+  addOnText: {
+    color: '#666',
+    marginLeft: 8,
+  },
+  addOnContainer: {
+    marginTop: 4,
+    paddingLeft: 15,
+  },
+  orerItemContainer: {
+    padding: 10,
+  },
 });
