@@ -1,8 +1,8 @@
+// src/api/axiosInstance.ts
 import axios from 'axios';
-import {API_BASE_URL} from '@env';
+import {store} from '../redux/store';
 
 const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -10,15 +10,20 @@ const axiosInstance = axios.create({
   },
 });
 
-// 🔍 Log requests
+// 🧠 Always pull latest baseURL before each request
 axiosInstance.interceptors.request.use(
   config => {
+    const latestBaseURL = store.getState().api.baseURL;
+    config.baseURL = latestBaseURL;
+
     console.log(
       '[Axios Request]',
       config.method?.toUpperCase(),
-      `${API_BASE_URL} ${config.url}`,
+      config.baseURL,
+      config.url,
       config.data,
     );
+
     return config;
   },
   error => {
@@ -44,12 +49,11 @@ axiosInstance.interceptors.response.use(
       const {status, data, config} = error.response;
 
       console.log(`[Axios Response Error] ${status}`, {
-        url: API_BASE_URL + config.url,
+        url: config.baseURL + config.url,
         method: config.method,
         data,
       });
 
-      // 🎯 Custom handling by status
       switch (status) {
         case 400:
           console.warn('Bad Request: Please check your input.');
@@ -64,16 +68,14 @@ axiosInstance.interceptors.response.use(
           console.warn('Server Error: Try again later.');
           break;
       }
+
       return Promise.reject(data || error.response);
     } else if (error.request) {
-      // No response was received
       console.error('[Axios No Response]', error.request);
     } else {
-      // Other errors (e.g., setting up the request)
       console.error('[Axios Error]', error.message);
     }
 
-    // Return the rejected promise with the error data for further processing
     return Promise.reject(error);
   },
 );
