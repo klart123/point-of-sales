@@ -21,4 +21,13 @@ export default StyleSheet.create({
     marginBottom: 16,
     fontSize: 16,
   },
+  settingsButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 10,
+  },
+  settingsIcon: {
+    fontSize: 24,
+  },
 });

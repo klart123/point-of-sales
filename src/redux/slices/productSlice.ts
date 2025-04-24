@@ -11,7 +11,7 @@ const initialState: products.ProductState = {
 };
 
 const productSlice = createSlice({
-  name: 'auth',
+  name: 'product',
   initialState,
   reducers: {
     productStart: state => {

@@ -6,14 +6,16 @@ import authReducer from './slices/authSlice';
 import productReducer from './slices/productSlice';
 import menuSlice from './slices/menuSlice';
 import orderSlice from './slices/orderSlice';
+import apiSlice from './slices/apiSlice';
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['auth'], // only persist auth
+  whitelist: ['auth', 'api'], // only persist auth
 };
 
 const rootReducer = combineReducers({
+  api: apiSlice,
   auth: authReducer,
   products: productReducer,
   menu: menuSlice,

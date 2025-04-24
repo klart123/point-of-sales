@@ -18,7 +18,7 @@ const initialState: AuthState = {
 };
 
 const menuSlice = createSlice({
-  name: 'auth',
+  name: 'menu',
   initialState,
   reducers: {
     menuStart: state => {
