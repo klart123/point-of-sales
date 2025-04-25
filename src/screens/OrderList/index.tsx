@@ -75,6 +75,7 @@ const OrderListScreen = () => {
 
   const handleEditOrder = (item: object) => {
     if (item) {
+      console.log('item', item.items);
       dispatch(orderActions.editOrders(item));
       navigation.navigate('Store');
     }
@@ -92,17 +93,40 @@ const OrderListScreen = () => {
 
         {item.items?.map((orderItem, index) => (
           <View key={index} style={styles.orerItemContainer}>
-            <Text style={styles.itemText}>
-              • {orderItem.name} ({orderItem.size}) - ₱{orderItem.price}
-            </Text>
+            <View style={styles.itemTextPrice}>
+              <Text style={styles.itemText}>
+                • {orderItem.name} ({orderItem.size})
+              </Text>
+              <Text style={styles.textPrice}>₱{orderItem.price}</Text>
+            </View>
             {orderItem.addOns && orderItem.addOns.length > 0 && (
               <View style={styles.addOnContainer}>
                 {orderItem.addOns.map((addOn, idx) => (
-                  <Text key={idx} style={styles.addOnText}>
-                    + {addOn.name} (₱{addOn.price})
-                  </Text>
+                  <View style={styles.itemTextPrice}>
+                    <Text key={idx} style={styles.addOnText}>
+                      + {addOn.name}
+                    </Text>
+                    <Text style={styles.textPrice}>(₱{addOn.price})</Text>
+                  </View>
                 ))}
               </View>
+            )}
+
+            {orderItem.addOns?.length > 0 && (
+              <>
+                <View>
+                  <Text style={[styles.textPrice, styles.addOnPrice]}>
+                    {'Total + add-ons = ₱'}
+                    {(
+                      parseFloat(orderItem.price) +
+                      orderItem.addOns.reduce(
+                        (s, a) => s + parseFloat(a.price),
+                        0,
+                      )
+                    ).toFixed(2)}
+                  </Text>
+                </View>
+              </>
             )}
           </View>
         ))}

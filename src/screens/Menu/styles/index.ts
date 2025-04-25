@@ -80,6 +80,7 @@ export default StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     elevation: 10,
+    maxHeight: '80%',
   },
   input: {
     borderWidth: 1,
@@ -160,12 +161,17 @@ export default StyleSheet.create({
   itemRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+    alignItems: 'flex-start',
+    marginBottom: 10,
   },
 
   itemTextContainer: {
     flex: 1,
+  },
+  itemTextPrice: {
+    paddingHorizontal: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 
   removeButton: {
@@ -241,7 +247,7 @@ export default StyleSheet.create({
   },
   addOnText: {
     fontSize: 12,
-    color: '#666',
+    color: '#667',
     marginLeft: 8,
   },
   addOnContainer: {
