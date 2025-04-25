@@ -1,7 +1,8 @@
-import React from 'react';
-import {Text, FlatList, TouchableOpacity} from 'react-native';
+import React, {useLayoutEffect} from 'react';
+import {Text, FlatList, TouchableOpacity, Pressable} from 'react-native';
 import styles from './styles';
 import {HomeScreenProps, MenuItem} from './types';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const menuItems = [
   {label: 'Store', screen: 'Store'},
@@ -10,6 +11,18 @@ const menuItems = [
 ];
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable
+          onPress={() => navigation.navigate('Profile' as never)}
+          style={{marginRight: 5}}>
+          <Icon name="gear" size={24} color="#000" />
+        </Pressable>
+      ),
+    });
+  }, [navigation]);
+
   const renderItem = ({item}: {item: MenuItem}) => (
     <TouchableOpacity
       style={[styles.card, item.style]}

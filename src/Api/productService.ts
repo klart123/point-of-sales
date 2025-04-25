@@ -4,6 +4,5 @@ import * as types from '../types';
 
 export const getProducts = async () => {
   const response = await axiosInstance.get('/products');
-  console.log('product service get', response);
   return response.data;
 };

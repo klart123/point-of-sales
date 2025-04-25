@@ -6,6 +6,7 @@ import LoginScreen from './screens/Login';
 import OrderListScreen from './screens/OrderList';
 import MenuScreen from './screens/Menu';
 import ProductScreen from './screens/Products';
+import ProfileScreen from './screens/Profile';
 
 export {
   HomeScreen,
@@ -16,4 +17,5 @@ export {
   OrderListScreen,
   MenuScreen,
   ProductScreen,
+  ProfileScreen,
 };

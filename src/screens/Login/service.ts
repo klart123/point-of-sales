@@ -13,12 +13,9 @@ export const loginUser = (data: {email: string; password: string}) => {
           return dispatch(authSlice.loginSuccess(response.data));
         }
 
-        console.log('response', response);
-
         return dispatch(authSlice.loginFailed(response.data.message));
       })
       .catch(error => {
-        console.log('error', error);
         return dispatch(authSlice.loginFailed(error.message));
       });
   };

@@ -18,7 +18,6 @@ const apiSlice = createSlice({
   initialState,
   reducers: {
     setBaseURL: (state, action: PayloadAction<string>) => {
-      console.log('action', action.payload);
       state.baseURL = action.payload; // Update baseURL in state
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
