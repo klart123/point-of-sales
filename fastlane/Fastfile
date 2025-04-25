@@ -1,0 +1,133 @@
+platform :android do
+    desc "Run Build App task"
+    private_lane :run_build_app do |options|
+        build_android_app(
+            task: "assemble", 
+            project_dir: 'android/', 
+            build_type: "Release", 
+            print_command: false,
+            properties: {
+                "RELEASE_STORE_FILE" => ENV["RELEASE_STORE_FILE"],
+                "RELEASE_KEY_ALIAS" => ENV["RELEASE_KEY_ALIAS"],
+                "RELEASE_STORE_PASSWORD" => ENV["RELEASE_STORE_PASSWORD"],
+                "RELEASE_KEY_PASSWORD" => ENV["RELEASE_KEY_PASSWORD"]
+            }
+        )
+    end
+
+    desc 'Upload the APK to Firebase App Distribution.'
+    private_lane :upload_to_fad do |options|
+        release_notes = "en.txt"
+        firebase_app_distribution(
+            app: ENV["APP_ID_ANDROID"],
+            android_artifact_type: "APK",
+            groups: ENV["TESTER_GROUPS"],
+            firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
+            release_notes_file: "fastlane/release-notes/#{release_notes}",
+            android_artifact_path: "android/app/build/outputs/apk/release/app-release.apk"
+        )
+    end
+
+    desc "Build the APK"
+    lane :build do |options|
+      run_build_app(options) 
+    end
+  
+    desc 'Upload the APK to Firebase App Distribution.'
+    lane :upload do |options|
+      upload_to_fad(options) 
+    end
+  
+    desc 'Deploy the APK to Firebase App Distribution.'
+    lane :deploy do |options|
+      build(options) 
+      upload(options) 
+    end
+end
+
+platform :ios do
+
+    desc "Run Build App task"
+    private_lane :run_build_app do |options|
+        build_ios_app(
+            scheme: "MIMSConsult2_0 #{options[:scheme]}", 
+            workspace: './ios/MimsMobileApp.xcworkspace', 
+            output_name: "MIMSConsult #{options[:scheme]}.ipa", 
+            output_directory: "./ios/build_ipa", 
+            silent: true,
+            clean: true,
+            export_method: "ad-hoc",
+            xcargs: "-allowProvisioningUpdates"
+        )
+    end
+
+    desc 'Upload the IPA to Firebase App Distribution.'
+    private_lane :upload_to_fad do |options|
+        scheme = options[:scheme]
+        env_key = "APP_ID_IOS_#{scheme.upcase}"
+
+        if scheme === "ID"
+            release_notes = "id.txt"
+        elsif scheme === "VN"
+            release_notes = "vn.txt"
+        else
+            release_notes = "en.txt"
+        end
+
+        firebase_app_distribution(
+            app: ENV[env_key],
+            groups: ENV["TESTER_GROUPS"],
+            firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
+            ipa_path: "ios/build_ipa/MIMSConsult #{scheme}.ipa",
+            release_notes_file: "fastlane/release-notes/#{release_notes}"
+        )
+    end
+
+    desc "Build the IPA"
+    lane :build do |options|
+        scheme = options[:scheme] || "all"
+        
+        # Clean build_ipa directory
+        sh("rm -rf ../ios/build_ipa")
+        sh("mkdir -p ../ios/build_ipa")
+
+        if scheme === "all"
+            run_build_app(scheme: "TH")
+            run_build_app(scheme: "HK")
+            run_build_app(scheme: "PH")
+            run_build_app(scheme: "MY")
+            run_build_app(scheme: "ID")
+            run_build_app(scheme: "IN")
+            run_build_app(scheme: "VN")
+            run_build_app(scheme: "SG")
+        else
+            run_build_app(scheme: scheme)
+        end
+    end
+
+    desc 'Upload the IPA to Firebase App Distribution.'
+    lane :upload do |options|
+        scheme = options[:scheme] || "all"
+
+        if scheme === "all" 
+            upload_to_fad(scheme: "TH")
+            upload_to_fad(scheme: "HK")
+            upload_to_fad(scheme: "PH")
+            upload_to_fad(scheme: "MY")
+            upload_to_fad(scheme: "ID")
+            upload_to_fad(scheme: "IN")
+            upload_to_fad(scheme: "VN")
+            upload_to_fad(scheme: "SG")
+        else
+            upload_to_fad(scheme: scheme)
+        end
+    end
+
+    desc 'Deploy the IPA to Firebase App Distribution.'
+    lane :deploy do |options|
+        scheme = options[:scheme] || "all"
+
+        build(scheme: scheme)
+        upload(scheme: scheme)
+    end
+end
