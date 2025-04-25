@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   FlatList,
   View,
@@ -14,6 +14,7 @@ import styles from './styles';
 import MenuModal from './components/menuModal';
 import {orderActions} from '../../redux/slices/orderSlice';
 import OrderListModal from './components/ordersListModal';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = 160;
@@ -23,10 +24,11 @@ const numColumns = Math.floor(screenWidth / (itemWidth + spacing));
 
 const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const {loading, menu, hasMore} = useSelector(
-    (state: RootState) => state.menu,
+  const navigation = useNavigation();
+  const {loading, menu} = useSelector((state: RootState) => state.menu);
+  const {orders, isEdit, orderId, isEditUpdated} = useSelector(
+    (state: RootState) => state.orders,
   );
-  const {orders} = useSelector((state: RootState) => state.orders);
   const [list, setList] = useState([]);
   const [viewModal, setViewModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -39,6 +41,7 @@ const MenuScreen = () => {
   useEffect(() => {
     loadProducts();
     return () => {
+      dispatch(services.resetEditOrder());
       dispatch(services.resetMenu());
     };
   }, []);
@@ -48,6 +51,16 @@ const MenuScreen = () => {
       setList(menu?.data);
     }
   }, [menu]);
+
+  useEffect(() => {
+    if (isEdit && isEditUpdated) {
+      dispatch(services.resetMenu());
+      dispatch(services.resetEditOrder());
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      }
+    }
+  }, [isEdit, isEditUpdated]);
 
   // Handle pull-to-refresh
   const onRefresh = () => {
@@ -59,7 +72,19 @@ const MenuScreen = () => {
   };
 
   const handleSubmitOrder = data => {
-    dispatch(
+    if (isEdit) {
+      dispatch(
+        services.updateOrder({
+          id: orderId,
+          items: orders,
+          customer_name: data,
+        }),
+      );
+
+      return;
+    }
+
+    return dispatch(
       services.submitOrders({
         customer_name: data,
         items: orders,

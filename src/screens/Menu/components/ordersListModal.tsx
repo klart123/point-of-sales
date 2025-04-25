@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Modal,
   View,
@@ -23,9 +23,12 @@ const OrderListModal = ({
   onClose: () => void;
   onSubmit: (customerName: string) => void;
 }) => {
-  const orders = useSelector((state: RootState) => state.orders.orders);
+  const {orderCustomerName, orders} = useSelector(
+    (state: RootState) => state.orders,
+  );
+
   const dispatch = useDispatch();
-  const [customerName, setCustomerName] = useState('');
+  const [customerName, setCustomerName] = useState(orderCustomerName);
 
   const total = orders.reduce((sum, order) => {
     const basePrice = parseFloat(order.price) || 0;

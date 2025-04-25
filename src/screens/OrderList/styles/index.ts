@@ -29,7 +29,7 @@ export default StyleSheet.create({
     marginVertical: 6,
   },
   itemText: {
-    fontSize: 14,
+    fontSize: 16,
     marginLeft: 6,
   },
   total: {
@@ -37,12 +37,11 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
   completeButton: {
-    marginTop: 10,
+    flex: 1,
     backgroundColor: '#4CAF50',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    alignSelf: 'flex-end',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
@@ -61,6 +60,20 @@ export default StyleSheet.create({
     paddingLeft: 15,
   },
   orerItemContainer: {
+    padding: 5,
+    paddingHorizontal: 10,
+  },
+  editButton: {
+    flex: 1,
+    backgroundColor: '#ffc107',
     padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+    marginTop: 10,
   },
 });
