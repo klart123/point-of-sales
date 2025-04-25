@@ -84,19 +84,47 @@ const OrderListModal = ({
                 renderItem={({item, index}) => (
                   <View style={styles.itemRow}>
                     <View style={styles.itemTextContainer}>
-                      <Text style={styles.itemText}>
-                        {item.name} ({item.size}) - ₱{item.totalPrice}
-                      </Text>
+                      <View style={styles.itemTextPrice}>
+                        <Text style={styles.itemText}>
+                          {item.name} ({item.size})
+                        </Text>
+                        <Text>₱{item.price}</Text>
+                      </View>
 
                       {/* Show add-ons if they exist */}
                       {item.addOns && item.addOns.length > 0 && (
                         <View style={styles.addOnContainer}>
                           {item.addOns.map((addOn, idx) => (
-                            <Text key={idx} style={styles.addOnText}>
-                              + {addOn.name} (₱{addOn.price})
-                            </Text>
+                            <View style={styles.itemTextPrice}>
+                              <Text key={idx} style={styles.addOnText}>
+                                + {addOn.name}
+                              </Text>
+                              <Text style={styles.addOnText}>
+                                (₱{addOn.price})
+                              </Text>
+                            </View>
                           ))}
                         </View>
+                      )}
+
+                      {item.addOns?.length > 0 && (
+                        <>
+                          <Text
+                            style={{
+                              flex: 1,
+                              textAlign: 'right',
+                              paddingHorizontal: 5,
+                            }}>
+                            {'Total + add-ons = ₱'}
+                            {(
+                              parseFloat(item.price) +
+                              item.addOns.reduce(
+                                (s, a) => s + parseFloat(a.price),
+                                0,
+                              )
+                            ).toFixed(2)}
+                          </Text>
+                        </>
                       )}
                     </View>
 

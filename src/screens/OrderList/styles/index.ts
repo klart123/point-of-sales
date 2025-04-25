@@ -32,6 +32,11 @@ export default StyleSheet.create({
     fontSize: 16,
     marginLeft: 6,
   },
+  itemTextPrice: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   total: {
     marginTop: 6,
     fontWeight: 'bold',
@@ -55,6 +60,9 @@ export default StyleSheet.create({
     color: '#666',
     marginLeft: 8,
   },
+  textPrice: {
+    fontSize: 12,
+  },
   addOnContainer: {
     marginTop: 4,
     paddingLeft: 15,
@@ -75,5 +83,10 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
     marginTop: 10,
+  },
+  addOnPrice: {
+    flex: 1,
+    textAlign: 'right',
+    paddingBottom: 5,
   },
 });
