@@ -35,7 +35,6 @@ axiosInstance.interceptors.request.use(
 // 📥 Log responses
 axiosInstance.interceptors.response.use(
   response => {
-    console.log('response', response);
     console.log(
       '[Axios Response]',
       response.status,

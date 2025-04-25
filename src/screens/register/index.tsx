@@ -36,7 +36,6 @@ const RegisterScreen: React.FC = () => {
         password,
         password_confirmation: confirmPassword,
       });
-      console.log('userData', userData);
       dispatch(registerSuccess(userData)); // Assuming backend returns name & email
       Alert.alert('Success', 'Account created successfully!');
     } catch (error: any) {

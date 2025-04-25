@@ -7,6 +7,7 @@ import productReducer from './slices/productSlice';
 import menuSlice from './slices/menuSlice';
 import orderSlice from './slices/orderSlice';
 import apiSlice from './slices/apiSlice';
+import userSlice from './slices/userSlice';
 
 const persistConfig = {
   key: 'root',
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   products: productReducer,
   menu: menuSlice,
   orders: orderSlice,
+  user: userSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
