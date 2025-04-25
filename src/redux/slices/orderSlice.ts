@@ -15,9 +15,13 @@ interface OrderState {
   isSubmitted: boolean;
   loading: boolean;
   error: string;
-  ordersList: [];
+  ordersList: OrderItem[];
   isUpdating: boolean;
   isUpdated: boolean;
+  isEdit: Boolean;
+  orderId: number | null;
+  orderCustomerName: string;
+  isEditUpdated: boolean;
 }
 
 const initialState: OrderState = {
@@ -28,6 +32,10 @@ const initialState: OrderState = {
   ordersList: [],
   isUpdating: false,
   isUpdated: false,
+  isEdit: false,
+  orderId: null,
+  orderCustomerName: '',
+  isEditUpdated: false,
 };
 
 const orderSlice = createSlice({
@@ -91,6 +99,44 @@ const orderSlice = createSlice({
     resetUpdateOrder: state => {
       state.isUpdated = false;
       state.isUpdating = false;
+    },
+    editOrderStart: state => {
+      state.loading = true;
+      state.isEditUpdated = false;
+      state.isUpdated = false;
+    },
+    editOrderSuccess: state => {
+      state.loading = false;
+      state.isEditUpdated = true;
+      state.isUpdated = true;
+    },
+    editOrderFailed: (state, action: PayloadAction<string>) => {
+      state.isUpdating = false;
+      state.isEditUpdated = false;
+      state.isUpdated = false;
+      state.error = action.payload;
+    },
+    editOrders: (
+      state,
+      action: PayloadAction<{
+        id: number | null;
+        customer_name: string;
+        items: OrderItem[];
+      }>,
+    ) => {
+      const {id, customer_name, items} = action.payload;
+
+      state.isEdit = true;
+      state.orderCustomerName = customer_name;
+      state.orderId = id;
+      state.orders = items;
+    },
+    resetEditOrder: state => {
+      state.isEdit = false;
+      state.orderCustomerName = '';
+      state.orderId = null;
+      state.orders = [];
+      state.isEditUpdated = false;
     },
   },
 });

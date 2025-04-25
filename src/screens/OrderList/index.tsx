@@ -10,15 +10,18 @@ import {
 import styles from './styles';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from './service';
-import {RootState} from '../../redux/store';
+import {RootState, AppDispatch} from '../../redux/store';
+import {orderActions} from '../../redux/slices/orderSlice';
+import {useNavigation} from '@react-navigation/native';
 
 const OrderListScreen = () => {
-  const dispatch = useDispatch();
-  const {loading, ordersList, isUpdated} = useSelector(
+  const dispatch = useDispatch<AppDispatch>();
+  const {loading, orders, ordersList, isUpdated} = useSelector(
     (state: RootState) => state.orders,
   );
   const [list, setList] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const navigation = useNavigation();
 
   // Function to refresh the list
   const onRefresh = () => {
@@ -54,23 +57,30 @@ const OrderListScreen = () => {
     }
   }, [isUpdated]);
 
-  const renderItem = ({item}) => {
-    const handleCompleteOrder = () => {
-      Alert.alert(
-        'Complete Order',
-        'Are you sure you want to mark this order as completed?',
-        [
-          {text: 'Cancel', style: 'cancel'},
-          {
-            text: 'Yes',
-            onPress: () => {
-              dispatch(services.completeOrder({id: item.id, status: 'served'}));
-            },
+  const handleCompleteOrder = () => {
+    Alert.alert(
+      'Complete Order',
+      'Are you sure you want to mark this order as completed?',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Yes',
+          onPress: () => {
+            dispatch(services.completeOrder({id: item.id, status: 'served'}));
           },
-        ],
-      );
-    };
+        },
+      ],
+    );
+  };
 
+  const handleEditOrder = (item: object) => {
+    if (item) {
+      dispatch(orderActions.editOrders(item));
+      navigation.navigate('Store');
+    }
+  };
+
+  const renderItem = ({item}) => {
     return (
       <View style={styles.item}>
         <View style={styles.orderNumber}>
@@ -81,8 +91,8 @@ const OrderListScreen = () => {
         <Text style={styles.status}>📌 Status: {item.status}</Text>
 
         {item.items?.map((orderItem, index) => (
-          <View style={styles.orerItemContainer}>
-            <Text key={index} style={styles.itemText}>
+          <View key={index} style={styles.orerItemContainer}>
+            <Text style={styles.itemText}>
               • {orderItem.name} ({orderItem.size}) - ₱{orderItem.price}
             </Text>
             {orderItem.addOns && orderItem.addOns.length > 0 && (
@@ -100,11 +110,19 @@ const OrderListScreen = () => {
         <Text style={styles.total}>💰 Total: ₱{item.total_price ?? '—'}</Text>
 
         {item.status !== 'completed' && (
-          <TouchableOpacity
-            style={styles.completeButton}
-            onPress={handleCompleteOrder}>
-            <Text style={styles.buttonText}>✅ Complete Order</Text>
-          </TouchableOpacity>
+          <View style={styles.actionButtonsContainer}>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => handleEditOrder(item)}>
+              <Text style={styles.buttonText}>✏️ Edit</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.completeButton}
+              onPress={handleCompleteOrder}>
+              <Text style={styles.buttonText}>✅ Complete Order</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </View>
     );

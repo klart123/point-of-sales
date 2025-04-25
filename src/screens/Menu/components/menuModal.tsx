@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Modal, View, Text, TextInput, TouchableOpacity} from 'react-native';
 import styles from '../styles';
-import {Picker} from '@react-native-picker/picker';
 
 type Props = {
   visible: boolean;
@@ -12,9 +11,6 @@ type Props = {
 };
 
 const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
-  const [name, setName] = useState(item?.name || '');
-  const [price, setPrice] = useState('');
-  const [size, setSize] = useState(item?.size || '');
   const [selectedTemp, setSelectedTemp] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedPrice, setSelectedPrice] = useState<number>(0);
@@ -157,7 +153,7 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
                     <Text
                       style={[
                         styles.optionButtonText,
-                        selectedAddOns.includes(addOn.name) &&
+                        selectedAddOns.some(a => a.name === addOn.name) &&
                           styles.optionButtonTextSelected,
                       ]}>
                       {addOn.name} (+₱{addOn.price})

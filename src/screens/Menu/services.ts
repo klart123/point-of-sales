@@ -41,8 +41,39 @@ export const submitOrders = (payload: any) => {
   };
 };
 
+export const updateOrder = ({
+  id,
+  items,
+  customer_name,
+}: {
+  id: number | string;
+  items: any;
+  customer_name: string;
+}) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(orderActions.editOrderStart());
+    axiosInstance
+      .put(`/orders/${id}`, {items, customer_name})
+      .then(response => {
+        if (response.status === 200 || response.status === 201) {
+          return dispatch(orderActions.editOrderSuccess());
+        }
+        return dispatch(orderActions.editOrderFailed(response.data));
+      })
+      .catch(error => {
+        return dispatch(orderActions.editOrderFailed(error.data));
+      });
+  };
+};
+
 export const resetMenu = () => {
   return (dispatch: AppDispatch) => {
     dispatch(menuSlice.resetMenu());
+  };
+};
+
+export const resetEditOrder = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(orderActions.resetEditOrder());
   };
 };
