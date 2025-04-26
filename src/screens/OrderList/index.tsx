@@ -75,15 +75,14 @@ const OrderListScreen = () => {
 
   const handleEditOrder = (item: object) => {
     if (item) {
-      console.log('item', item.items);
       dispatch(orderActions.editOrders(item));
       navigation.navigate('Store');
     }
   };
 
-  const renderItem = ({item}) => {
+  const renderItem = ({item, index}) => {
     return (
-      <View style={styles.item}>
+      <View style={styles.item} key={index}>
         <View style={styles.orderNumber}>
           <Text style={styles.customerName}># {item.id}</Text>
         </View>
@@ -92,10 +91,10 @@ const OrderListScreen = () => {
         <Text style={styles.status}>📌 Status: {item.status}</Text>
 
         {item.items?.map((orderItem, index) => (
-          <View key={index} style={styles.orerItemContainer}>
+          <View key={`item_${index}`} style={styles.orerItemContainer}>
             <View style={styles.itemTextPrice}>
               <Text style={styles.itemText}>
-                • {orderItem.name} ({orderItem.size})
+                • {orderItem.name} ({orderItem.type}) ({orderItem.size})
               </Text>
               <Text style={styles.textPrice}>₱{orderItem.price}</Text>
             </View>

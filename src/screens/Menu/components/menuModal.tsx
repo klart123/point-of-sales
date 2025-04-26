@@ -38,6 +38,7 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
       sku: item?.sku,
       name: item?.name,
       price: selectedPrice,
+      type: selectedTemp,
       size: selectedSize,
       addOns: selectedAddOns,
       totalPrice: totalPrice,
