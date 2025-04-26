@@ -20,16 +20,35 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
   useEffect(() => {
-    const base = parseFloat(selectedPrice.toString()) || 0;
+    if (item) {
+      setSelectedTemp('');
+      setSelectedSize('');
+      setSelectedPrice(0);
+      setSelectedAddOns([]);
+      setTotalPrice(0);
 
-    const addOnTotal =
-      item?.addOns?.reduce((sum, addOn) => {
-        return selectedAddOns.some(a => a.name === addOn.name)
-          ? sum + parseFloat(addOn.price)
-          : sum;
-      }, 0) || 0;
+      if (item.category === 'Pastry') {
+        setSelectedPrice(item.cost || 0);
+        setTotalPrice(item.cost || 0); // Pastry usually no temp/size, so set total directly
+        setSelectedSize('Small');
+        setSelectedTemp('Pastry');
+      }
+    }
+  }, [item]);
 
-    setTotalPrice(base + addOnTotal);
+  useEffect(() => {
+    if (selectedPrice) {
+      const base = parseFloat(selectedPrice?.toString()) || 0;
+
+      const addOnTotal =
+        item?.addOns?.reduce((sum, addOn) => {
+          return selectedAddOns.some(a => a.name === addOn.name)
+            ? sum + parseFloat(addOn.price)
+            : sum;
+        }, 0) || 0;
+
+      setTotalPrice(base + addOnTotal);
+    }
   }, [selectedPrice, selectedAddOns]);
 
   const handleSubmit = () => {
@@ -77,7 +96,7 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
           </Text>
 
           {/* Temperature Buttons */}
-          {item?.variants && (
+          {item?.category !== 'Pastry' && item?.variants && (
             <View style={styles.optionGroup}>
               <Text style={styles.optionLabel}>Select Temperature:</Text>
               <View style={styles.buttonGroup}>
@@ -108,62 +127,66 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
           )}
 
           {/* Size Buttons */}
-          {item?.variants && selectedTemp !== '' && (
-            <View style={styles.optionGroup}>
-              <Text style={styles.optionLabel}>Select Size:</Text>
-              <View style={styles.buttonGroup}>
-                {item.variants[selectedTemp].map((variant, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.optionButton,
-                      selectedSize === variant.size &&
-                        styles.optionButtonSelected,
-                    ]}
-                    onPress={() => {
-                      setSelectedSize(variant.size);
-                      setSelectedPrice(variant.price);
-                    }}>
-                    <Text
+          {item?.category !== 'Pastry' &&
+            item?.variants &&
+            selectedTemp !== '' && (
+              <View style={styles.optionGroup}>
+                <Text style={styles.optionLabel}>Select Size:</Text>
+                <View style={styles.buttonGroup}>
+                  {item.variants[selectedTemp].map((variant, index) => (
+                    <TouchableOpacity
+                      key={index}
                       style={[
-                        styles.optionButtonText,
+                        styles.optionButton,
                         selectedSize === variant.size &&
-                          styles.optionButtonTextSelected,
-                      ]}>
-                      {variant.size}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                          styles.optionButtonSelected,
+                      ]}
+                      onPress={() => {
+                        setSelectedSize(variant.size);
+                        setSelectedPrice(variant.price);
+                      }}>
+                      <Text
+                        style={[
+                          styles.optionButtonText,
+                          selectedSize === variant.size &&
+                            styles.optionButtonTextSelected,
+                        ]}>
+                        {variant.size}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
-            </View>
-          )}
+            )}
 
-          {item?.addOns && item.addOns.length > 0 && (
-            <View style={styles.optionGroup}>
-              <Text style={styles.optionLabel}>Select Add-Ons:</Text>
-              <View style={styles.buttonGroup}>
-                {item.addOns.map((addOn, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.optionButton,
-                      selectedAddOns.some(a => a.name === addOn.name) &&
-                        styles.optionButtonSelected,
-                    ]}
-                    onPress={() => toggleAddOn(addOn)}>
-                    <Text
+          {item?.category !== 'Pastry' &&
+            item?.addOns &&
+            item.addOns.length > 0 && (
+              <View style={styles.optionGroup}>
+                <Text style={styles.optionLabel}>Select Add-Ons:</Text>
+                <View style={styles.buttonGroup}>
+                  {item.addOns.map((addOn, index) => (
+                    <TouchableOpacity
+                      key={index}
                       style={[
-                        styles.optionButtonText,
+                        styles.optionButton,
                         selectedAddOns.some(a => a.name === addOn.name) &&
-                          styles.optionButtonTextSelected,
-                      ]}>
-                      {addOn.name} (+₱{addOn.price})
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                          styles.optionButtonSelected,
+                      ]}
+                      onPress={() => toggleAddOn(addOn)}>
+                      <Text
+                        style={[
+                          styles.optionButtonText,
+                          selectedAddOns.some(a => a.name === addOn.name) &&
+                            styles.optionButtonTextSelected,
+                        ]}>
+                        {addOn.name} (+₱{addOn.price})
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
-            </View>
-          )}
+            )}
 
           {/* Display Price */}
 
@@ -177,10 +200,14 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
               onPress={handleSubmit}
               style={[
                 styles.buttonAdd,
-                !selectedTemp || !selectedSize ? styles.buttonDisabled : null,
+                item?.category !== 'Pastry' && (!selectedTemp || !selectedSize)
+                  ? styles.buttonDisabled
+                  : null,
               ]}
-              disabled={!selectedTemp || !selectedSize}>
-              <Text style={styles.buttonText}>Save</Text>
+              disabled={
+                item?.category !== 'Pastry' && (!selectedTemp || !selectedSize)
+              }>
+              <Text style={styles.buttonText}>Save </Text>
             </TouchableOpacity>
           </View>
         </View>

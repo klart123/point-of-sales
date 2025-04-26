@@ -87,7 +87,9 @@ const OrderListModal = ({
                     <View style={styles.itemTextContainer}>
                       <View style={styles.itemTextPrice}>
                         <Text style={styles.itemText}>
-                          {item.name} ({item.size})
+                          {item.name} (
+                          {item?.type !== 'Pastry' ? item.type : ''}) (
+                          {item?.type !== 'Pastry' ? item.size : ''})
                         </Text>
                         <Text>₱{item.price}</Text>
                       </View>

@@ -8,6 +8,7 @@ const menuItems = [
   {label: 'Store', screen: 'Store'},
   {label: 'Products', screen: 'Products'},
   {label: 'Orders', screen: 'Orders', style: {backgroundColor: 'red'}},
+  {label: 'Summary', screen: 'OrderSummary', style: {backgroundColor: '#12a'}},
 ];
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {

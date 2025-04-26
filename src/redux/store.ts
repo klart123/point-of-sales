@@ -8,6 +8,7 @@ import menuSlice from './slices/menuSlice';
 import orderSlice from './slices/orderSlice';
 import apiSlice from './slices/apiSlice';
 import userSlice from './slices/userSlice';
+import orderSummarySlice from './slices/orderSummarySlice';
 
 const persistConfig = {
   key: 'root',
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   menu: menuSlice,
   orders: orderSlice,
   user: userSlice,
+  orderSummary: orderSummarySlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

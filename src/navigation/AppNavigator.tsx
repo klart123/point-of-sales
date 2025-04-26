@@ -23,6 +23,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Store" component={screens.MenuScreen} />
         <Stack.Screen name="Products" component={screens.ProductScreen} />
         <Stack.Screen name="Profile" component={screens.ProfileScreen} />
+        <Stack.Screen name="OrderSummary" component={screens.OrderSummary} />
       </Stack.Navigator>
     </NavigationContainer>
   );
