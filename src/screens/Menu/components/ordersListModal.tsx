@@ -29,6 +29,7 @@ const OrderListModal = ({
 
   const dispatch = useDispatch();
   const [customerName, setCustomerName] = useState(orderCustomerName);
+  const [cash, setCash] = useState('0');
 
   const total = orders.reduce((sum, order) => {
     const basePrice = parseFloat(order.price) || 0;
@@ -152,6 +153,33 @@ const OrderListModal = ({
               value={customerName}
               onChangeText={setCustomerName}
             />
+          </View>
+
+          <View style={styles.optionGroup}>
+            <Text style={styles.optionLabel}>Cash:</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+              <TextInput
+                style={[styles.input, {flex: 1}]}
+                placeholder="Cash"
+                value={cash}
+                onChangeText={setCash}
+              />
+              <TouchableOpacity
+                style={[
+                  styles.orderListAddButton,
+                  styles.input,
+                  {
+                    backgroundColor: '#eee',
+                    padding: 15,
+                  },
+                ]}
+                onPress={() => setCash(total.toFixed(2))}>
+                <Text>Exact Amount</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.optionLabel}>
+              Change: ₱{(parseFloat(cash || '0') - total).toFixed(2)}
+            </Text>
           </View>
 
           <View style={styles.actions}>
