@@ -57,7 +57,7 @@ const OrderListScreen = () => {
     }
   }, [isUpdated]);
 
-  const handleCompleteOrder = () => {
+  const handleCompleteOrder = (item: object) => {
     Alert.alert(
       'Complete Order',
       'Are you sure you want to mark this order as completed?',
@@ -66,7 +66,7 @@ const OrderListScreen = () => {
         {
           text: 'Yes',
           onPress: () => {
-            dispatch(services.completeOrder({id: item.id, status: 'served'}));
+            dispatch(services.completeOrder({id: item?.id, status: 'served'}));
           },
         },
       ],
@@ -94,7 +94,9 @@ const OrderListScreen = () => {
           <View key={`item_${index}`} style={styles.orerItemContainer}>
             <View style={styles.itemTextPrice}>
               <Text style={styles.itemText}>
-                • {orderItem.name} ({orderItem.type}) ({orderItem.size})
+                • {orderItem.name} (
+                {orderItem?.type !== 'Pastry' ? orderItem.type : 0}) (
+                {orderItem?.type !== 'Pastry' ? orderItem.size : 0})
               </Text>
               <Text style={styles.textPrice}>₱{orderItem.price}</Text>
             </View>
@@ -142,7 +144,7 @@ const OrderListScreen = () => {
 
             <TouchableOpacity
               style={styles.completeButton}
-              onPress={handleCompleteOrder}>
+              onPress={() => handleCompleteOrder(item)}>
               <Text style={styles.buttonText}>✅ Complete Order</Text>
             </TouchableOpacity>
           </View>
