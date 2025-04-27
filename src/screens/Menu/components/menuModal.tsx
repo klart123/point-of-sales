@@ -1,6 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {Modal, View, Text, TextInput, TouchableOpacity} from 'react-native';
 import styles from '../styles';
+import {useFocusEffect} from '@react-navigation/native';
 
 type Props = {
   visible: boolean;
@@ -21,20 +22,15 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
 
   useEffect(() => {
     if (item) {
-      setSelectedTemp('');
-      setSelectedSize('');
-      setSelectedPrice(0);
-      setSelectedAddOns([]);
-      setTotalPrice(0);
-
-      if (item.category === 'Pastry') {
-        setSelectedPrice(item.cost || 0);
-        setTotalPrice(item.cost || 0); // Pastry usually no temp/size, so set total directly
-        setSelectedSize('Small');
-        setSelectedTemp('Pastry');
-      }
+      handleReset();
     }
-  }, [item]);
+    if (item?.category === 'Pastry') {
+      setSelectedPrice(item.cost);
+      setTotalPrice(item.cost);
+      setSelectedTemp('Pastry');
+      setSelectedSize('small');
+    }
+  }, [visible]);
 
   useEffect(() => {
     if (selectedPrice) {
@@ -65,12 +61,16 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
     handleClose(); // optional: close after submit
   };
 
-  const handleClose = () => {
+  const handleReset = () => {
     setSelectedTemp('');
     setSelectedSize('');
     setSelectedPrice(0);
     setSelectedAddOns([]);
     setTotalPrice(0);
+  };
+
+  const handleClose = () => {
+    handleReset();
     onClose();
   };
 
@@ -127,66 +127,62 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
           )}
 
           {/* Size Buttons */}
-          {item?.category !== 'Pastry' &&
-            item?.variants &&
-            selectedTemp !== '' && (
-              <View style={styles.optionGroup}>
-                <Text style={styles.optionLabel}>Select Size:</Text>
-                <View style={styles.buttonGroup}>
-                  {item.variants[selectedTemp].map((variant, index) => (
-                    <TouchableOpacity
-                      key={index}
+          {item?.variants && selectedTemp !== '' && (
+            <View style={styles.optionGroup}>
+              <Text style={styles.optionLabel}>Select Size:</Text>
+              <View style={styles.buttonGroup}>
+                {item?.variants[selectedTemp]?.map((variant, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.optionButton,
+                      selectedSize === variant.size &&
+                        styles.optionButtonSelected,
+                    ]}
+                    onPress={() => {
+                      setSelectedSize(variant.size);
+                      setSelectedPrice(variant.price);
+                    }}>
+                    <Text
                       style={[
-                        styles.optionButton,
+                        styles.optionButtonText,
                         selectedSize === variant.size &&
-                          styles.optionButtonSelected,
-                      ]}
-                      onPress={() => {
-                        setSelectedSize(variant.size);
-                        setSelectedPrice(variant.price);
-                      }}>
-                      <Text
-                        style={[
-                          styles.optionButtonText,
-                          selectedSize === variant.size &&
-                            styles.optionButtonTextSelected,
-                        ]}>
-                        {variant.size}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+                          styles.optionButtonTextSelected,
+                      ]}>
+                      {variant.size}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               </View>
-            )}
+            </View>
+          )}
 
-          {item?.category !== 'Pastry' &&
-            item?.addOns &&
-            item.addOns.length > 0 && (
-              <View style={styles.optionGroup}>
-                <Text style={styles.optionLabel}>Select Add-Ons:</Text>
-                <View style={styles.buttonGroup}>
-                  {item.addOns.map((addOn, index) => (
-                    <TouchableOpacity
-                      key={index}
+          {item?.addOns && item.addOns.length > 0 && (
+            <View style={styles.optionGroup}>
+              <Text style={styles.optionLabel}>Select Add-Ons:</Text>
+              <View style={styles.buttonGroup}>
+                {item.addOns.map((addOn, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.optionButton,
+                      selectedAddOns.some(a => a.name === addOn.name) &&
+                        styles.optionButtonSelected,
+                    ]}
+                    onPress={() => toggleAddOn(addOn)}>
+                    <Text
                       style={[
-                        styles.optionButton,
+                        styles.optionButtonText,
                         selectedAddOns.some(a => a.name === addOn.name) &&
-                          styles.optionButtonSelected,
-                      ]}
-                      onPress={() => toggleAddOn(addOn)}>
-                      <Text
-                        style={[
-                          styles.optionButtonText,
-                          selectedAddOns.some(a => a.name === addOn.name) &&
-                            styles.optionButtonTextSelected,
-                        ]}>
-                        {addOn.name} (+₱{addOn.price})
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+                          styles.optionButtonTextSelected,
+                      ]}>
+                      {addOn.name} (+₱{addOn.price})
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               </View>
-            )}
+            </View>
+          )}
 
           {/* Display Price */}
 

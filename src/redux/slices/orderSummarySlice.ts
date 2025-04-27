@@ -14,7 +14,7 @@ const initialState: userState = {
 };
 
 const orderSummarySlice = createSlice({
-  name: 'user',
+  name: 'orderSummary',
   initialState,
   reducers: {
     getSummaryStart: state => {

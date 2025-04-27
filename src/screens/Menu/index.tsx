@@ -6,6 +6,7 @@ import {
   RefreshControl,
   TouchableOpacity,
   Dimensions,
+  Alert,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from './services';
@@ -17,7 +18,7 @@ import OrderListModal from './components/ordersListModal';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('window').width;
-const itemWidth = 160;
+const itemWidth = 120;
 const spacing = 16;
 
 const numColumns = Math.floor(screenWidth / (itemWidth + spacing));
@@ -26,9 +27,8 @@ const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const {loading, menu} = useSelector((state: RootState) => state.menu);
-  const {orders, isEdit, orderId, isEditUpdated} = useSelector(
-    (state: RootState) => state.orders,
-  );
+  const {orders, isEdit, orderId, isEditUpdated, isSubmitted, message} =
+    useSelector((state: RootState) => state.orders);
   const [list, setList] = useState([]);
   const [viewModal, setViewModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -40,27 +40,39 @@ const MenuScreen = () => {
 
   useEffect(() => {
     loadProducts();
+
     return () => {
-      dispatch(services.resetEditOrder());
-      dispatch(services.resetMenu());
+      resetMenu();
     };
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(menu?.data)) {
-      setList(menu?.data);
+    if (Array.isArray(menu)) {
+      setList(menu);
     }
   }, [menu]);
 
   useEffect(() => {
     if (isEdit && isEditUpdated) {
-      dispatch(services.resetMenu());
-      dispatch(services.resetEditOrder());
+      resetMenu();
+
       if (navigation.canGoBack()) {
         navigation.goBack();
       }
     }
   }, [isEdit, isEditUpdated]);
+
+  useEffect(() => {
+    if (isSubmitted) {
+      Alert.alert(message);
+      resetMenu();
+    }
+  }, [isSubmitted]);
+
+  const resetMenu = () => {
+    dispatch(services.resetMenu());
+    dispatch(services.resetEditOrder());
+  };
 
   // Handle pull-to-refresh
   const onRefresh = () => {
@@ -99,11 +111,26 @@ const MenuScreen = () => {
     setViewModal(true);
   };
 
-  const renderItem = ({item}: {item: any}) => (
-    <TouchableOpacity style={styles.item} onPress={() => handleOpenModal(item)}>
-      <Text style={styles.textCenter}>{item.name}</Text>
-    </TouchableOpacity>
-  );
+  const categoryStyles: {[key: string]: any} = {
+    Coffee: styles.categoryCoffee,
+    Matcha: styles.categoryMatcha,
+    Pastry: styles.categoryPastry,
+    'Coffee Matcha': styles.categoryCoffeeMatcha,
+    Soda: styles.categorySoda,
+  };
+
+  const renderItem = ({item}: {item: any}) => {
+    const categoryStyle =
+      categoryStyles[item?.category] || styles.categoryDefault;
+
+    return (
+      <TouchableOpacity
+        style={[styles.item, categoryStyle]}
+        onPress={() => handleOpenModal(item)}>
+        <Text style={[styles.textItems, styles.textCenter]}>{item.name}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <>
@@ -115,6 +142,7 @@ const MenuScreen = () => {
           </TouchableOpacity>
         </View>
         <FlatList
+          key={JSON.stringify(menu)}
           data={list}
           keyExtractor={item => item.id.toString()}
           renderItem={renderItem}

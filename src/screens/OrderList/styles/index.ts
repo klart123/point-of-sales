@@ -41,12 +41,17 @@ export default StyleSheet.create({
     marginTop: 6,
     fontWeight: 'bold',
   },
-  completeButton: {
+  orderButton: {
     flex: 1,
-    backgroundColor: '#4CAF50',
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  completeButton: {
+    backgroundColor: '#4CAF50',
+  },
+  cancelButton: {
+    backgroundColor: '#bd3929',
   },
   buttonText: {
     color: '#fff',
