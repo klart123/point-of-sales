@@ -143,6 +143,7 @@ const orderSlice = createSlice({
       state.orders = [];
       state.isEditUpdated = false;
       state.message = '';
+      state.isSubmitted = false;
     },
   },
 });
