@@ -21,6 +21,24 @@ export const getOrders = () => {
   };
 };
 
+export const updateOrderStatus = (data: any) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(orderActions.updateOrderStart());
+    axiosInstance
+      .put(`/orders/${data.id}/status`, {status: data.status})
+      .then(response => {
+        if (response.status === 200 || response.status === 201) {
+          return dispatch(orderActions.updateOrderSuccess(response.data));
+        }
+
+        return dispatch(orderActions.updateOrderFailed(response.data.message));
+      })
+      .catch(error => {
+        return dispatch(orderActions.updateOrderFailed(error.data.message));
+      });
+  };
+};
+
 export const completeOrder = (data: any) => {
   return (dispatch: AppDispatch) => {
     dispatch(orderActions.updateOrderStart());

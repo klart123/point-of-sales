@@ -39,10 +39,10 @@ const OrderListModal = ({
   }, 0);
 
   const handleSubmit = () => {
-    if (customerName.trim() === '') {
-      Alert.alert('Please enter a customer name');
-      return;
-    }
+    // if (customerName.trim() === '') {
+    //   Alert.alert('Please enter a customer name');
+    //   return;
+    // }
     onSubmit(customerName);
     onClose();
   };
@@ -87,9 +87,9 @@ const OrderListModal = ({
                     <View style={styles.itemTextContainer}>
                       <View style={styles.itemTextPrice}>
                         <Text style={styles.itemText}>
-                          {item.name} (
-                          {item?.type !== 'Pastry' ? item.type : ''}) (
-                          {item?.type !== 'Pastry' ? item.size : ''})
+                          {item.name}
+                          {item?.type !== 'Pastry' ? `(${item.type})` : ''}
+                          {item?.type !== 'Pastry' ? `(${item.size})` : ''}
                         </Text>
                         <Text>₱{item.price}</Text>
                       </View>
@@ -190,12 +190,10 @@ const OrderListModal = ({
               <Text style={styles.buttonText}>Close</Text>
             </Pressable>
             <TouchableOpacity
-              disabled={orders.length <= 0 || !customerName}
+              disabled={orders.length <= 0}
               style={[
                 styles.orderListAddButton,
-                orders.length <= 0 || !customerName
-                  ? styles.buttonDisabled
-                  : null,
+                orders.length <= 0 ? styles.buttonDisabled : null,
               ]}
               onPress={handleSubmit}>
               <Text style={styles.buttonText}>Submit Order</Text>

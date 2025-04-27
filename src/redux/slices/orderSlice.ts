@@ -22,6 +22,7 @@ interface OrderState {
   orderId: number | null;
   orderCustomerName: string;
   isEditUpdated: boolean;
+  message: string;
 }
 
 const initialState: OrderState = {
@@ -36,6 +37,7 @@ const initialState: OrderState = {
   orderId: null,
   orderCustomerName: '',
   isEditUpdated: false,
+  message: 'string',
 };
 
 const orderSlice = createSlice({
@@ -54,10 +56,13 @@ const orderSlice = createSlice({
     orderStart: state => {
       state.loading = true;
       state.isSubmitted = false;
+      state.message = '';
     },
-    orderSuccess: (state, action: PayloadAction<OrderItem>) => {
+    orderSuccess: (state, action: PayloadAction<any | object>) => {
+      const {order_id, message} = action.payload;
       state.loading = false;
       state.isSubmitted = true;
+      state.message = `${message} ID: ${order_id}`;
     },
     orderFailed: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -137,6 +142,7 @@ const orderSlice = createSlice({
       state.orderId = null;
       state.orders = [];
       state.isEditUpdated = false;
+      state.message = '';
     },
   },
 });

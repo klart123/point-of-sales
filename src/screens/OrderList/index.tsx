@@ -13,6 +13,7 @@ import * as services from './service';
 import {RootState, AppDispatch} from '../../redux/store';
 import {orderActions} from '../../redux/slices/orderSlice';
 import {useNavigation} from '@react-navigation/native';
+import CancelOrderModal from './components/CancelOrderModal';
 
 const OrderListScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,11 +22,13 @@ const OrderListScreen = () => {
   );
   const [list, setList] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const navigation = useNavigation();
 
   // Function to refresh the list
   const onRefresh = () => {
-    setList([]);
+    setList([]); // Clear the list to refresh
     setRefreshing(true);
     getOrdersList(); // Trigger the action to get orders again
   };
@@ -66,7 +69,9 @@ const OrderListScreen = () => {
         {
           text: 'Yes',
           onPress: () => {
-            dispatch(services.completeOrder({id: item?.id, status: 'served'}));
+            dispatch(
+              services.updateOrderStatus({id: item?.id, status: 'served'}),
+            );
           },
         },
       ],
@@ -78,6 +83,13 @@ const OrderListScreen = () => {
       dispatch(orderActions.editOrders(item));
       navigation.navigate('Store');
     }
+  };
+
+  const handleConfirmCancel = () => {
+    dispatch(
+      services.updateOrderStatus({id: selectedOrder, status: 'cancelled'}),
+    );
+    setModalVisible(false);
   };
 
   const renderItem = ({item, index}) => {
@@ -94,9 +106,9 @@ const OrderListScreen = () => {
           <View key={`item_${index}`} style={styles.orerItemContainer}>
             <View style={styles.itemTextPrice}>
               <Text style={styles.itemText}>
-                • {orderItem.name} (
-                {orderItem?.type !== 'Pastry' ? orderItem.type : 0}) (
-                {orderItem?.type !== 'Pastry' ? orderItem.size : 0})
+                • {orderItem.name}{' '}
+                {orderItem?.type !== 'Pastry' ? `(${orderItem.type})` : ''}
+                {orderItem?.type !== 'Pastry' ? `(${orderItem.size})` : ''}
               </Text>
               <Text style={styles.textPrice}>₱{orderItem.price}</Text>
             </View>
@@ -114,20 +126,13 @@ const OrderListScreen = () => {
             )}
 
             {orderItem.addOns?.length > 0 && (
-              <>
-                <View>
-                  <Text style={[styles.textPrice, styles.addOnPrice]}>
-                    {'Total + add-ons = ₱'}
-                    {(
-                      parseFloat(orderItem.price) +
-                      orderItem.addOns.reduce(
-                        (s, a) => s + parseFloat(a.price),
-                        0,
-                      )
-                    ).toFixed(2)}
-                  </Text>
-                </View>
-              </>
+              <Text style={[styles.textPrice, styles.addOnPrice]}>
+                {'Total + add-ons = ₱'}
+                {(
+                  parseFloat(orderItem.price) +
+                  orderItem.addOns.reduce((s, a) => s + parseFloat(a.price), 0)
+                ).toFixed(2)}
+              </Text>
             )}
           </View>
         ))}
@@ -135,18 +140,30 @@ const OrderListScreen = () => {
         <Text style={styles.total}>💰 Total: ₱{item.total_price ?? '—'}</Text>
 
         {item.status !== 'completed' && (
-          <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() => handleEditOrder(item)}>
-              <Text style={styles.buttonText}>✏️ Edit</Text>
-            </TouchableOpacity>
+          <View style={{gap: 15}}>
+            <View style={styles.actionButtonsContainer}>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => handleEditOrder(item)}>
+                <Text style={styles.buttonText}>✏️ Edit</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.completeButton}
-              onPress={() => handleCompleteOrder(item)}>
-              <Text style={styles.buttonText}>✅ Complete Order</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.orderButton, styles.cancelButton]}
+                onPress={() => {
+                  setModalVisible(true);
+                  setSelectedOrder(item?.id);
+                }}>
+                <Text style={styles.buttonText}>❌ Cancel Order</Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <TouchableOpacity
+                style={[styles.orderButton, styles.completeButton]}
+                onPress={() => handleCompleteOrder(item)}>
+                <Text style={styles.buttonText}>✅ Complete Order</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       </View>
@@ -154,22 +171,28 @@ const OrderListScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🧾 Orders</Text>
-      <FlatList
-        data={list}
-        keyExtractor={item => item.id.toString()}
-        renderItem={renderItem}
-        // Add RefreshControl to enable pull-to-refresh
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={onRefresh}
-            colors={['#4CAF50']} // Change this to match your theme color
-          />
-        }
+    <>
+      <View style={styles.container}>
+        <Text style={styles.title}>🧾 Orders</Text>
+        <FlatList
+          data={list}
+          keyExtractor={item => item.id.toString()}
+          renderItem={renderItem}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={onRefresh}
+              colors={['#4CAF50']}
+            />
+          }
+        />
+      </View>
+      <CancelOrderModal
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)} // Correct way to handle modal close\
+        onConfirm={handleConfirmCancel}
       />
-    </View>
+    </>
   );
 };
 

@@ -21,11 +21,32 @@ export default StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 5,
   },
+  textItems: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
   textCenter: {
     textAlign: 'center',
     padding: 5,
   },
-
+  categoryCoffee: {
+    backgroundColor: '#bd5e28',
+  },
+  categoryMatcha: {
+    backgroundColor: '#87bd28',
+  },
+  categoryPastry: {
+    backgroundColor: '#bda928',
+  },
+  categoryDefault: {
+    backgroundColor: '#fff',
+  },
+  categoryCoffeeMatcha: {
+    backgroundColor: '#5a7e1b',
+  },
+  categorySoda: {
+    backgroundColor: '#2887bd',
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
