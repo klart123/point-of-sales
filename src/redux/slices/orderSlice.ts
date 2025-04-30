@@ -1,6 +1,10 @@
 // src/store/slices/orderSlice.ts
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
+interface UpdateItemStatusPayload {
+  orderId: number;
+  itemId: number;
+}
 interface OrderItem {
   id: number;
   sku: string;
@@ -135,6 +139,22 @@ const orderSlice = createSlice({
       state.orderCustomerName = customer_name;
       state.orderId = id;
       state.orders = items;
+    },
+    updateOrderItemStatus: (
+      state,
+      action: PayloadAction<UpdateItemStatusPayload>,
+    ) => {
+      const {orderId, itemId} = action.payload;
+
+      const order = state.ordersList?.data?.find(o => o.id === orderId);
+      if (order) {
+        const item = order?.items.find(i => i.id === itemId);
+
+        if (item) {
+          const currentStatus = item.status ?? 'pending';
+          item.status = currentStatus === 'pending' ? 'completed' : 'pending';
+        }
+      }
     },
     resetEditOrder: state => {
       state.isEdit = false;

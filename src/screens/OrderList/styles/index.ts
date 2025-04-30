@@ -73,8 +73,12 @@ export default StyleSheet.create({
     paddingLeft: 15,
   },
   orerItemContainer: {
+    flex: 1,
+    gap: 10,
     padding: 5,
     paddingHorizontal: 10,
+    marginBottom: 10,
+    borderRadius: 8,
   },
   editButton: {
     flex: 1,
