@@ -28,13 +28,49 @@ platform :android do
         )
     end
 
-    desc "Auto-increment Android versionName and versionCode"
+    # desc "Auto-increment Android versionName and versionCode"
+    # lane :increment_version do |options|
+    #     gradle_file = "android/app/build.gradle"
+        
+    #     # Get current version details
+    #     current_version_name = android_get_version_name(gradle_file: gradle_file)
+    #     current_version_code = android_get_version_code(gradle_file: gradle_file).to_i
+        
+    #     UI.message("Current version name: #{current_version_name}")
+    #     UI.message("Current version code: #{current_version_code}")
+        
+    #     # Parse current version name (assumes format x.y.z)
+    #     parts = current_version_name.split('.').map(&:to_i)
+    #     bump_type = options[:bump] || "patch"
+        
+    #     case bump_type
+    #     when "major"
+    #         parts[0] += 1
+    #         parts[1] = 0
+    #         parts[2] = 0
+    #     when "minor"
+    #         parts[1] += 1
+    #         parts[2] = 0
+    #     else # patch
+    #         parts[2] = (parts[2] || 0) + 1
+    #     end
+        
+    #     new_version_name = parts.join('.')
+    #     new_version_code = current_version_code + 1
+        
+    #     # Set new version name and code
+    #     android_set_version_name(version_name: new_version_name, gradle_file: gradle_file)
+    #     android_set_version_code(version_code: new_version_code, gradle_file: gradle_file)
+        
+    #     UI.success("Updated to versionName #{new_version_name}, versionCode #{new_version_code}")
+       
+    # desc "Auto-increment Android versionName and versionCode"
     lane :increment_version do |options|
         gradle_file = "android/app/build.gradle"
         
         # Get current version details
-        current_version_name = android_get_version_name(gradle_file: gradle_file)
-        current_version_code = android_get_version_code(gradle_file: gradle_file).to_i
+        current_version_name = ENV['ANDROID_VERSION_NAME']
+        current_version_code = ENV['ANDROID_VERSION_CODE'].to_i
         
         UI.message("Current version name: #{current_version_name}")
         UI.message("Current version code: #{current_version_code}")
@@ -62,8 +98,20 @@ platform :android do
         android_set_version_name(version_name: new_version_name, gradle_file: gradle_file)
         android_set_version_code(version_code: new_version_code, gradle_file: gradle_file)
         
+        # Read the current .env file content
+        env_file = File.read('.env')
+
+        # Update only VERSION_CODE and VERSION_NAME, while preserving other variables
+        env_file.gsub!(/VERSION_CODE=\d+/, "ANDROID_VERSION_CODE=#{new_version_code}")
+        env_file.gsub!(/VERSION_NAME=[^\n]+/, "ANDROID_VERSION_NAME=#{new_version_name}")
+
+        # Write the modified content back to the .env file
+        File.open('.env', 'w') { |file| file.puts env_file }
+          
+
         UI.success("Updated to versionName #{new_version_name}, versionCode #{new_version_code}")
        
+
     end
     
 
