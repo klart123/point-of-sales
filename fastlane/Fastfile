@@ -28,21 +28,62 @@ platform :android do
         )
     end
 
+    desc "Auto-increment Android versionName and versionCode"
+    lane :increment_version do |options|
+        gradle_file = "android/app/build.gradle"
+        
+        # Get current version details
+        current_version_name = android_get_version_name(gradle_file: gradle_file)
+        current_version_code = android_get_version_code(gradle_file: gradle_file).to_i
+        
+        UI.message("Current version name: #{current_version_name}")
+        UI.message("Current version code: #{current_version_code}")
+        
+        # Parse current version name (assumes format x.y.z)
+        parts = current_version_name.split('.').map(&:to_i)
+        bump_type = options[:bump] || "patch"
+        
+        case bump_type
+        when "major"
+            parts[0] += 1
+            parts[1] = 0
+            parts[2] = 0
+        when "minor"
+            parts[1] += 1
+            parts[2] = 0
+        else # patch
+            parts[2] = (parts[2] || 0) + 1
+        end
+        
+        new_version_name = parts.join('.')
+        new_version_code = current_version_code + 1
+        
+        # Set new version name and code
+        android_set_version_name(version_name: new_version_name, gradle_file: gradle_file)
+        android_set_version_code(version_code: new_version_code, gradle_file: gradle_file)
+        
+        UI.success("Updated to versionName #{new_version_name}, versionCode #{new_version_code}")
+       
+    end
+    
+
     desc "Build the APK"
     lane :build do |options|
-      run_build_app(options) 
+        run_build_app(options) 
     end
   
     desc 'Upload the APK to Firebase App Distribution.'
     lane :upload do |options|
-      upload_to_fad(options) 
+        upload_to_fad(options) 
     end
   
     desc 'Deploy the APK to Firebase App Distribution.'
     lane :deploy do |options|
-      build(options) 
-      upload(options) 
+        increment_version()
+        build(options) 
+        upload(options) 
     end
+
 end
 
 platform :ios do

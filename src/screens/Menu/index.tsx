@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from './services';
@@ -27,8 +28,15 @@ const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const {loading, menu} = useSelector((state: RootState) => state.menu);
-  const {orders, isEdit, orderId, isEditUpdated, isSubmitted, message} =
-    useSelector((state: RootState) => state.orders);
+  const {
+    orders,
+    isEdit,
+    orderId,
+    isEditUpdated,
+    isSubmitted,
+    message,
+    loading: loadingOrder,
+  } = useSelector((state: RootState) => state.orders);
   const [list, setList] = useState([]);
   const [viewModal, setViewModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -164,6 +172,11 @@ const MenuScreen = () => {
         onClose={() => setOrderModal(false)}
         onSubmit={handleSubmitOrder}
       />
+      {loadingOrder && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#1aF" />
+        </View>
+      )}
     </>
   );
 };
