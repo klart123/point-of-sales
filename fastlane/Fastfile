@@ -102,8 +102,8 @@ platform :android do
         env_file = File.read('.env')
 
         # Update only VERSION_CODE and VERSION_NAME, while preserving other variables
-        env_file.gsub!(/VERSION_CODE=\d+/, "ANDROID_VERSION_CODE=#{new_version_code}")
-        env_file.gsub!(/VERSION_NAME=[^\n]+/, "ANDROID_VERSION_NAME=#{new_version_name}")
+        env_file.gsub!(/ANDROID_VERSION_CODE=\d+/, "ANDROID_VERSION_CODE=#{new_version_code}")
+        env_file.gsub!(/ANDROID_VERSION_NAME=[^\n]+/, "ANDROID_VERSION_NAME=#{new_version_name}")
 
         # Write the modified content back to the .env file
         File.open('.env', 'w') { |file| file.puts env_file }
