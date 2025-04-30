@@ -275,4 +275,12 @@ export default StyleSheet.create({
     marginTop: 4,
     paddingLeft: 10,
   },
+
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+  },
 });

@@ -14,6 +14,7 @@ import {RootState, AppDispatch} from '../../redux/store';
 import {orderActions} from '../../redux/slices/orderSlice';
 import {useNavigation} from '@react-navigation/native';
 import CancelOrderModal from './components/CancelOrderModal';
+import {OrderList} from './components/orderListItem';
 
 const OrderListScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -49,6 +50,7 @@ const OrderListScreen = () => {
     if (Array.isArray(ordersList?.data)) {
       setList(ordersList?.data);
     }
+
     setRefreshing(false); // Stop the refreshing animation once data is loaded
   }, [ordersList]);
 
@@ -92,83 +94,21 @@ const OrderListScreen = () => {
     setModalVisible(false);
   };
 
-  const renderItem = ({item, index}) => {
-    return (
-      <View style={styles.item} key={index}>
-        <View style={styles.orderNumber}>
-          <Text style={styles.customerName}># {item.id}</Text>
-        </View>
-        <Text style={styles.customerName}>👤 {item.customer_name}</Text>
-        <Text style={styles.notes}>📝 Notes: {item.notes}</Text>
-        <Text style={styles.status}>📌 Status: {item.status}</Text>
-
-        {item.items?.map((orderItem, index) => (
-          <View key={`item_${index}`} style={styles.orerItemContainer}>
-            <View style={styles.itemTextPrice}>
-              <Text style={styles.itemText}>
-                • {orderItem.name}{' '}
-                {orderItem?.type !== 'Pastry' ? `(${orderItem.type})` : ''}
-                {orderItem?.type !== 'Pastry' ? `(${orderItem.size})` : ''}
-              </Text>
-              <Text style={styles.textPrice}>₱{orderItem.price}</Text>
-            </View>
-            {orderItem.addOns && orderItem.addOns.length > 0 && (
-              <View style={styles.addOnContainer}>
-                {orderItem.addOns.map((addOn, idx) => (
-                  <View style={styles.itemTextPrice}>
-                    <Text key={idx} style={styles.addOnText}>
-                      + {addOn.name}
-                    </Text>
-                    <Text style={styles.textPrice}>(₱{addOn.price})</Text>
-                  </View>
-                ))}
-              </View>
-            )}
-
-            {orderItem.addOns?.length > 0 && (
-              <Text style={[styles.textPrice, styles.addOnPrice]}>
-                {'Total + add-ons = ₱'}
-                {(
-                  parseFloat(orderItem.price) +
-                  orderItem.addOns.reduce((s, a) => s + parseFloat(a.price), 0)
-                ).toFixed(2)}
-              </Text>
-            )}
-          </View>
-        ))}
-
-        <Text style={styles.total}>💰 Total: ₱{item.total_price ?? '—'}</Text>
-
-        {item.status !== 'completed' && (
-          <View style={{gap: 15}}>
-            <View style={styles.actionButtonsContainer}>
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={() => handleEditOrder(item)}>
-                <Text style={styles.buttonText}>✏️ Edit</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.orderButton, styles.cancelButton]}
-                onPress={() => {
-                  setModalVisible(true);
-                  setSelectedOrder(item?.id);
-                }}>
-                <Text style={styles.buttonText}>❌ Cancel Order</Text>
-              </TouchableOpacity>
-            </View>
-            <View>
-              <TouchableOpacity
-                style={[styles.orderButton, styles.completeButton]}
-                onPress={() => handleCompleteOrder(item)}>
-                <Text style={styles.buttonText}>✅ Complete Order</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      </View>
-    );
+  const updateThisItem = (orderId: any, itemId: any) => {
+    dispatch(orderActions.updateOrderItemStatus({orderId, itemId}));
   };
+
+  // Make sure renderItem returns a JSX element
+  const renderItem = ({item}: {item: any}) => (
+    <OrderList
+      item={item}
+      updateThisItem={updateThisItem}
+      handleEditOrder={handleEditOrder}
+      handleCompleteOrder={handleCompleteOrder}
+      setModalVisible={setModalVisible}
+      setSelectedOrder={setSelectedOrder}
+    />
+  );
 
   return (
     <>
