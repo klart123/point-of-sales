@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
   View,
   FlatList,
@@ -12,9 +12,10 @@ import {useDispatch, useSelector} from 'react-redux';
 import * as services from './service';
 import {RootState, AppDispatch} from '../../redux/store';
 import {orderActions} from '../../redux/slices/orderSlice';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import CancelOrderModal from './components/CancelOrderModal';
 import {OrderList} from './components/orderListItem';
+import HeaderComponent from '../../components/Header';
 
 const OrderListScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -38,13 +39,14 @@ const OrderListScreen = () => {
     dispatch(services.getOrders());
   };
 
-  useEffect(() => {
-    getOrdersList();
-
-    return () => {
-      dispatch(services.resetOrders());
-    };
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getOrdersList();
+      return () => {
+        dispatch(services.resetOrders());
+      };
+    }, []),
+  );
 
   useEffect(() => {
     if (Array.isArray(ordersList?.data)) {
@@ -110,8 +112,13 @@ const OrderListScreen = () => {
     />
   );
 
+  const handleHeaderPress = () => {
+    navigation.navigate('Store' as never);
+  };
+
   return (
     <>
+      <HeaderComponent label="Add Order" onPress={handleHeaderPress} />
       <View style={styles.container}>
         <Text style={styles.title}>🧾 Orders</Text>
         <FlatList
