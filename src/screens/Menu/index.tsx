@@ -16,7 +16,8 @@ import styles from './styles';
 import MenuModal from './components/menuModal';
 import {orderActions} from '../../redux/slices/orderSlice';
 import OrderListModal from './components/ordersListModal';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import {CommonActions} from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = 120;
@@ -73,6 +74,9 @@ const MenuScreen = () => {
   useEffect(() => {
     if (isSubmitted) {
       Alert.alert(message);
+
+      navigation.goBack();
+
       resetMenu();
     }
   }, [isSubmitted]);

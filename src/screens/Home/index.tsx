@@ -5,8 +5,6 @@ import {HomeScreenProps, MenuItem} from './types';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const menuItems = [
-  {label: 'Store', screen: 'Store'},
-  {label: 'Products', screen: 'Products'},
   {label: 'Orders', screen: 'Orders', style: {backgroundColor: 'red'}},
   {label: 'Summary', screen: 'OrderSummary', style: {backgroundColor: '#12a'}},
 ];
@@ -36,7 +34,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     <FlatList
       data={menuItems}
       keyExtractor={(item, index) => index.toString()}
-      numColumns={1}
+      numColumns={2}
       contentContainerStyle={styles.list}
       renderItem={renderItem}
     />
