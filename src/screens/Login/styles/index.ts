@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    paddingTop: '10%',
     padding: 24,
     backgroundColor: '#fff',
   },
@@ -29,5 +29,15 @@ export default StyleSheet.create({
   },
   settingsIcon: {
     fontSize: 24,
+  },
+  buttonContainer: {
+    paddingTop: 25,
+  },
+  signupContainer: {
+    paddingTop: 25,
+  },
+  signup: {
+    color: 'blue',
+    textAlign: 'center',
   },
 });
