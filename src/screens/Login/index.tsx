@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  Button,
+  // Button,
   Alert,
   TouchableOpacity,
 } from 'react-native';
@@ -14,7 +14,7 @@ import styles from './styles';
 import {navigation} from '../../types';
 import {loginUser} from './service';
 import {RootState} from '../../redux/store';
-import ApiSettingsModal from '../../components/ApiSettingsModal';
+import {ApiSettingsModal, HeaderComponent, Button} from '../../components';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   navigation.RootStackParamList,
@@ -48,15 +48,9 @@ const LoginScreen = () => {
   }, [isAuthenticated]);
 
   return (
-    <>
-      <View style={styles.container}>
-        {/* ⚙️ Settings button */}
-        <TouchableOpacity
-          style={styles.settingsButton}
-          onPress={() => setShowModal(true)}>
-          <Text style={styles.settingsIcon}>⚙️</Text>
-        </TouchableOpacity>
-
+    <View style={styles.container}>
+      <HeaderComponent icon="⚙️" onPress={() => setShowModal(true)} />
+      <View>
         <Text style={styles.title}>Login</Text>
 
         <TextInput
@@ -76,20 +70,24 @@ const LoginScreen = () => {
           onChangeText={setPassword}
         />
 
-        <Button title="Login" onPress={handleLogin} />
+        <View style={styles.buttonContainer}>
+          <Button title="Login" onPress={handleLogin} />
+        </View>
 
-        <Text
-          style={{marginTop: 15, color: 'blue'}}
-          onPress={() => navigation.navigate('Register')}>
-          Don't have an account? Register
-        </Text>
+        <View style={styles.signupContainer}>
+          <Text
+            style={styles.signup}
+            onPress={() => navigation.navigate('Register')}>
+            Don't have an account? Register
+          </Text>
+        </View>
       </View>
 
       <ApiSettingsModal
         visible={showModal}
         onClose={() => setShowModal(false)}
       />
-    </>
+    </View>
   );
 };
 

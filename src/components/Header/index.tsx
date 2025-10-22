@@ -1,15 +1,21 @@
 import React, {useLayoutEffect} from 'react';
 import {TouchableOpacity, Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import HeaderButton from './HeaderButton'; // adjust path as needed
+import styles from './styles';
 
 type Props = {
-  label: string;
+  label?: string;
   routeName?: string;
   onPress?: () => void;
+  icon?: string;
 };
 
-const HeaderComponent: React.FC<Props> = ({label, routeName, onPress}) => {
+const HeaderComponent: React.FC<Props> = ({
+  label,
+  routeName,
+  onPress,
+  icon,
+}) => {
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
@@ -21,16 +27,20 @@ const HeaderComponent: React.FC<Props> = ({label, routeName, onPress}) => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Text
-            style={{
-              color: '#7af',
-              textAlign: 'center',
-              fontSize: 18,
-              fontWeight: 'bold',
-              padding: 15,
-            }}>
-            {label}
-          </Text>
+          {icon ? (
+            <Text style={styles.settingsIcon}>⚙️</Text>
+          ) : (
+            <Text
+              style={{
+                color: '#7af',
+                textAlign: 'center',
+                fontSize: 18,
+                fontWeight: 'bold',
+                padding: 15,
+              }}>
+              {label}
+            </Text>
+          )}
         </TouchableOpacity>
       ),
     });
