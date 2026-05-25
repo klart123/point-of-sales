@@ -16,6 +16,9 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import CancelOrderModal from './components/CancelOrderModal';
 import {OrderList} from './components/orderListItem';
 import HeaderComponent from '../../components/Header';
+import {io} from 'socket.io-client';
+
+let socket;
 
 const OrderListScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -27,6 +30,8 @@ const OrderListScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const navigation = useNavigation();
+  const [order, setOrders] = useState([]);
+  const SERVER = 'http://192.168.5.7:3000'; // Replace with your server URL
 
   // Function to refresh the list
   const onRefresh = () => {
@@ -47,6 +52,28 @@ const OrderListScreen = () => {
       };
     }, []),
   );
+
+  useEffect(() => {
+    // Connect and register as kitchen display
+    socket = io(SERVER); // need to setup from login
+    socket.emit('join', 'kitchen'); // Join the "orders" room
+
+    // Listen for new orders pushed by server
+    socket.on('new_order', order => {
+      console.log('[Socket] New order:', order);
+      setOrders(prev => [order, ...prev]);
+    });
+
+    // Listen for status updates
+    socket.on('order_updated', updated => {
+      setOrders(prev =>
+        prev.map(o => (o.id === updated.id ? {...o, ...updated} : o)),
+      );
+    });
+
+    // Cleanup on unmount
+    return () => socket.disconnect();
+  }, []);
 
   useEffect(() => {
     if (Array.isArray(ordersList?.data)) {

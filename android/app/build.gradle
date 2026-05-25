@@ -85,6 +85,11 @@ android {
         versionCode 11
         versionName "1.0.11"
         multiDexEnabled true 
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++17"
+            }
+        }
     }
     signingConfigs {
         debug {
