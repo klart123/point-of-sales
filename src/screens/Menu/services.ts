@@ -10,6 +10,7 @@ export const getMenu = () => {
     axiosInstance
       .get('/products')
       .then(response => {
+        console.log('response:', response);
         if (response?.status === 200) {
           return dispatch(menuSlice.menuSuccess(response.data));
         }

@@ -56,6 +56,7 @@ const MenuScreen = () => {
   }, []);
 
   useEffect(() => {
+    console.log('menu updated:', menu);
     if (Array.isArray(menu)) {
       setList(menu);
     }

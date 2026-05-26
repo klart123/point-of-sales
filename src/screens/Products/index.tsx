@@ -16,9 +16,8 @@ import ProductModal from './components/productModal';
 
 const ProductScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const {loading, products, hasMore} = useSelector(
-    (state: RootState) => state.products,
-  );
+  const {loading, products, hasMore, isAddingLoading, isAddingSuccess} =
+    useSelector((state: RootState) => state.products);
   const [list, setList] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
@@ -27,6 +26,8 @@ const ProductScreen = () => {
   // Function to load products
   const loadProducts = () => {
     dispatch(services.getProducts()); // Pass page number for pagination
+    dispatch(services.getCategories());
+    dispatch(services.getProductCategories());
   };
 
   useEffect(() => {
@@ -37,10 +38,18 @@ const ProductScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(products?.data)) {
-      setList(products?.data);
+    if (Array.isArray(products)) {
+      setList(products);
     }
   }, [products]);
+
+  useEffect(() => {
+    if (isAddingLoading == false && isAddingSuccess === true) {
+      loadProducts();
+      setAddModal(false);
+      dispatch(services.resetAddProductState());
+    }
+  }, [isAddingLoading, isAddingSuccess]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -61,6 +70,7 @@ const ProductScreen = () => {
   };
 
   const handleAddSubmit = (data: any) => {
+    console.log(data);
     dispatch(services.addProducts(data));
   };
 

@@ -2,6 +2,25 @@ import {AppDispatch} from '../../redux/store'; // adjust path if needed
 import {productActions} from '../../redux/slices/productSlice';
 import axiosInstance from '../../Api/axiosInstance';
 
+// Types
+type Variant = {
+  size: string;
+  price: string;
+};
+
+type VariantMap = {
+  hot: Variant[];
+  cold: Variant[];
+  blended: Variant[];
+};
+
+export type ProductFormData = {
+  name: string;
+  description: string;
+  category_id: string;
+  variants: VariantMap;
+};
+
 export const getProducts = () => {
   return async (dispatch: AppDispatch) => {
     dispatch(productActions.productStart());
@@ -42,5 +61,67 @@ export const addProducts = (payload: any) => {
       .catch(error => {
         dispatch(productActions.addProductFailed(error));
       });
+  };
+};
+
+export const getCategories = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productActions.getCategoriesStart());
+    axiosInstance
+      .get('/categories')
+      .then(response => {
+        if (response?.status === 200) {
+          return dispatch(productActions.getCategoriesSuccess(response?.data));
+        }
+
+        return dispatch(
+          productActions.getCategoriesFailed(response.data.error),
+        );
+      })
+      .catch(error => {
+        return dispatch(productActions.getCategoriesFailed(error.data.error));
+      });
+  };
+};
+
+export const getProductCategories = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productActions.getSubCategoriesStart());
+    axiosInstance
+      .get('/product-categories')
+      .then(response => {
+        if (response?.status === 200) {
+          return dispatch(
+            productActions.getSubCategoriesSuccess(response?.data),
+          );
+        }
+
+        return dispatch(
+          productActions.getSubCategoriesFailed(response.data.error),
+        );
+      })
+      .catch(error => {
+        return dispatch(
+          productActions.getSubCategoriesFailed(error.data.error),
+        );
+      });
+  };
+};
+
+export const resetCategories = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productActions.resetCategories());
+  };
+};
+
+export const resetAddProductState = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productActions.addProductFailed(''));
+  };
+};
+
+export const resetProductCategories = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productActions.resetProductCategories());
   };
 };

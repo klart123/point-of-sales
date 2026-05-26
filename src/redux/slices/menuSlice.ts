@@ -26,7 +26,7 @@ const menuSlice = createSlice({
       state.menu = null;
     },
     menuSuccess: (state, action: PayloadAction<object>) => {
-      const {data} = action.payload;
+      const data = action.payload;
       state.loading = false;
       state.menu = data;
     },

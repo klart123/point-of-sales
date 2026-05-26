@@ -51,7 +51,6 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
-    // paddingHorizontal: 16,
   },
   addButton: {
     fontSize: 16,
@@ -127,16 +126,139 @@ export default StyleSheet.create({
     paddingLeft: 8,
     fontSize: 14,
   },
-  // modalCloseButton: {
-  //   marginTop: 20,
-  //   alignSelf: 'flex-end',
-  //   backgroundColor: '#333',
-  //   paddingHorizontal: 16,
-  //   paddingVertical: 8,
-  //   borderRadius: 8,
-  // },
+
   modalCloseText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+
+  tempTab: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 0.5,
+    borderColor: '#D3D1C7',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  tempTabActive: {
+    backgroundColor: '#E1F5EE',
+    borderColor: '#1D9E75',
+  },
+  tempTabText: {
+    fontSize: 13,
+    color: '#888780',
+  },
+  tempTabTextActive: {
+    fontSize: 13,
+    color: '#0F6E56',
+    fontWeight: '500',
+  },
+  addVariantBtn: {
+    borderWidth: 0.5,
+    borderColor: '#D3D1C7',
+    borderStyle: 'dashed',
+    borderRadius: 8,
+    paddingVertical: 8,
+    alignItems: 'center',
+    marginBottom: 12,
+    backgroundColor: 'transparent',
+  },
+  addVariantText: {
+    fontSize: 13,
+    color: '#888780',
+  },
+
+  // Modal title spacing
+  modalTitleSpacing: {
+    paddingBottom: 16,
+  },
+
+  // ScrollView content
+  scrollContent: {
+    paddingBottom: 20,
+  },
+
+  // Category row
+  categoryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  categoryDropdown: {
+    flex: 1,
+    borderRadius: 8,
+    borderWidth: 0.7,
+    overflow: 'hidden',
+    padding: 10,
+    marginBottom: 10,
+    borderColor: '#aaa',
+  },
+  categoryDropdownText: {
+    fontSize: 14,
+  },
+  categoryDropdownPlaceholder: {
+    fontSize: 14,
+    color: '#aaa',
+  },
+  addCategoryBtn: {
+    padding: 10,
+    marginBottom: 10,
+  },
+  addCategoryBtnText: {
+    fontSize: 20,
+  },
+
+  // Dropdown items
+  dropdownItem: {
+    padding: 10,
+  },
+
+  // Variant header row
+  variantHeader: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 6,
+    paddingHorizontal: 2,
+  },
+  variantHeaderText: {
+    flex: 1,
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  variantHeaderSpacer: {
+    width: 24,
+  },
+
+  // Variant row
+  variantRow: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  variantInput: {
+    flex: 1,
+    marginBottom: 0,
+  },
+  removeVariantBtn: {
+    fontSize: 20,
+    color: '#ccc',
+    lineHeight: 24,
+  },
+
+  // Temperature dropdown
+  tempDropdownWrapper: {
+    flex: 1.2,
+    borderRadius: 8,
+    borderWidth: 0.5,
+    overflow: 'hidden',
+  },
+  tempDropdown: {
+    flex: 1,
+  },
+  tempDropdownItem: {
+    padding: 10,
   },
 });

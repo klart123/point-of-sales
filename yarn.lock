@@ -5955,6 +5955,13 @@ react-native-dotenv@^3.4.11:
   dependencies:
     dotenv "^16.4.5"
 
+react-native-element-dropdown@^2.12.4:
+  version "2.12.4"
+  resolved "https://registry.yarnpkg.com/react-native-element-dropdown/-/react-native-element-dropdown-2.12.4.tgz#259db84e673b9f4fc03090a54760efd4f4a1456c"
+  integrity sha512-abZc5SVji9FIt7fjojRYrbuvp03CoeZJrgvezQoDoSOrpiTqkX69ix5m+j06W2AVncA0VWvbT+vCMam8SoVadw==
+  dependencies:
+    lodash "^4.17.21"
+
 react-native-safe-area-context@^5.3.0:
   version "5.4.0"
   resolved "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-5.4.0.tgz"
