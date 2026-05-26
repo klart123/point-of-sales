@@ -11,12 +11,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import * as services from './services';
 import {AppDispatch, RootState} from '../../redux/store';
 import styles from './styles';
-import ProductItem from './components/productItem';
+import Product from '../../components/Product';
+import ProductItem from '../../components/ProductItem';
 import ProductModal from './components/productModal';
 
 const ProductScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const {loading, products, hasMore, isAddingLoading, isAddingSuccess} =
+  const {loading, productsGrouped, hasMore, isAddingLoading, isAddingSuccess} =
     useSelector((state: RootState) => state.products);
   const [list, setList] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -25,7 +26,7 @@ const ProductScreen = () => {
 
   // Function to load products
   const loadProducts = () => {
-    dispatch(services.getProducts()); // Pass page number for pagination
+    dispatch(services.getProductsGrouped()); // Pass page number for pagination
     dispatch(services.getCategories());
     dispatch(services.getProductCategories());
   };
@@ -38,10 +39,10 @@ const ProductScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(products)) {
-      setList(products);
+    if (Array.isArray(productsGrouped)) {
+      setList(productsGrouped);
     }
-  }, [products]);
+  }, [productsGrouped]);
 
   useEffect(() => {
     if (isAddingLoading == false && isAddingSuccess === true) {
@@ -83,15 +84,14 @@ const ProductScreen = () => {
             <Text style={styles.addButton}>+ Add</Text>
           </TouchableOpacity>
         </View>
-        <FlatList
-          data={list}
-          keyExtractor={item => item?.id.toString()}
-          renderItem={({item}) => <ProductItem item={item} />}
-          numColumns={2}
-          contentContainerStyle={styles.list}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
+
+        <Product
+          list={list}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          onPress={item => {
+            console.log('pressed item', item);
+          }}
         />
       </View>
       <ProductModal

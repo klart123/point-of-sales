@@ -10,6 +10,7 @@ export type ProductCategory = {
   id: number;
   name: string;
   category_id: number;
+  products: object[];
 };
 
 export type ProductState = {
@@ -20,6 +21,7 @@ export type ProductState = {
   isSuccess: boolean;
   categories: Category[];
   productCategories: ProductCategory[];
+  productsGrouped: object[];
   isAddingLoading: boolean;
   isAddingSuccess: boolean;
 };
@@ -29,5 +31,13 @@ export type ProductItemProps = {
     id: number;
     name: string;
     price: number;
+    product_categories: ProductCategory[];
+    variants: {
+      [key: string]: {
+        size: string;
+        price: number;
+      }[];
+    };
   };
+  onPress?: (item: object) => void;
 };

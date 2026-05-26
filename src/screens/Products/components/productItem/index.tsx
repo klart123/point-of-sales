@@ -1,23 +1,58 @@
 import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, Modal, Pressable} from 'react-native';
-import styles from '../styles';
-import {products} from '../../../types';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+  FlatList,
+} from 'react-native';
+import styles from './styles';
+import {products} from '../../../../types';
 
 const ProductItem: React.FC<products.ProductItemProps> = ({item}) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const {name, variants} = item;
-
+  const {name, variants, product_categories} = item;
+  console.log('item', item);
   const handlePress = () => {
     setModalVisible(true);
   };
 
   return (
     <>
-      <TouchableOpacity style={styles.item} onPress={handlePress}>
+      <View style={styles.item} onPress={handlePress}>
         <Text>{name}</Text>
-      </TouchableOpacity>
+        <FlatList
+          style={{flex: 1, width: '100%'}}
+          data={product_categories}
+          keyExtractor={item => item?.id.toString()}
+          contentContainerStyle={{
+            flex: 1,
+            width: '100%',
+            backgroundColor: 'yellow',
+            padding: 10,
+          }}
+          renderItem={({item}) => (
+            <View style={styles.categoryBadge}>
+              <Text style={styles.categoryBadgeText}>{item.name}</Text>
+              <FlatList
+                style={{flex: 1, width: '100%'}}
+                data={item.products}
+                keyExtractor={item => item?.id.toString()}
+                renderItem={({item}) => (
+                  <TouchableOpacity style={styles.productItem}>
+                    <Text style={styles.productText}>{item.name}</Text>
+                  </TouchableOpacity>
+                )}
+                numColumns={2}
+              />
+            </View>
+          )}
+          showsHorizontalScrollIndicator={false}
+        />
+      </View>
 
-      <Modal
+      {/* <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
@@ -53,7 +88,7 @@ const ProductItem: React.FC<products.ProductItemProps> = ({item}) => {
             </Pressable>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
     </>
   );
 };

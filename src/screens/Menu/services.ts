@@ -8,7 +8,7 @@ export const getMenu = () => {
     dispatch(menuSlice.menuStart());
 
     axiosInstance
-      .get('/products')
+      .get('/products/grouped')
       .then(response => {
         console.log('response:', response);
         if (response?.status === 200) {

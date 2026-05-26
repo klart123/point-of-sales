@@ -17,7 +17,9 @@ import MenuModal from './components/menuModal';
 import {orderActions} from '../../redux/slices/orderSlice';
 import OrderListModal from './components/ordersListModal';
 import {useNavigation} from '@react-navigation/native';
-import {CommonActions} from '@react-navigation/native';
+import MenuItems from './components/menuItems';
+import ProductItem from '../../components/ProductItem';
+import Product from '../../components/Product';
 
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = 120;
@@ -132,19 +134,6 @@ const MenuScreen = () => {
     Soda: styles.categorySoda,
   };
 
-  const renderItem = ({item}: {item: any}) => {
-    const categoryStyle =
-      categoryStyles[item?.category] || styles.categoryDefault;
-
-    return (
-      <TouchableOpacity
-        style={[styles.item, categoryStyle]}
-        onPress={() => handleOpenModal(item)}>
-        <Text style={[styles.textItems, styles.textCenter]}>{item.name}</Text>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <>
       <View style={styles.container}>
@@ -154,16 +143,12 @@ const MenuScreen = () => {
             <Text style={styles.addButton}>Orders</Text>
           </TouchableOpacity>
         </View>
-        <FlatList
-          key={JSON.stringify(menu)}
-          data={list}
-          keyExtractor={item => item.id.toString()}
-          renderItem={renderItem}
-          numColumns={numColumns}
-          contentContainerStyle={styles.list}
-          refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={onRefresh} />
-          }
+
+        <Product
+          list={list}
+          refreshing={loading}
+          onRefresh={onRefresh}
+          onPress={handleOpenModal}
         />
       </View>
       <MenuModal

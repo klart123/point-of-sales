@@ -4,7 +4,7 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 type ErrorPayload = string | Record<string, any>;
 
 type AuthState = {
-  menu: null | object;
+  menu: null | object[];
   loading: boolean;
   error: string | null | Record<string, any>;
   hasMore: boolean;
@@ -25,7 +25,7 @@ const menuSlice = createSlice({
       state.loading = true;
       state.menu = null;
     },
-    menuSuccess: (state, action: PayloadAction<object>) => {
+    menuSuccess: (state, action: PayloadAction<object[]>) => {
       const data = action.payload;
       state.loading = false;
       state.menu = data;

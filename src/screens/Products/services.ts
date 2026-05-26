@@ -108,6 +108,30 @@ export const getProductCategories = () => {
   };
 };
 
+export const getProductsGrouped = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productActions.getProductsGroupedStart());
+    axiosInstance
+      .get('/products/grouped')
+      .then(response => {
+        if (response?.status === 200) {
+          return dispatch(
+            productActions.getProductsGroupedSuccess(response?.data),
+          );
+        }
+
+        return dispatch(
+          productActions.getProductsGroupedFailed(response.data.error),
+        );
+      })
+      .catch(error => {
+        return dispatch(
+          productActions.getProductsGroupedFailed(error.data.error),
+        );
+      });
+  };
+};
+
 export const resetCategories = () => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.resetCategories());

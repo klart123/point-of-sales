@@ -88,11 +88,32 @@ const productSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    getProductsGroupedStart: state => {
+      state.loading = true;
+      state.productsGrouped = [];
+    },
+    getProductsGroupedSuccess: (
+      state,
+      action: PayloadAction<products.ProductCategory[]>,
+    ) => {
+      state.loading = false;
+      state.productsGrouped = action.payload;
+    },
+    getProductsGroupedFailed: (
+      state,
+      action: PayloadAction<products.ErrorPayload>,
+    ) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
     resetCategories: state => {
       state.categories = [];
     },
     resetProductCategories: state => {
       state.productCategories = [];
+    },
+    resetProductsGrouped: state => {
+      state.productsGrouped = [];
     },
   },
 });
