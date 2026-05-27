@@ -39,6 +39,29 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
     }, 0);
   }, [selectedItems]);
 
+  const groupedItems = useMemo(() => {
+    const map = new Map();
+
+    selectedItems.forEach(item => {
+      const key = `${item.temp}-${item.size}`;
+
+      if (!map.has(key)) {
+        map.set(key, {
+          temp: item.temp,
+          size: item.size,
+          price: Number(item.price),
+          quantity: 1,
+        });
+      } else {
+        const existing = map.get(key);
+        existing.quantity += 1;
+        existing.price += Number(item.price);
+      }
+    });
+
+    return Array.from(map.values());
+  }, [selectedItems]);
+
   useEffect(() => {
     if (item) {
       handleReset();
@@ -98,8 +121,44 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
     );
   };
 
-  const removeVariantRow = (index: number) => {
-    setSelectedItems(prev => prev.filter((_, i) => i !== index));
+  const handleDeleteItem = (temp: string, size: string) => {
+    setSelectedItems(prev => {
+      const index = prev.findIndex(
+        item => item.temp === temp && item.size === size,
+      );
+
+      if (index === -1) return prev;
+
+      const updated = [...prev];
+      updated.splice(index, 1); // remove ONLY ONE item
+
+      return updated;
+    });
+  };
+
+  const handleAddItem = (temp: string, size: string, price: string) => {
+    setSelectedItems(prev => {
+      const updated = [
+        ...prev,
+        {
+          temp,
+          size,
+          price,
+        },
+      ];
+
+      return updated.sort((a, b) => {
+        // 1. Sort by temperature first
+        if (a.temp < b.temp) return -1;
+        if (a.temp > b.temp) return 1;
+
+        // 2. If same temp, sort by size
+        if (a.size < b.size) return -1;
+        if (a.size > b.size) return 1;
+
+        return 0;
+      });
+    });
   };
 
   return (
@@ -135,16 +194,7 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
                           selectedTemp === temperature &&
                             styles.optionButtonSelected,
                         ]}
-                        onPress={() => {
-                          setSelectedItems([
-                            ...selectedItems,
-                            {
-                              temp: temperature,
-                              size: size,
-                              price: price,
-                            },
-                          ]);
-                        }}>
+                        onPress={() => handleAddItem(temperature, size, price)}>
                         <Text
                           style={[
                             styles.optionButtonText,
@@ -227,21 +277,31 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
           {/* Display Price */}
           <View style={{flex: 1}}>
             <FlatList
-              data={selectedItems}
+              data={groupedItems}
               keyExtractor={(_, index) => index.toString()}
-              renderItem={({item}) => (
-                <View
-                  style={{flexDirection: 'row', gap: 4, alignItems: 'center'}}>
-                  <Text style={styles.selectedItems}>{item.temp}</Text>
-                  <Text style={styles.selectedItems}>{item.size}</Text>
-                  <Text style={styles.selectedItems}>₱{item.price}</Text>
+              renderItem={({item, index}) => (
+                <View style={styles.displayItem} key={`selected_${index}`}>
+                  <Text style={styles.selectedItems}>
+                    {item?.temp} - {item?.size}
+                  </Text>
+
+                  <Text style={styles.selectedItems}>
+                    {item?.quantity} x ₱{item?.price}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => handleDeleteItem(item.temp, item.size)}
+                    style={{paddingHorizontal: 10}}>
+                    <Text style={styles.removeVariantBtn}>×</Text>
+                  </TouchableOpacity>
                 </View>
               )}
             />
           </View>
+
           <View style={styles.buttons}>
             <Text style={styles.selectedPrice}>Price: ₱{totalPrice}</Text>
           </View>
+
           <View style={styles.buttons}>
             <TouchableOpacity onPress={handleClose} style={styles.buttonCancel}>
               <Text style={styles.buttonText}>Cancel</Text>

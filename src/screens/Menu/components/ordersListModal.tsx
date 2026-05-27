@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {
   Modal,
   View,
@@ -40,11 +40,37 @@ const OrderListModal = ({
     return sum + basePrice + addOnsTotal;
   }, 0);
 
+  const groupItemsByVariant = items => {
+    const map = new Map();
+
+    items.forEach(item => {
+      const key = `${item.temp}-${item.size}`;
+
+      if (!map.has(key)) {
+        map.set(key, {
+          temp: item.temp,
+          size: item.size,
+          quantity: 1,
+          price: Number(item.price),
+        });
+      } else {
+        const existing = map.get(key);
+        existing.quantity += 1;
+        existing.price += Number(item.price);
+      }
+    });
+
+    return Array.from(map.values());
+  };
+
+  const groupedOrders = useMemo(() => {
+    return orders.map(order => ({
+      ...order,
+      groupedItems: groupItemsByVariant(order.items),
+    }));
+  }, [orders]);
+
   const handleSubmit = () => {
-    // if (customerName.trim() === '') {
-    //   Alert.alert('Please enter a customer name');
-    //   return;
-    // }
     onSubmit(customerName);
     onClose();
   };
@@ -82,7 +108,7 @@ const OrderListModal = ({
             ) : (
               <>
                 <FlatList
-                  data={orders}
+                  data={groupedOrders}
                   keyExtractor={(item, index) => item.id.toString() + index}
                   renderItem={({item, index}) => (
                     <View style={styles.itemRow}>
@@ -96,10 +122,11 @@ const OrderListModal = ({
                           </View>
 
                           <FlatList
-                            data={item?.items || []}
+                            data={item?.groupedItems || []}
                             renderItem={({item: subItem}) => (
                               <Text style={styles.subItemText}>
-                                {subItem.temp} {subItem.size} - ₱{subItem.price}
+                                {subItem.temp} {subItem.size} -{' '}
+                                {subItem.quantity} x ₱{subItem.price}
                               </Text>
                             )}
                           />

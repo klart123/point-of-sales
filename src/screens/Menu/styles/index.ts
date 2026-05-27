@@ -217,6 +217,11 @@ export default StyleSheet.create({
     backgroundColor: COLORS.cardSoft,
     padding: 10,
   },
+  displayItem: {
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
+  },
 
   itemTextContainer: {
     flex: 1,
