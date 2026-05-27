@@ -11,7 +11,7 @@ const ProductItem: React.FC<products.ProductItemProps> = ({
 
   return (
     <View style={styles.item}>
-      <Text style={styles.itemName}>{name}</Text>
+      {/* <Text style={styles.itemName}>{name}</Text> */}
       <FlatList
         style={styles.productCategoriesList}
         data={product_categories}
@@ -23,7 +23,9 @@ const ProductItem: React.FC<products.ProductItemProps> = ({
         }}
         renderItem={({item}) => (
           <View style={styles.categoryBadge}>
-            <Text style={styles.categoryBadgeText}>{item.name}</Text>
+            <View style={styles.categoryBadgeTextContainer}>
+              <Text style={styles.itemName}>{item.name}</Text>
+            </View>
             <FlatList
               style={styles.productCategoriesList}
               data={item?.products}
