@@ -1,5 +1,6 @@
 // src/store/slices/orderSlice.ts
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {updateOrder} from '../../screens/Menu/services';
 
 interface UpdateItemStatusPayload {
   orderId: number;
@@ -50,6 +51,12 @@ const orderSlice = createSlice({
   reducers: {
     addOrder: (state, action: PayloadAction<OrderItem>) => {
       state.orders.push(action.payload);
+    },
+    updateOrder: (state, action: PayloadAction<OrderItem>) => {
+      const index = state.orders.findIndex(o => o.id === action.payload.id);
+      if (index !== -1) {
+        state.orders[index] = action.payload;
+      }
     },
     removeOrder: (state, action: PayloadAction<number>) => {
       state.orders.splice(action.payload, 1);

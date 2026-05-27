@@ -27,7 +27,7 @@ const OrderListModal = ({
     (state: RootState) => state.orders,
   );
 
-  console.log('orders in modal:', orders);
+  console.log('orders in modal', orders);
 
   const dispatch = useDispatch();
   const [customerName, setCustomerName] = useState(orderCustomerName);

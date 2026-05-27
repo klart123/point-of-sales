@@ -93,7 +93,15 @@ const MenuScreen = () => {
   };
 
   const handleEditItem = (item: any) => {
-    dispatch(orderActions.addOrder(item));
+    if (item?.isUpdate) {
+      dispatch(
+        orderActions.updateOrder({
+          ...item,
+        }),
+      );
+    } else {
+      dispatch(orderActions.addOrder(item));
+    }
   };
 
   const handleSubmitOrder = data => {
