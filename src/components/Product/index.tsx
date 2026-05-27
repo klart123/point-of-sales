@@ -22,7 +22,11 @@ const Product: React.FC<ProductProps> = ({
       data={list}
       keyExtractor={item => item?.id.toString()}
       renderItem={({item}) => (
-        <ProductItem item={item} onPress={() => onPress(item)} />
+        <ProductItem
+          key={`product_${item?.id}`}
+          item={item}
+          onPress={onPress}
+        />
       )}
       contentContainerStyle={styles.list}
       refreshControl={

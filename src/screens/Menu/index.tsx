@@ -57,7 +57,6 @@ const MenuScreen = () => {
   }, []);
 
   useEffect(() => {
-    console.log('menu updated:', menu);
     if (Array.isArray(menu)) {
       setList(menu);
     }
@@ -134,7 +133,6 @@ const MenuScreen = () => {
   };
 
   const handleHeaderPress = () => {
-    console.log('header pressed');
     setOrderModal(true);
   };
 
@@ -142,13 +140,6 @@ const MenuScreen = () => {
     <View style={styles.container}>
       <HeaderComponent label="Orders" onPress={handleHeaderPress} />
       <View style={styles.productContainer}>
-        {/* <View style={styles.header}>
-          <Text style={styles.title}>🧾 Shop</Text>
-          <TouchableOpacity onPress={() => setOrderModal(true)}>
-            <Text style={styles.addButton}>Orders</Text>
-          </TouchableOpacity>
-        </View> */}
-
         <Product
           list={list}
           refreshing={loading}

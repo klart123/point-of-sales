@@ -21,8 +21,8 @@ const ProductItem: React.FC<products.ProductItemProps> = ({
           width: '100%',
           backgroundColor: 'yellow',
         }}
-        renderItem={({item}) => (
-          <View style={styles.categoryBadge}>
+        renderItem={({item, index}) => (
+          <View style={styles.categoryBadge} key={`product_${index}`}>
             <View style={styles.categoryBadgeTextContainer}>
               <Text style={styles.itemName}>{item.name}</Text>
             </View>
@@ -30,13 +30,18 @@ const ProductItem: React.FC<products.ProductItemProps> = ({
               style={styles.productCategoriesList}
               data={item?.products}
               keyExtractor={item => item?.id.toString()}
-              renderItem={({item}) => (
-                <TouchableOpacity
-                  style={styles.productItem}
-                  onPress={() => onPress(item)}>
-                  <Text style={styles.productItemText}>{item?.name}</Text>
-                </TouchableOpacity>
-              )}
+              renderItem={productItem => {
+                return (
+                  <TouchableOpacity
+                    key={`product_item_${productItem?.index}`}
+                    style={styles.productItem}
+                    onPress={() => onPress(productItem?.item)}>
+                    <Text style={styles.productItemText}>
+                      {productItem?.item?.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }}
               numColumns={2}
             />
           </View>

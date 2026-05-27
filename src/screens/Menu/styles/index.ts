@@ -95,16 +95,17 @@ export default StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: 'rgba(0,0,0,0.4)',
-    padding: 20,
+    padding: 10,
+    paddingTop: '20%',
   },
   modal: {
     backgroundColor: 'white',
     borderRadius: 12,
-    padding: 20,
+    padding: 10,
     elevation: 10,
-    maxHeight: '80%',
+    maxHeight: '100%',
   },
   input: {
     borderWidth: 1,
@@ -116,6 +117,7 @@ export default StyleSheet.create({
   buttons: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    marginTop: 10,
   },
   buttonCancel: {
     padding: 10,
@@ -124,7 +126,7 @@ export default StyleSheet.create({
     borderRadius: 8,
   },
   buttonAdd: {
-    backgroundColor: '#007bff',
+    backgroundColor: COLORS.primary,
     padding: 10,
     borderRadius: 8,
   },
@@ -132,13 +134,32 @@ export default StyleSheet.create({
     color: '#fff',
   },
   selectedPrice: {
+    flex: 1,
     marginTop: 16,
-    fontWeight: 'bold',
     fontSize: 16,
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: '#eee',
+    textAlign: 'center',
   },
+  selectedItems: {
+    flex: 1,
+    fontSize: 16,
+    borderRadius: 8,
+    textAlign: 'center',
+    backgroundColor: '#eee',
+    paddingVertical: 5,
+    marginBottom: 2,
+  },
+  removeVariantBtn: {
+    fontSize: 20,
+    color: '#ccc',
+    lineHeight: 24,
+  },
+
   emptyText: {
     fontStyle: 'italic',
-    color: '#666',
+    color: '#668',
   },
   orderItem: {
     paddingVertical: 8,
@@ -227,7 +248,6 @@ export default StyleSheet.create({
   },
 
   optionButton: {
-    width: '48%',
     padding: 12,
     paddingVertical: 20,
     backgroundColor: '#eee',
@@ -235,6 +255,8 @@ export default StyleSheet.create({
     marginBottom: 10,
     alignItems: 'center',
     textAlign: 'center',
+    flex: 1,
+    margin: 3,
   },
 
   optionButtonSelected: {
