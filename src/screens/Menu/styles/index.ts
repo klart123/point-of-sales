@@ -1,11 +1,14 @@
 import {StyleSheet} from 'react-native';
+import {COLORS} from '../../../theme/colors';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
     paddingHorizontal: 10,
+    backgroundColor: COLORS.primary,
   },
+  productContainer: {},
   title: {
     fontSize: 24,
     fontWeight: 'bold',

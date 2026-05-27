@@ -17,9 +17,8 @@ import MenuModal from './components/menuModal';
 import {orderActions} from '../../redux/slices/orderSlice';
 import OrderListModal from './components/ordersListModal';
 import {useNavigation} from '@react-navigation/native';
-import MenuItems from './components/menuItems';
-import ProductItem from '../../components/ProductItem';
 import Product from '../../components/Product';
+import {HeaderComponent} from '../../components';
 
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = 120;
@@ -134,15 +133,21 @@ const MenuScreen = () => {
     Soda: styles.categorySoda,
   };
 
+  const handleHeaderPress = () => {
+    console.log('header pressed');
+    setOrderModal(true);
+  };
+
   return (
-    <>
-      <View style={styles.container}>
-        <View style={styles.header}>
+    <View style={styles.container}>
+      <HeaderComponent label="Orders" onPress={handleHeaderPress} />
+      <View style={styles.productContainer}>
+        {/* <View style={styles.header}>
           <Text style={styles.title}>🧾 Shop</Text>
           <TouchableOpacity onPress={() => setOrderModal(true)}>
             <Text style={styles.addButton}>Orders</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         <Product
           list={list}
@@ -167,7 +172,7 @@ const MenuScreen = () => {
           <ActivityIndicator size="large" color="#1aF" />
         </View>
       )}
-    </>
+    </View>
   );
 };
 

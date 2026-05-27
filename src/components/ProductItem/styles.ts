@@ -6,8 +6,8 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     borderRadius: 5,
-    backgroundColor: COLORS.cardSoft,
-    marginBottom: 5,
+    // backgroundColor: COLORS.cardSoft,
+    // marginBottom: 5,
   },
   itemName: {
     fontSize: 20,
@@ -19,12 +19,13 @@ export default StyleSheet.create({
     width: '100%',
   },
   categoryBadge: {
-    margin: 3,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
     width: '100%',
     paddingBottom: 10,
+    backgroundColor: COLORS.cardSoft,
+    marginBottom: 5,
   },
   categoryBadgeTextContainer: {
     padding: 10,
