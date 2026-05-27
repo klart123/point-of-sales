@@ -5,9 +5,15 @@ import styles from '../styles';
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (data: {name: string; price: string; size: string}) => void;
-  // item: {name: string; price: string; size: string}; // Accepting data from main component
-  item: any; // Accepting data from main component
+  onSubmit: (data: {
+    id: number;
+    sku: string;
+    name: string;
+    items: any[];
+    totalPrice: number;
+  }) => void;
+
+  item: any;
 };
 
 const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
@@ -64,10 +70,7 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
       id: item?.id,
       sku: item?.sku,
       name: item?.name,
-      price: selectedPrice,
-      type: selectedTemp,
-      size: selectedSize,
-      addOns: selectedAddOns,
+      items: selectedItems,
       totalPrice: totalPrice,
     });
     handleClose(); // optional: close after submit
@@ -222,26 +225,19 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
           )}
 
           {/* Display Price */}
-          <View>
-            {selectedItems?.map((item, index) => {
-              return (
+          <View style={{flex: 1}}>
+            <FlatList
+              data={selectedItems}
+              keyExtractor={(_, index) => index.toString()}
+              renderItem={({item}) => (
                 <View
-                  style={{
-                    flexDirection: 'row',
-                    gap: 4,
-                    alignItems: 'center',
-                  }}
-                  key={index}>
+                  style={{flexDirection: 'row', gap: 4, alignItems: 'center'}}>
                   <Text style={styles.selectedItems}>{item.temp}</Text>
                   <Text style={styles.selectedItems}>{item.size}</Text>
                   <Text style={styles.selectedItems}>₱{item.price}</Text>
-                  {/* Remove */}
-                  <TouchableOpacity onPress={() => removeVariantRow(index)}>
-                    <Text style={styles.removeVariantBtn}>×</Text>
-                  </TouchableOpacity>
                 </View>
-              );
-            })}
+              )}
+            />
           </View>
           <View style={styles.buttons}>
             <Text style={styles.selectedPrice}>Price: ₱{totalPrice}</Text>

@@ -27,12 +27,14 @@ const OrderListModal = ({
     (state: RootState) => state.orders,
   );
 
+  console.log('orders in modal:', orders);
+
   const dispatch = useDispatch();
   const [customerName, setCustomerName] = useState(orderCustomerName);
   const [cash, setCash] = useState('0');
 
   const total = orders.reduce((sum, order) => {
-    const basePrice = parseFloat(order.price) || 0;
+    const basePrice = parseFloat(order.totalPrice) || 0;
     const addOnsTotal =
       order.addOns?.reduce((s, a) => s + parseFloat(a.price), 0) || 0;
     return sum + basePrice + addOnsTotal;
@@ -74,78 +76,90 @@ const OrderListModal = ({
               </TouchableOpacity>
             )}
           </View>
+          <View style={{flex: 1}}>
+            {orders.length === 0 ? (
+              <Text style={styles.emptyText}>No orders yet.</Text>
+            ) : (
+              <>
+                <FlatList
+                  data={orders}
+                  keyExtractor={(item, index) => item.id.toString() + index}
+                  renderItem={({item, index}) => (
+                    <View style={styles.itemRow}>
+                      <View style={styles.itemTextContainer}>
+                        <View style={styles.itemTextPrice}>
+                          <View style={styles.itemHeadPrice}>
+                            <Text style={styles.itemText}>{item.name}</Text>
+                            <Text style={styles.itemText}>
+                              {item.totalPrice}
+                            </Text>
+                          </View>
 
-          {orders.length === 0 ? (
-            <Text style={styles.emptyText}>No orders yet.</Text>
-          ) : (
-            <>
-              <FlatList
-                data={orders}
-                keyExtractor={(item, index) => item.id.toString() + index}
-                renderItem={({item, index}) => (
-                  <View style={styles.itemRow}>
-                    <View style={styles.itemTextContainer}>
-                      <View style={styles.itemTextPrice}>
-                        <Text style={styles.itemText}>
-                          {item.name}
-                          {item?.type !== 'Pastry' ? `(${item.type})` : ''}
-                          {item?.type !== 'Pastry' ? `(${item.size})` : ''}
-                        </Text>
-                        <Text>₱{item.price}</Text>
+                          <FlatList
+                            data={item?.items || []}
+                            renderItem={({item: subItem}) => (
+                              <Text style={styles.subItemText}>
+                                {subItem.temp} {subItem.size} - ₱{subItem.price}
+                              </Text>
+                            )}
+                          />
+                        </View>
+
+                        {/* Show add-ons if they exist */}
+                        {item.addOns && item.addOns.length > 0 && (
+                          <View style={styles.addOnContainer}>
+                            {item.addOns.map((addOn, idx) => (
+                              <View style={styles.itemTextPrice}>
+                                <Text key={idx} style={styles.addOnText}>
+                                  + {addOn.name}
+                                </Text>
+                                <Text style={styles.addOnText}>
+                                  (₱{addOn.price})
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        )}
+
+                        {item.addOns?.length > 0 && (
+                          <>
+                            <Text
+                              style={{
+                                flex: 1,
+                                textAlign: 'right',
+                                paddingHorizontal: 5,
+                              }}>
+                              {'Total + add-ons = ₱'}
+                              {(
+                                parseFloat(item.price) +
+                                item.addOns.reduce(
+                                  (s, a) => s + parseFloat(a.price),
+                                  0,
+                                )
+                              ).toFixed(2)}
+                            </Text>
+                          </>
+                        )}
                       </View>
 
-                      {/* Show add-ons if they exist */}
-                      {item.addOns && item.addOns.length > 0 && (
-                        <View style={styles.addOnContainer}>
-                          {item.addOns.map((addOn, idx) => (
-                            <View style={styles.itemTextPrice}>
-                              <Text key={idx} style={styles.addOnText}>
-                                + {addOn.name}
-                              </Text>
-                              <Text style={styles.addOnText}>
-                                (₱{addOn.price})
-                              </Text>
-                            </View>
-                          ))}
-                        </View>
-                      )}
-
-                      {item.addOns?.length > 0 && (
-                        <>
-                          <Text
-                            style={{
-                              flex: 1,
-                              textAlign: 'right',
-                              paddingHorizontal: 5,
-                            }}>
-                            {'Total + add-ons = ₱'}
-                            {(
-                              parseFloat(item.price) +
-                              item.addOns.reduce(
-                                (s, a) => s + parseFloat(a.price),
-                                0,
-                              )
-                            ).toFixed(2)}
-                          </Text>
-                        </>
-                      )}
+                      <Pressable
+                        onPress={() =>
+                          dispatch(orderActions.removeOrder(index))
+                        }
+                        style={styles.removeButton}>
+                        <Text style={styles.removeText}>✕</Text>
+                      </Pressable>
                     </View>
+                  )}
+                />
 
-                    <Pressable
-                      onPress={() => dispatch(orderActions.removeOrder(index))}
-                      style={styles.removeButton}>
-                      <Text style={styles.removeText}>✕</Text>
-                    </Pressable>
-                  </View>
-                )}
-              />
-
-              <View style={styles.totalSection}>
-                <Text style={styles.totalLabel}>Total:</Text>
-                <Text style={styles.totalAmount}>₱{total.toFixed(2)}</Text>
-              </View>
-            </>
-          )}
+                <View style={styles.totalSection}>
+                  <Text style={styles.totalLabel}>Total:</Text>
+                  <Text style={styles.totalAmount}>₱{total.toFixed(2)}</Text>
+                </View>
+              </>
+            )}
+          </View>
 
           <View style={styles.optionGroup}>
             <Text style={styles.optionLabel}>Customer Name:</Text>
@@ -179,9 +193,11 @@ const OrderListModal = ({
                 <Text>Exact Amount</Text>
               </TouchableOpacity>
             </View>
-            <Text style={styles.optionLabel}>
-              Change: ₱{(parseFloat(cash || '0') - total).toFixed(2)}
-            </Text>
+            {cash !== '0' && (
+              <Text style={styles.optionLabel}>
+                Change: ₱{(parseFloat(cash) - total).toFixed(2)}
+              </Text>
+            )}
           </View>
 
           <View style={styles.actions}>

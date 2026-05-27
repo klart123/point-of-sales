@@ -105,7 +105,7 @@ export default StyleSheet.create({
     borderRadius: 12,
     padding: 10,
     elevation: 10,
-    maxHeight: '100%',
+    minHeight: '80%',
   },
   input: {
     borderWidth: 1,
@@ -167,6 +167,11 @@ export default StyleSheet.create({
   itemText: {
     fontSize: 16,
   },
+  subItemText: {
+    fontSize: 14,
+    color: '#667',
+    marginLeft: 8,
+  },
   actions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -208,6 +213,9 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 10,
+    borderRadius: 8,
+    backgroundColor: COLORS.cardSoft,
+    padding: 10,
   },
 
   itemTextContainer: {
@@ -215,8 +223,13 @@ export default StyleSheet.create({
   },
   itemTextPrice: {
     paddingHorizontal: 5,
+    justifyContent: 'center',
+  },
+
+  itemHeadPrice: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
 
   removeButton: {
