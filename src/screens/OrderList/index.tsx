@@ -29,6 +29,7 @@ type OrderItem = {
 type Order = {
   id: number;
   order_number: string;
+  total_price: number;
   customer_name: string | null;
   status: string;
   created_at: string;
@@ -154,9 +155,11 @@ const OrderList = () => {
   const renderOrderCard = ({item: order}: {item: Order}) => {
     const allDone = order.items.every(i => i.status === 'done');
     const doneCount = order.items.filter(i => i.status === 'done').length;
-
+    console.log('order', order);
     return (
-      <View style={[styles.card, allDone && styles.cardAllDone]}>
+      <TouchableOpacity
+        style={[styles.card, allDone && styles.cardAllDone]}
+        disabled={order.status !== 'completed'}>
         {/* Order header */}
         <View style={styles.cardHeader}>
           <Text style={styles.orderNumber}>{order.order_number}</Text>
@@ -180,6 +183,7 @@ const OrderList = () => {
         <View style={styles.itemList}>
           {order.items.map(item => (
             <TouchableOpacity
+              disabled={order.status === 'completed'}
               key={item.id}
               style={[
                 styles.itemRow,
@@ -188,6 +192,7 @@ const OrderList = () => {
               onPress={() => handleItemPress(order, item)}
               activeOpacity={0.7}>
               {/* Checkbox */}
+
               <View
                 style={[
                   styles.checkbox,
@@ -197,7 +202,9 @@ const OrderList = () => {
                   <Text style={styles.checkmark}>✓</Text>
                 )}
               </View>
-
+              <View style={styles.qtyBadge}>
+                <Text style={styles.qtyText}>x{item.quantity}</Text>
+              </View>
               {/* Item info */}
               <View style={styles.itemInfo}>
                 <Text
@@ -217,20 +224,64 @@ const OrderList = () => {
               </View>
 
               {/* Quantity badge */}
+
               <View style={styles.qtyBadge}>
-                <Text style={styles.qtyText}>x{item.quantity}</Text>
+                <Text style={styles.qtyText}>{item.price}</Text>
               </View>
             </TouchableOpacity>
           ))}
         </View>
+        <View>
+          {order?.total_price && (
+            <View style={styles.totalPriceContainer}>
+              <Text style={styles.totalPrice}>
+                Total: ₱{order?.total_price}
+              </Text>
+            </View>
+          )}
+        </View>
 
         {/* All done banner */}
-        {allDone && (
-          <View style={styles.readyBanner}>
-            <Text style={styles.readyText}>✓ Ready for pickup</Text>
+        {order.status !== 'completed' && allDone && (
+          <View>
+            <View style={styles.readyBanner}>
+              <Text style={styles.readyText}>Ready for pickup</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.complete}
+              onPress={() => {
+                Alert.alert(
+                  'Complete Order',
+                  'Are you sure you want to mark this order as complete?',
+                  [
+                    {text: 'Cancel', style: 'cancel'},
+                    {
+                      text: 'Yes',
+                      onPress: () => {
+                        axiosInstance
+                          .patch(`/orders/${order.id}/status`, {
+                            status: 'completed',
+                          })
+                          .then(() => {
+                            loadActiveOrders();
+                            setOrders(prev =>
+                              prev.filter(o => o.id !== order.id),
+                            );
+                          })
+                          .catch(error => {
+                            console.error('Failed to complete order', error);
+                            Alert.alert('Error', 'Failed to complete order.');
+                          });
+                      },
+                    },
+                  ],
+                );
+              }}>
+              <Text style={styles.readyText}>Complete</Text>
+            </TouchableOpacity>
           </View>
         )}
-      </View>
+      </TouchableOpacity>
     );
   };
 

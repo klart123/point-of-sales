@@ -8,8 +8,8 @@ import {
   Alert,
 } from 'react-native';
 import {io, Socket} from 'socket.io-client';
-import {authFetch} from '../../Api';
 import axiosInstance from '../../Api/axiosInstance';
+import styles from './styles';
 
 const SOCKET_URL = 'http://192.168.5.7:3000';
 
@@ -87,7 +87,7 @@ const KitchenScreen = () => {
 
   const loadActiveOrders = async () => {
     axiosInstance
-      .get('/orders?status=pending')
+      .get('/orders', {params: {status: 'pending,preparing'}})
       .then(response => {
         const sorted = response.data.map((o: Order) => ({
           ...o,
@@ -134,22 +134,22 @@ const KitchenScreen = () => {
   const renderOrderCard = ({item: order}: {item: Order}) => {
     const allDone = order.items.every(i => i.status === 'done');
     const doneCount = order.items.filter(i => i.status === 'done').length;
-
+    console.log('order', order);
     return (
-      <View style={[kitchenStyles.card, allDone && kitchenStyles.cardAllDone]}>
+      <View style={[styles.card, allDone && styles.cardAllDone]}>
         {/* Order header */}
-        <View style={kitchenStyles.cardHeader}>
-          <Text style={kitchenStyles.orderNumber}>{order.order_number}</Text>
-          <Text style={kitchenStyles.progress}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.orderNumber}>{order.order_number}</Text>
+          <Text style={styles.progress}>
             {doneCount}/{order.items.length}
           </Text>
         </View>
 
         {order.customer_name ? (
-          <Text style={kitchenStyles.customerName}>{order.customer_name}</Text>
+          <Text style={styles.customerName}>{order.customer_name}</Text>
         ) : null}
 
-        <Text style={kitchenStyles.timeText}>
+        <Text style={styles.timeText}>
           {new Date(order.created_at).toLocaleTimeString('en-PH', {
             hour: '2-digit',
             minute: '2-digit',
@@ -157,75 +157,91 @@ const KitchenScreen = () => {
         </Text>
 
         {/* Item list */}
-        <View style={kitchenStyles.itemList}>
+        <View style={styles.itemList}>
           {order.items.map(item => (
             <TouchableOpacity
               key={item.id}
               style={[
-                kitchenStyles.itemRow,
-                item.status === 'done' && kitchenStyles.itemRowDone,
+                styles.itemRow,
+                item.status === 'done' && styles.itemRowDone,
               ]}
               onPress={() => handleItemPress(order, item)}
               activeOpacity={0.7}>
               {/* Checkbox */}
+
               <View
                 style={[
-                  kitchenStyles.checkbox,
-                  item.status === 'done' && kitchenStyles.checkboxDone,
+                  styles.checkbox,
+                  item.status === 'done' && styles.checkboxDone,
                 ]}>
                 {item.status === 'done' && (
-                  <Text style={kitchenStyles.checkmark}>✓</Text>
+                  <Text style={styles.checkmark}>✓</Text>
                 )}
               </View>
-
+              <View style={styles.qtyBadge}>
+                <Text style={styles.qtyText}>x{item.quantity}</Text>
+              </View>
               {/* Item info */}
-              <View style={kitchenStyles.itemInfo}>
+              <View style={styles.itemInfo}>
                 <Text
                   style={[
-                    kitchenStyles.itemName,
-                    item.status === 'done' && kitchenStyles.itemNameDone,
+                    styles.itemName,
+                    item.status === 'done' && styles.itemNameDone,
                   ]}>
                   {item.name}
                 </Text>
                 <Text
                   style={[
-                    kitchenStyles.itemDetail,
-                    item.status === 'done' && kitchenStyles.itemDetailDone,
+                    styles.itemDetail,
+                    item.status === 'done' && styles.itemDetailDone,
                   ]}>
                   {item.type} · {item.size}
                 </Text>
               </View>
 
               {/* Quantity badge */}
-              <View style={kitchenStyles.qtyBadge}>
-                <Text style={kitchenStyles.qtyText}>x{item.quantity}</Text>
+
+              <View style={styles.qtyBadge}>
+                <Text style={styles.qtyText}>{item.price}</Text>
               </View>
             </TouchableOpacity>
           ))}
         </View>
+        <View>
+          {order?.total_price && (
+            <View style={styles.totalPriceContainer}>
+              <Text style={styles.totalPrice}>
+                Total: ₱{order?.total_price}
+              </Text>
+            </View>
+          )}
+        </View>
 
         {/* All done banner */}
         {allDone && (
-          <View style={kitchenStyles.readyBanner}>
-            <Text style={kitchenStyles.readyText}>✓ Ready for pickup</Text>
+          <View>
+            <View style={styles.readyBanner}>
+              <Text style={styles.readyText}>Ready for pickup</Text>
+            </View>
+            <View style={styles.complete}>
+              <Text style={styles.readyText}>Complete</Text>
+            </View>
           </View>
         )}
       </View>
     );
   };
-
+  ``;
   return (
-    <View style={kitchenStyles.container}>
-      <View style={kitchenStyles.header}>
-        <Text style={kitchenStyles.title}>🍳 Kitchen</Text>
-        <Text style={kitchenStyles.subtitle}>
-          {orders.length} active orders
-        </Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>🍳 Kitchen</Text>
+        <Text style={styles.subtitle}>{orders.length} active orders</Text>
       </View>
 
       {orders.length === 0 ? (
-        <View style={kitchenStyles.empty}>
-          <Text style={kitchenStyles.emptyText}>No active orders</Text>
+        <View style={styles.empty}>
+          <Text style={styles.emptyText}>No active orders</Text>
         </View>
       ) : (
         <FlatList
@@ -241,155 +257,5 @@ const KitchenScreen = () => {
     </View>
   );
 };
-
-const kitchenStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F0',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#1D1D1B',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  subtitle: {
-    fontSize: 13,
-    color: '#aaa',
-  },
-  empty: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#aaa',
-  },
-
-  // Order card
-  card: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 2,
-    borderColor: '#F5A623', // orange — in progress
-  },
-  cardAllDone: {
-    borderColor: '#1D9E75', // green — all done
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 2,
-  },
-  orderNumber: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#1D1D1B',
-  },
-  progress: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#888',
-  },
-  customerName: {
-    fontSize: 12,
-    color: '#555',
-    marginBottom: 2,
-  },
-  timeText: {
-    fontSize: 11,
-    color: '#aaa',
-    marginBottom: 10,
-  },
-
-  // Item rows
-  itemList: {
-    gap: 6,
-  },
-  itemRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#FFF8EE',
-  },
-  itemRowDone: {
-    backgroundColor: '#F0FBF7',
-  },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 1.5,
-    borderColor: '#F5A623',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxDone: {
-    backgroundColor: '#1D9E75',
-    borderColor: '#1D9E75',
-  },
-  checkmark: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: 'bold',
-  },
-  itemInfo: {
-    flex: 1,
-  },
-  itemName: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#1D1D1B',
-  },
-  itemNameDone: {
-    color: '#aaa',
-    textDecorationLine: 'line-through',
-  },
-  itemDetail: {
-    fontSize: 11,
-    color: '#888',
-    textTransform: 'capitalize',
-  },
-  itemDetailDone: {
-    color: '#bbb',
-  },
-  qtyBadge: {
-    backgroundColor: '#1D1D1B',
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  qtyText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: '600',
-  },
-
-  // Ready banner
-  readyBanner: {
-    marginTop: 10,
-    backgroundColor: '#E1F5EE',
-    borderRadius: 8,
-    padding: 8,
-    alignItems: 'center',
-  },
-  readyText: {
-    color: '#0F6E56',
-    fontWeight: '600',
-    fontSize: 13,
-  },
-});
 
 export default KitchenScreen;
