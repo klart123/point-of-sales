@@ -16,18 +16,18 @@ import styles from '../styles';
 
 const OrderListModal = ({
   visible,
-  onClose,
-  onSubmit,
+  onClose = () => {},
+  onSubmit = () => {},
+  onEdit = () => {},
 }: {
   visible: boolean;
   onClose: () => void;
   onSubmit: (customerName: string) => void;
+  onEdit: (item: any) => void;
 }) => {
   const {orderCustomerName, orders} = useSelector(
     (state: RootState) => state.orders,
   );
-
-  console.log('orders in modal', orders);
 
   const dispatch = useDispatch();
   const [customerName, setCustomerName] = useState(orderCustomerName);
@@ -75,6 +75,10 @@ const OrderListModal = ({
     onClose();
   };
 
+  const handleEdit = (item: any) => {
+    onEdit(item);
+  };
+
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.overlay}>
@@ -111,7 +115,12 @@ const OrderListModal = ({
                   data={groupedOrders}
                   keyExtractor={(item, index) => item.id.toString() + index}
                   renderItem={({item, index}) => (
-                    <View style={styles.itemRow}>
+                    <TouchableOpacity
+                      key={index}
+                      style={styles.itemRow}
+                      onPress={() => {
+                        handleEdit(item);
+                      }}>
                       <View style={styles.itemTextContainer}>
                         <View style={styles.itemTextPrice}>
                           <View style={styles.itemHeadPrice}>
@@ -168,15 +177,7 @@ const OrderListModal = ({
                           </>
                         )}
                       </View>
-
-                      <Pressable
-                        onPress={() =>
-                          dispatch(orderActions.removeOrder(index))
-                        }
-                        style={styles.removeButton}>
-                        <Text style={styles.removeText}>✕</Text>
-                      </Pressable>
-                    </View>
+                    </TouchableOpacity>
                   )}
                 />
 

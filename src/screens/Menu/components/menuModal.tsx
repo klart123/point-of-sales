@@ -33,9 +33,6 @@ type Props = {
 
 const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
   const {orders} = useSelector((state: RootState) => state.orders);
-  const [selectedTemp, setSelectedTemp] = useState('');
-  const [selectedSize, setSelectedSize] = useState('');
-  const [selectedPrice, setSelectedPrice] = useState<number>(0);
   const [selectedAddOns, setSelectedAddOns] = useState<
     {name: string; price: string}[]
   >([]);
@@ -73,33 +70,21 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
     return Array.from(map.values());
   }, [selectedItems]);
 
-  // ── Load existing order items when modal opens ─────────────────────────────
-
   useEffect(() => {
     if (!visible || !item) return;
 
-    // Find if this product already has items in the current order
     const existingOrder = orders?.find(
       o => o.id === item.id || o.sku === item.sku,
     );
 
     if (existingOrder?.items?.length > 0) {
-      // Pre-populate with existing items so user can modify them
       setSelectedItems(existingOrder.items);
       setIsUpdate(true);
     } else {
       setSelectedItems([]);
       setIsUpdate(false);
     }
-
-    if (item?.category === 'Pastry') {
-      setSelectedPrice(item.cost);
-      setSelectedTemp('Pastry');
-      setSelectedSize('small');
-    }
   }, [visible, item]);
-
-  // ── Handlers ───────────────────────────────────────────────────────────────
 
   const handleAddItem = (temp: string, size: string, price: string) => {
     setSelectedItems(prev =>
@@ -144,9 +129,6 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
   };
 
   const handleReset = () => {
-    setSelectedTemp('');
-    setSelectedSize('');
-    setSelectedPrice(0);
     setSelectedAddOns([]);
     setIsUpdate(false);
   };
@@ -168,7 +150,6 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
       onDismiss={onClose}>
       <View style={styles.overlay}>
         <View style={styles.modal}>
-          {/* Header — fixed */}
           <Text style={[styles.title, {paddingBottom: 4}]}>
             {name?.charAt(0).toUpperCase() + name?.slice(1)}
           </Text>
@@ -176,7 +157,6 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
             <Text style={styles.updateBadge}>Editing existing order</Text>
           )}
 
-          {/* Scrollable content */}
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{paddingBottom: 8}}

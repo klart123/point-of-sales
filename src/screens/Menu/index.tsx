@@ -1,14 +1,5 @@
-import React, {useState, useEffect, useCallback} from 'react';
-import {
-  FlatList,
-  View,
-  Text,
-  RefreshControl,
-  TouchableOpacity,
-  Dimensions,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, Dimensions, Alert, ActivityIndicator} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from './services';
 import {AppDispatch, RootState} from '../../redux/store';
@@ -19,12 +10,6 @@ import OrderListModal from './components/ordersListModal';
 import {useNavigation} from '@react-navigation/native';
 import Product from '../../components/Product';
 import {HeaderComponent} from '../../components';
-
-const screenWidth = Dimensions.get('window').width;
-const itemWidth = 120;
-const spacing = 16;
-
-const numColumns = Math.floor(screenWidth / (itemWidth + spacing));
 
 const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -43,6 +28,7 @@ const MenuScreen = () => {
   const [viewModal, setViewModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [orderModal, setOrderModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const loadProducts = () => {
     dispatch(services.getMenu());
@@ -97,8 +83,15 @@ const MenuScreen = () => {
       dispatch(
         orderActions.updateOrder({
           ...item,
+          isUpdate: false,
         }),
       );
+
+      if (isEditing) {
+        setViewModal(false);
+        setIsEditing(false);
+        setOrderModal(true);
+      }
     } else {
       dispatch(orderActions.addOrder(item));
     }
@@ -132,16 +125,27 @@ const MenuScreen = () => {
     setViewModal(true);
   };
 
-  const categoryStyles: {[key: string]: any} = {
-    Coffee: styles.categoryCoffee,
-    Matcha: styles.categoryMatcha,
-    Pastry: styles.categoryPastry,
-    'Coffee Matcha': styles.categoryCoffeeMatcha,
-    Soda: styles.categorySoda,
+  const handleCloseMenuModal = () => {
+    setViewModal(false);
+    if (isEditing) {
+      setIsEditing(false);
+      setOrderModal(true);
+    }
   };
 
   const handleHeaderPress = () => {
     setOrderModal(true);
+  };
+
+  const handleEditOrderItem = item => {
+    const productData = list
+      .flatMap(group => group.product_categories || [])
+      .flatMap(cat => cat.products || [])
+      .find(product => product.sku === item?.sku);
+
+    setOrderModal(false);
+    handleOpenModal(productData);
+    setIsEditing(true);
   };
 
   return (
@@ -158,13 +162,14 @@ const MenuScreen = () => {
       <MenuModal
         visible={viewModal}
         item={selectedItem}
-        onClose={() => setViewModal(false)}
+        onClose={handleCloseMenuModal}
         onSubmit={handleEditItem}
       />
       <OrderListModal
         visible={orderModal}
         onClose={() => setOrderModal(false)}
         onSubmit={handleSubmitOrder}
+        onEdit={handleEditOrderItem}
       />
       {loadingOrder && (
         <View style={styles.loadingOverlay}>
