@@ -98,6 +98,7 @@ const MenuScreen = () => {
   };
 
   const handleSubmitOrder = data => {
+    console.log('data', data);
     if (isEdit) {
       dispatch(
         services.updateOrder({
@@ -110,14 +111,7 @@ const MenuScreen = () => {
       return;
     }
 
-    return dispatch(
-      services.submitOrders({
-        customer_name: data,
-        items: orders,
-        notes: '',
-        is_paid: true,
-      }),
-    );
+    return dispatch(services.submitOrder(data));
   };
 
   const handleOpenModal = (item: any) => {

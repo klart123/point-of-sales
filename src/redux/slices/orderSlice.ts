@@ -65,7 +65,7 @@ const orderSlice = createSlice({
       state.orders = [];
     },
     orderStart: state => {
-      state.loading = true;
+      // state.loading = true;
       state.isSubmitted = false;
       state.message = '';
     },

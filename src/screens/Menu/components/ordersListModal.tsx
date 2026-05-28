@@ -32,6 +32,7 @@ const OrderListModal = ({
   const dispatch = useDispatch();
   const [customerName, setCustomerName] = useState(orderCustomerName);
   const [cash, setCash] = useState('0');
+  const [isGcash, setIsGcash] = useState(false);
 
   const total = orders.reduce((sum, order) => {
     const basePrice = parseFloat(order.totalPrice) || 0;
@@ -71,8 +72,10 @@ const OrderListModal = ({
   }, [orders]);
 
   const handleSubmit = () => {
-    onSubmit(customerName);
-    onClose();
+    console.log('orders to submit:', orders);
+    console.log('customerName:', customerName);
+    onSubmit({customerName, orders, cash, isGcash});
+    // onClose();
   };
 
   const handleEdit = (item: any) => {
@@ -221,11 +224,25 @@ const OrderListModal = ({
                 <Text>Exact Amount</Text>
               </TouchableOpacity>
             </View>
-            {cash !== '0' && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 5,
+                justifyContent: 'space-between',
+              }}>
               <Text style={styles.optionLabel}>
                 Change: ₱{(parseFloat(cash) - total).toFixed(2)}
               </Text>
-            )}
+              <TouchableOpacity
+                onPress={() => {
+                  setIsGcash(prev => !prev);
+                }}>
+                <Text style={{color: isGcash ? '#00a86b' : '#555'}}>
+                  {isGcash ? '✓ ' : ''}Paid with GCash
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.actions}>

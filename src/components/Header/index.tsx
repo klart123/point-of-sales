@@ -1,5 +1,5 @@
 import React, {useLayoutEffect} from 'react';
-import {TouchableOpacity, Text} from 'react-native';
+import {TouchableOpacity, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import styles from './styles';
 
@@ -30,16 +30,17 @@ const HeaderComponent: React.FC<Props> = ({
           {icon ? (
             <Text style={styles.settingsIcon}>⚙️</Text>
           ) : (
-            <Text
-              style={{
-                color: '#7af',
-                textAlign: 'center',
-                fontSize: 18,
-                fontWeight: 'bold',
-                padding: 15,
-              }}>
-              {label}
-            </Text>
+            <View>
+              <Text
+                style={{
+                  color: '#7af',
+                  textAlign: 'center',
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                }}>
+                {label}
+              </Text>
+            </View>
           )}
         </TouchableOpacity>
       ),
