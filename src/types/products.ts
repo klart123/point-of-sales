@@ -1,5 +1,3 @@
-export type ErrorPayload = string | Record<string, any>;
-
 export type Category = {
   id: number;
   name: string;

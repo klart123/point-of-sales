@@ -1,49 +1,27 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import {View, Text, FlatList, Alert} from 'react-native';
 import {io, Socket} from 'socket.io-client';
 import axiosInstance from '../../Api/axiosInstance';
 import {HeaderComponent} from '../../components';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import styles from './styles';
+import {renderOrderCard} from '../../components/RenderOrderCard';
+import {Order, OrderItem} from './types';
+import Orders from '../../components/Orders';
 
 const SOCKET_URL = 'http://192.168.5.7:3000';
-
-type OrderItem = {
-  id: number;
-  sku: string;
-  name: string;
-  type: string;
-  size: string;
-  price: number;
-  quantity: number;
-  status: 'pending' | 'done';
-};
-
-type Order = {
-  id: number;
-  order_number: string;
-  total_price: number;
-  customer_name: string | null;
-  status: string;
-  created_at: string;
-  items: OrderItem[];
-};
 
 const OrderList = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [updatedAt, setUpdatedAt] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
 
   const navigation = useNavigation();
 
-  // ── Socket connection ──────────────────────────────────────────────────
+  const activeOrders = orders.filter(
+    o => !['served', 'cancelled', 'completed'].includes(o.status),
+  );
 
   const sortItems = (items: OrderItem[]): OrderItem[] => {
     return [...items].sort((a, b) => {
@@ -119,6 +97,9 @@ const OrderList = () => {
       })
       .catch(error => {
         console.error('Failed to load orders', error);
+      })
+      .finally(() => {
+        setRefreshing(false);
       });
   };
 
@@ -150,151 +131,49 @@ const OrderList = () => {
       });
   };
 
-  // ── Render ─────────────────────────────────────────────────────────────
-
-  const renderOrderCard = ({item: order}: {item: Order}) => {
-    const allDone = order.items.every(i => i.status === 'done');
-    const doneCount = order.items.filter(i => i.status === 'done').length;
-    console.log('order', order);
-    return (
-      <TouchableOpacity
-        style={[styles.card, allDone && styles.cardAllDone]}
-        disabled={order.status !== 'completed'}>
-        {/* Order header */}
-        <View style={styles.cardHeader}>
-          <Text style={styles.orderNumber}>{order.order_number}</Text>
-          <Text style={styles.progress}>
-            {doneCount}/{order.items.length}
-          </Text>
-        </View>
-
-        {order.customer_name ? (
-          <Text style={styles.customerName}>{order.customer_name}</Text>
-        ) : null}
-
-        <Text style={styles.timeText}>
-          {new Date(order.created_at).toLocaleTimeString('en-PH', {
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
-        </Text>
-
-        {/* Item list */}
-        <View style={styles.itemList}>
-          {order.items.map(item => (
-            <TouchableOpacity
-              disabled={order.status === 'completed'}
-              key={item.id}
-              style={[
-                styles.itemRow,
-                item.status === 'done' && styles.itemRowDone,
-              ]}
-              onPress={() => handleItemPress(order, item)}
-              activeOpacity={0.7}>
-              {/* Checkbox */}
-
-              <View
-                style={[
-                  styles.checkbox,
-                  item.status === 'done' && styles.checkboxDone,
-                ]}>
-                {item.status === 'done' && (
-                  <Text style={styles.checkmark}>✓</Text>
-                )}
-              </View>
-              <View style={styles.qtyBadge}>
-                <Text style={styles.qtyText}>x{item.quantity}</Text>
-              </View>
-              {/* Item info */}
-              <View style={styles.itemInfo}>
-                <Text
-                  style={[
-                    styles.itemName,
-                    item.status === 'done' && styles.itemNameDone,
-                  ]}>
-                  {item.name}
-                </Text>
-                <Text
-                  style={[
-                    styles.itemDetail,
-                    item.status === 'done' && styles.itemDetailDone,
-                  ]}>
-                  {item.type} · {item.size}
-                </Text>
-              </View>
-
-              {/* Quantity badge */}
-
-              <View style={styles.qtyBadge}>
-                <Text style={styles.qtyText}>{item.price}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <View>
-          {order?.total_price && (
-            <View style={styles.totalPriceContainer}>
-              <Text style={styles.totalPrice}>
-                Total: ₱{order?.total_price}
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* All done banner */}
-        {order.status !== 'completed' && allDone && (
-          <View>
-            <View style={styles.readyBanner}>
-              <Text style={styles.readyText}>Ready for pickup</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.complete}
-              onPress={() => {
-                Alert.alert(
-                  'Complete Order',
-                  'Are you sure you want to mark this order as complete?',
-                  [
-                    {text: 'Cancel', style: 'cancel'},
-                    {
-                      text: 'Yes',
-                      onPress: () => {
-                        axiosInstance
-                          .patch(`/orders/${order.id}/status`, {
-                            status: 'completed',
-                          })
-                          .then(() => {
-                            loadActiveOrders();
-                            setOrders(prev =>
-                              prev.filter(o => o.id !== order.id),
-                            );
-                          })
-                          .catch(error => {
-                            console.error('Failed to complete order', error);
-                            Alert.alert('Error', 'Failed to complete order.');
-                          });
-                      },
-                    },
-                  ],
-                );
-              }}>
-              <Text style={styles.readyText}>Complete</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </TouchableOpacity>
-    );
-  };
-
   const handleHeaderPress = () => {
     navigation.navigate('Store' as never);
   };
 
+  const handleCompleteOrder = (order: Order) => {
+    Alert.alert(
+      'Complete Order',
+      'Are you sure you want to mark this order as complete?',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Yes',
+          onPress: () => {
+            axiosInstance
+              .patch(`/orders/${order.id}/status`, {
+                status: 'completed',
+              })
+              .then(() => {
+                loadActiveOrders();
+                setOrders((prev: any[]) => prev.filter(o => o.id !== order.id));
+              })
+              .catch(error => {
+                console.error('Failed to complete order', error);
+                Alert.alert('Error', 'Failed to complete order.');
+              });
+          },
+        },
+      ],
+    );
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadActiveOrders();
+  };
+
+  // ── Render ─────────────────────────────────────────────────────────────
   return (
     <View style={styles.container}>
       <HeaderComponent label="Add Order" onPress={handleHeaderPress} />
       <View style={styles.header}>
         <Text style={styles.title}>🍳 Kitchen</Text>
-        <Text style={styles.subtitle}>{orders.length} active orders</Text>
+        <Text style={styles.subtitle}>{activeOrders.length} active orders</Text>
       </View>
 
       {orders.length === 0 ? (
@@ -302,14 +181,13 @@ const OrderList = () => {
           <Text style={styles.emptyText}>No active orders</Text>
         </View>
       ) : (
-        <FlatList
-          data={orders}
-          keyExtractor={o => o.id.toString()}
-          renderItem={renderOrderCard}
-          extraData={updatedAt} // ← forces FlatList to re-render when this changes
-          //   numColumns={2}
-          contentContainerStyle={{padding: 8, gap: 8}}
-          //   columnWrapperStyle={{gap: 8}}
+        <Orders
+          orders={orders}
+          updatedAt={updatedAt}
+          onPressItem={handleItemPress}
+          onCompleteOrder={handleCompleteOrder}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
         />
       )}
     </View>
