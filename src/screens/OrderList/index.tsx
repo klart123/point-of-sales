@@ -172,7 +172,6 @@ const OrderList = () => {
     <View style={styles.container}>
       <HeaderComponent label="Add Order" onPress={handleHeaderPress} />
       <View style={styles.header}>
-        <Text style={styles.title}>🍳 Kitchen</Text>
         <Text style={styles.subtitle}>{activeOrders.length} active orders</Text>
       </View>
 

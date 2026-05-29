@@ -5,12 +5,16 @@ interface userState {
   data: object | null;
   loading: boolean;
   error: string | object | null;
+  orderDates: object | null;
+  datesError: object | null;
 }
 
 const initialState: userState = {
   data: null,
   loading: false,
   error: null,
+  orderDates: null,
+  datesError: null,
 };
 
 const orderSummarySlice = createSlice({
@@ -31,6 +35,19 @@ const orderSummarySlice = createSlice({
     ) => {
       state.loading = false;
       state.error = action.payload;
+    },
+    getDatesStart: state => {
+      state.loading = true;
+      state.orderDates = null;
+      state.datesError = null;
+    },
+    getDatesSuccess: (state, action: PayloadAction<object | null>) => {
+      state.loading = false;
+      state.orderDates = action.payload;
+    },
+    getDatesFailed: (state, action: PayloadAction<object | null>) => {
+      state.loading = false;
+      state.datesError = null;
     },
     resetSummary: state => {
       state.loading = false;

@@ -2,6 +2,7 @@ import axiosInstance from './axiosInstance';
 import * as types from '../types';
 import {AppDispatch} from '../redux/store';
 import {orderSummaryAction} from '../redux/slices/orderSummarySlice';
+import axios from 'axios';
 
 export const getOrderSummary = () => {
   return (dispatch: AppDispatch) => {
@@ -27,6 +28,29 @@ export const getOrderSummary = () => {
         return dispatch(
           orderSummaryAction.getSummaryFailed(
             error?.response?.data?.message || 'An error occurred',
+          ),
+        );
+      });
+  };
+};
+
+export const getSummaryDates = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(orderSummaryAction.getDatesStart());
+
+    return axiosInstance
+      .get('/orders/dates')
+      .then(response => {
+        if (response.status === 200 || response.status === 202) {
+          return dispatch(orderSummaryAction.getDatesSuccess(response.data));
+        }
+
+        return dispatch(orderSummaryAction.getDatesFailed(response.statusText));
+      })
+      .catch(error => {
+        return dispatch(
+          orderSummaryAction.getDatesFailed(
+            error?.response?.data?.message || 'An error Occured',
           ),
         );
       });

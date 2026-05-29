@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {COLORS} from '../../../theme/colors';
 
 export default StyleSheet.create({
   container: {flex: 1},
@@ -105,10 +106,9 @@ export default StyleSheet.create({
   // },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#1D1D1B',
   },
   title: {
     fontSize: 20,
@@ -117,7 +117,7 @@ export default StyleSheet.create({
   },
   subtitle: {
     fontSize: 13,
-    color: '#aaa',
+    color: COLORS.text,
   },
   empty: {
     flex: 1,
