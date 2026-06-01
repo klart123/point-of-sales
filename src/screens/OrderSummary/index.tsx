@@ -213,7 +213,6 @@ const OrderSummary = () => {
           />
         }
         renderItem={item => {
-          console.log('item', item);
           return (
             <DateRow
               item={item?.item}

@@ -71,7 +71,6 @@ const ProductScreen = () => {
   };
 
   const handleAddSubmit = (data: any) => {
-    console.log(data);
     dispatch(services.addProducts(data));
   };
 

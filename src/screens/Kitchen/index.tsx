@@ -9,9 +9,15 @@ import {renderOrderCard} from '../../components/RenderOrderCard';
 import {Order, OrderItem} from './types';
 import Orders from '../../components/Orders';
 
+import {RootState} from '../../redux/store';
+import {useSelector, useDispatch} from 'react-redux';
+import {getOrderStatuses} from '../OrderList/service';
+
 const SOCKET_URL = 'http://192.168.5.7:3000';
 
 const KitchenScreen = () => {
+  const dispatch = useDispatch();
+  const {orderStatuses} = useSelector((state: RootState) => state.orders);
   const [orders, setOrders] = useState<Order[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [updatedAt, setUpdatedAt] = useState(0);
@@ -31,10 +37,18 @@ const KitchenScreen = () => {
 
   const sortOrders = (orders: Order[]): Order[] => {
     return [...orders].sort((a, b) => {
-      const aDone = a.items.every(i => i.status === 'done');
-      const bDone = b.items.every(i => i.status === 'done');
-      if (aDone === bDone) return 0;
-      return aDone ? 1 : -1; // pending orders first
+      const priorityA = orderStatuses[a.status]?.priority ?? 999;
+      const priorityB = orderStatuses[b.status]?.priority ?? 999;
+
+      // Sort by status priority first
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+
+      // Within the same status, oldest first
+      return (
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
     });
   };
 
@@ -47,33 +61,47 @@ const KitchenScreen = () => {
   useEffect(() => {
     const s = io(SOCKET_URL);
 
+    dispatch(getOrderStatuses() as any);
+
     s.on('connect', () => {
       s.emit('join_room', 'kitchen');
       console.log('[Kitchen] Connected to socket');
     });
 
     s.on('new_order', (order: Order) => {
-      setOrders(prev => [{...order, items: sortItems(order.items)}, ...prev]);
+      setOrders(prev =>
+        // Add the new order then re-sort everything
+        sortOrders([...prev, {...order, items: sortItems(order.items)}]),
+      );
       setUpdatedAt(Date.now());
     });
 
     s.on('order_updated', (updated: Order) => {
       setOrders(prev => {
-        if (['served', 'cancelled'].includes(updated.status)) {
+        // Remove if no longer active
+        if (['served', 'cancelled', 'completed'].includes(updated.status)) {
           return prev.filter(o => o.id !== updated.id);
         }
+
         const sortedUpdated = {...updated, items: sortItems(updated.items)};
         const exists = prev.find(o => o.id === updated.id);
+
+        let newList;
         if (exists) {
-          return prev.map(o => (o.id === updated.id ? sortedUpdated : o));
+          // Replace the updated order in the list
+          newList = prev.map(o => (o.id === updated.id ? sortedUpdated : o));
+        } else {
+          newList = prev;
         }
-        return prev;
+
+        // Re-sort the whole list after every update
+        // so FIFO order is always maintained
+        return sortOrders(newList);
       });
       setUpdatedAt(Date.now());
     });
 
     setSocket(s);
-    loadActiveOrders();
 
     return () => {
       s.disconnect();
@@ -161,7 +189,6 @@ const KitchenScreen = () => {
   // ── Render ─────────────────────────────────────────────────────────────
   return (
     <View style={styles.container}>
-      <HeaderComponent label="Add Order" onPress={handleHeaderPress} />
       <View style={styles.header}>
         <Text style={styles.subtitle}>{activeOrders.length} active orders</Text>
       </View>
@@ -177,6 +204,7 @@ const KitchenScreen = () => {
           onPressItem={handleItemPress}
           onCompleteOrder={handleCompleteOrder}
           hideCompleteButton
+          orderStatuses={orderStatuses}
         />
       )}
     </View>

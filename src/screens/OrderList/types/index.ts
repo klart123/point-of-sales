@@ -6,7 +6,7 @@ export type OrderItem = {
   size: string;
   price: number;
   quantity: number;
-  status: 'pending' | 'done';
+  status: 'pending' | 'done' | 'done' | 'ready';
 };
 
 export type Order = {

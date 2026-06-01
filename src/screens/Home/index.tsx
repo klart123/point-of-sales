@@ -1,8 +1,10 @@
-import React, {useLayoutEffect} from 'react';
+import React, {useEffect, useLayoutEffect} from 'react';
 import {Text, FlatList, TouchableOpacity, Pressable} from 'react-native';
 import styles from './styles';
 import {HomeScreenProps, MenuItem} from './types';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {useDispatch} from 'react-redux';
+import * as orderServices from '../OrderList/service';
 
 const menuItems = [
   {label: 'Orders', screen: 'Orders', style: {backgroundColor: 'red'}},
@@ -12,6 +14,12 @@ const menuItems = [
 ];
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(orderServices.getOrderStatuses());
+  }, []);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (

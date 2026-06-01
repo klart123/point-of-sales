@@ -1,9 +1,10 @@
 // components/OrderList/index.tsx
 
 import React from 'react';
-import {FlatList, RefreshControl, ViewStyle} from 'react-native';
+import {FlatList, RefreshControl, ViewStyle, View, Text} from 'react-native';
 import {Order} from '../../types';
 import OrderCard from '../OrderCard';
+import styles from './styles';
 
 interface OrderListProps {
   orders: Order[];
@@ -16,6 +17,7 @@ interface OrderListProps {
   hideCompleteButton?: boolean;
   refreshing: boolean;
   onRefresh: () => void;
+  orderStatuses: object;
 }
 
 const OrderList: React.FC<OrderListProps> = ({
@@ -27,6 +29,7 @@ const OrderList: React.FC<OrderListProps> = ({
   hideCompleteButton = false,
   refreshing,
   onRefresh,
+  orderStatuses,
 }) => {
   return (
     <FlatList
@@ -46,12 +49,18 @@ const OrderList: React.FC<OrderListProps> = ({
           onPressItem={onPressItem}
           onCompleteOrder={onCompleteOrder}
           hideCompleteButton={hideCompleteButton}
+          orderStatuses={orderStatuses}
         />
       )}
       refreshControl={
         onRefresh ? (
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         ) : undefined
+      }
+      ListEmptyComponent={
+        <View style={styles.empty}>
+          <Text style={styles.emptyText}>No orders yet.</Text>
+        </View>
       }
     />
   );

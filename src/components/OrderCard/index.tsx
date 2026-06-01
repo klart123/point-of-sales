@@ -13,6 +13,7 @@ interface Props {
 
   onCompleteOrder: (order: Order) => void;
   hideCompleteButton: boolean;
+  orderStatuses: object;
 }
 
 const OrderCard: React.FC<Props> = ({
@@ -20,14 +21,19 @@ const OrderCard: React.FC<Props> = ({
   onPressItem,
   onCompleteOrder,
   hideCompleteButton,
+  orderStatuses,
 }) => {
   const allDone = order.items.every(i => i.status === 'done');
 
   const doneCount = order.items.filter(i => i.status === 'done').length;
 
+  const borderColor = orderStatuses[order.status]?.color || '#000';
   return (
     <TouchableOpacity
-      style={[styles.card, allDone && styles.cardAllDone]}
+      style={[
+        styles.card,
+        {borderColor: orderStatuses[order.status]?.color || '#000'},
+      ]}
       disabled={order.status === 'completed'}
       onPress={() => {
         console.log('navigate to order', order);

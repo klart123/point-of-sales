@@ -10,7 +10,6 @@ export const getMenu = () => {
     axiosInstance
       .get('/products/grouped')
       .then(response => {
-        console.log('response:', response);
         if (response?.status === 200) {
           return dispatch(menuSlice.menuSuccess(response.data));
         }
@@ -23,64 +22,6 @@ export const getMenu = () => {
   };
 };
 
-// export const submitOrder =
-//   (data: {
-//     cash: string;
-//     customerName: string;
-//     isGcash: boolean;
-//     orders: any[];
-//   }) =>
-//   async (dispatch: AppDispatch) => {
-//     dispatch(orderActions.orderStart());
-
-//     // Transform your orders array into flat order_items
-//     const items = data.orders.flatMap(order => {
-//       // Group items by temp+size to calculate quantity
-//       const grouped = new Map<string, {count: number; price: number}>();
-
-//       order.items.forEach((item: any) => {
-//         const key = `${item.temp}-${item.size}`;
-//         if (!grouped.has(key)) {
-//           grouped.set(key, {count: 0, price: item.price});
-//         }
-//         grouped.get(key)!.count += 1;
-//       });
-
-//       // Map grouped items to order_items shape
-//       return Array.from(grouped.entries()).map(([key, val]) => {
-//         const [temp, size] = key.split('-');
-//         return {
-//           sku: order.sku,
-//           name: order.name,
-//           type: temp, // hot / cold / blended → type column
-//           size: size, // 8oz / 16oz / 22oz → size column
-//           price: val.price,
-//           quantity: val.count,
-//         };
-//       });
-//     });
-
-//     const payload = {
-//       customer_name: data.customerName || null,
-//       payment_method: data.isGcash ? 'gcash' : 'cash',
-//       items,
-//     };
-
-//     console.log('payload to submit:', payload);
-
-//     axiosInstance
-//       .post('/orders', payload)
-//       .then(response => {
-//         console.log('response', response);
-//         if (response?.status === 200 || response?.status === 201) {
-//           return dispatch(orderActions.orderSuccess(response.data));
-//         }
-//       })
-//       .catch(error => {
-//         console.log('error', error);
-//         dispatch(orderActions.orderFailed(error.data.error));
-//       });
-//   };
 export const submitOrder =
   (data: {
     cash: string;
@@ -108,8 +49,6 @@ export const submitOrder =
       payment_method: data.isGcash ? 'gcash' : 'cash',
       items,
     };
-
-    console.log('payload to submit:', payload);
 
     axiosInstance
       .post('/orders', payload)

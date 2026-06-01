@@ -68,3 +68,35 @@ export const resetUpdateOrders = () => {
     dispatch(orderActions.resetUpdateOrder());
   };
 };
+
+export const getOrderStatuses = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(orderActions.getStatusesStart());
+
+    axiosInstance
+      .get(`/orders/statuses`)
+      .then(response => {
+        if (response.status === 200 || response.status === 201) {
+          const statuses = response.data;
+
+          // ✅ convert to map ONCE here
+          const statusMap = Object.fromEntries(
+            statuses.map((s: any) => [
+              s.status,
+              {
+                priority: s.priority,
+                color: s.color,
+                label: s.label,
+              },
+            ]),
+          );
+          return dispatch(orderActions.getStatusesSuccess(statusMap));
+        }
+
+        return dispatch(orderActions.getStatusesFailed(response.data));
+      })
+      .catch(error => {
+        return dispatch(orderActions.getStatusesFailed(error.data));
+      });
+  };
+};

@@ -72,8 +72,6 @@ const OrderListModal = ({
   }, [orders]);
 
   const handleSubmit = () => {
-    console.log('orders to submit:', orders);
-    console.log('customerName:', customerName);
     onSubmit({customerName, orders, cash, isGcash});
     // onClose();
   };

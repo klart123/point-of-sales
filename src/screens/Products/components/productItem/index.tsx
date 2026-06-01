@@ -13,7 +13,6 @@ import {products} from '../../../../types';
 const ProductItem: React.FC<products.ProductItemProps> = ({item}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const {name, variants, product_categories} = item;
-  console.log('item', item);
   const handlePress = () => {
     setModalVisible(true);
   };

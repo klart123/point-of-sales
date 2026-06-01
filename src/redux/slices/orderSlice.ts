@@ -28,6 +28,9 @@ interface OrderState {
   orderCustomerName: string;
   isEditUpdated: boolean;
   message: string;
+  isStatusesPending: boolean;
+  orderStatusesError: string;
+  orderStatuses: object;
 }
 
 const initialState: OrderState = {
@@ -43,6 +46,9 @@ const initialState: OrderState = {
   orderCustomerName: '',
   isEditUpdated: false,
   message: 'string',
+  isStatusesPending: false,
+  orderStatusesError: '',
+  orderStatuses: [],
 };
 
 const orderSlice = createSlice({
@@ -162,6 +168,23 @@ const orderSlice = createSlice({
           item.status = currentStatus === 'pending' ? 'completed' : 'pending';
         }
       }
+    },
+    getStatusesStart: state => {
+      state.isStatusesPending = true;
+    },
+    getStatusesSuccess: (
+      state,
+      action: PayloadAction<UpdateItemStatusPayload>,
+    ) => {
+      state.isStatusesPending = false;
+      state.orderStatuses = action.payload;
+    },
+    getStatusesFailed: (
+      state,
+      action: PayloadAction<UpdateItemStatusPayload>,
+    ) => {
+      state.isStatusesPending = false;
+      state.orderStatusesError = action.payload;
     },
     resetEditOrder: state => {
       state.isEdit = false;
