@@ -1,5 +1,5 @@
 import React, {useEffect, useLayoutEffect} from 'react';
-import {Text, FlatList, TouchableOpacity, Pressable} from 'react-native';
+import {View, Text, FlatList, TouchableOpacity, Pressable} from 'react-native';
 import styles from './styles';
 import {HomeScreenProps, MenuItem} from './types';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -11,6 +11,11 @@ const menuItems = [
   {label: 'Summary', screen: 'OrderSummary', style: {backgroundColor: '#12a'}},
   {label: 'Products', screen: 'Products', style: {backgroundColor: '#4CAF50'}},
   {label: 'Kitchen', screen: 'Kitchen', style: {backgroundColor: '#FF9800'}},
+  {
+    label: 'Add Product',
+    screen: 'AddProduct',
+    style: {backgroundColor: '#2196F3'},
+  },
 ];
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
@@ -41,13 +46,15 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   );
 
   return (
-    <FlatList
-      data={menuItems}
-      keyExtractor={(item, index) => index.toString()}
-      numColumns={2}
-      contentContainerStyle={styles.list}
-      renderItem={renderItem}
-    />
+    <View style={styles.container}>
+      <FlatList
+        data={menuItems}
+        keyExtractor={(item, index) => index.toString()}
+        numColumns={2}
+        contentContainerStyle={styles.list}
+        renderItem={renderItem}
+      />
+    </View>
   );
 };
 

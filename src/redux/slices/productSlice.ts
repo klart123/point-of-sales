@@ -106,6 +106,19 @@ const productSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    addProductCategoryStart: state => {
+      state.loading = true;
+    },
+    addProductCategorySuccess: state => {
+      state.loading = false;
+    },
+    addProductCategoryFailed: (
+      state,
+      action: PayloadAction<products.ErrorPayload>,
+    ) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
     resetCategories: state => {
       state.categories = [];
     },

@@ -9,4 +9,5 @@ export type RootStackParamList = {
   Profile: undefined;
   OrderSummary: any;
   Kitchen: undefined;
+  AddProduct: any;
 };

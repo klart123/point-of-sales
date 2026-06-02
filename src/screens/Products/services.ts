@@ -132,6 +132,26 @@ export const getProductsGrouped = () => {
   };
 };
 
+export const addProductCategory = (payload: any) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productActions.addProductCategoryStart());
+    axiosInstance
+      .post('/product-categories', payload)
+      .then(response => {
+        if (response?.status) {
+          return dispatch(
+            productActions.addProductCategorySuccess(response?.data),
+          );
+        }
+
+        return dispatch(productActions.addProductCategoryFailed(response));
+      })
+      .catch(error => {
+        dispatch(productActions.addProductCategoryFailed(error));
+      });
+  };
+};
+
 export const resetCategories = () => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.resetCategories());

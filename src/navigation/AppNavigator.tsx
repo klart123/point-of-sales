@@ -4,6 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import * as screens from '../index';
 import {navigation} from '../types';
 import SplashScreen from 'react-native-splash-screen';
+import {COLORS} from '../theme/colors';
 
 const Stack = createNativeStackNavigator<navigation.RootStackParamList>();
 
@@ -14,7 +15,14 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator
+        initialRouteName="Login"
+        screenOptions={{
+          headerStyle: {backgroundColor: COLORS.primary},
+          headerTitleStyle: {color: COLORS.text},
+          headerBackTitleStyle: {color: COLORS.text},
+          headerTintColor: COLORS.text,
+        }}>
         <Stack.Screen name="Login" component={screens.LoginScreen} />
         <Stack.Screen name="Home" component={screens.HomeScreen} />
         <Stack.Screen name="Details" component={screens.DetailsScreen} />
@@ -25,6 +33,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Profile" component={screens.ProfileScreen} />
         <Stack.Screen name="OrderSummary" component={screens.OrderSummary} />
         <Stack.Screen name="Kitchen" component={screens.KitchenScreen} />
+        <Stack.Screen name="AddProduct" component={screens.AddProductScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

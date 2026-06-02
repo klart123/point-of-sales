@@ -14,8 +14,10 @@ import styles from './styles';
 import Product from '../../components/Product';
 import ProductItem from '../../components/ProductItem';
 import ProductModal from './components/productModal';
+import {useNavigation} from '@react-navigation/native';
 
 const ProductScreen = () => {
+  const navigation = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
   const {loading, productsGrouped, hasMore, isAddingLoading, isAddingSuccess} =
     useSelector((state: RootState) => state.products);
@@ -67,7 +69,7 @@ const ProductScreen = () => {
   };
 
   const handleAddModal = () => {
-    setAddModal(true);
+    navigation.navigate('AddProduct');
   };
 
   const handleAddSubmit = (data: any) => {

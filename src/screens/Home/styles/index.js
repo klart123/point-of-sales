@@ -1,12 +1,12 @@
 // HomeScreen.styles.ts
 import {StyleSheet} from 'react-native';
+import {COLORS} from '../../../theme/colors';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f8f9fa',
+    justifyContent: 'center',
+    backgroundColor: COLORS.primary,
   },
   title: {
     fontSize: 24,
