@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {COLORS} from '../../theme/colors';
 
 export default StyleSheet.create({
   container: {flex: 1},
@@ -12,7 +13,7 @@ export default StyleSheet.create({
     elevation: 2,
   },
   customerName: {
-    fontSize: 16,
+    fontSize: 12,
     color: '#555',
     marginBottom: 2,
     fontWeight: '600',
@@ -148,20 +149,20 @@ export default StyleSheet.create({
     marginBottom: 2,
   },
   orderNumber: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '700',
     color: '#1D1D1B',
   },
   totalPriceContainer: {
     flex: 1,
     marginTop: 4,
-    padding: 6,
-    backgroundColor: '#F0F0F0',
+    padding: 10,
+    backgroundColor: COLORS.secondary,
     borderRadius: 6,
     alignSelf: 'flex-end',
   },
   totalPrice: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '700',
     color: '#1D1D1B',
   },
@@ -214,7 +215,7 @@ export default StyleSheet.create({
     flex: 1,
   },
   itemName: {
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: '600',
     color: '#1D1D1B',
   },
@@ -223,22 +224,34 @@ export default StyleSheet.create({
     textDecorationLine: 'line-through',
   },
   itemDetail: {
-    fontSize: 11,
-    color: '#888',
+    fontSize: 15,
     textTransform: 'capitalize',
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    backgroundColor: COLORS.tertiary,
+    marginTop: 4,
   },
   itemDetailDone: {
     color: '#bbb',
   },
+  itemDetailsRow: {
+    flexDirection: 'row',
+    gap: 5,
+  },
   qtyBadge: {
-    // backgroundColor: '#E1F5EE',
+    // backgroundColor: COLORS.tertiary,
     borderRadius: 6,
     padding: 10,
   },
   qtyText: {
     color: '#1c1c1c',
-    fontSize: 11,
+    fontSize: 14,
     fontWeight: '600',
+  },
+  priceBadge: {
+    borderRadius: 6,
+    padding: 10,
   },
 
   // Ready banner

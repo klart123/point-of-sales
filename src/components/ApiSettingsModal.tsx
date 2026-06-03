@@ -9,7 +9,13 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import {getApiBaseUrl, saveApiBaseUrl, removeApiBaseUrl} from '../../env';
+import {
+  getApiBaseURL,
+  saveApiBaseUrl,
+  removeApiBaseUrl,
+  saveSocketUrl,
+  removeSocketeUrl,
+} from '../../env';
 import {useDispatch} from 'react-redux';
 import {apiActions} from '../redux/slices/apiSlice';
 
@@ -42,6 +48,10 @@ const ApiSettingsModal = ({
       Alert.alert('Invalid URL', 'Please enter a valid API URL');
       return;
     }
+    dispatch(apiActions.setSocketURL(url));
+
+    await removeSocketeUrl();
+    await saveSocketUrl(url);
 
     dispatch(apiActions.setBaseURL(`${url}/api`));
     await removeApiBaseUrl();

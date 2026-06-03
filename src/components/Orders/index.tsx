@@ -1,5 +1,3 @@
-// components/OrderList/index.tsx
-
 import React from 'react';
 import {FlatList, RefreshControl, ViewStyle, View, Text} from 'react-native';
 import {Order} from '../../types';

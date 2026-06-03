@@ -1,222 +1,181 @@
+require 'dotenv'
+
+# Load environment variables
+Dotenv.load('.env.release')
+
+default_platform(:android)
+
 platform :android do
-    desc "Run Build App task"
-    private_lane :run_build_app do |options|
-        build_android_app(
-            task: "assemble", 
-            project_dir: 'android/', 
-            build_type: "Release", 
-            print_command: false,
-            properties: {
-                "RELEASE_STORE_FILE" => ENV["RELEASE_STORE_FILE"],
-                "RELEASE_KEY_ALIAS" => ENV["RELEASE_KEY_ALIAS"],
-                "RELEASE_STORE_PASSWORD" => ENV["RELEASE_STORE_PASSWORD"],
-                "RELEASE_KEY_PASSWORD" => ENV["RELEASE_KEY_PASSWORD"]
-            }
-        )
+
+  desc "Increment Android version"
+  lane :increment_version do |options|
+    gradle_file = "android/app/build.gradle"
+
+    current_version_name = ENV['ANDROID_VERSION_NAME']
+    current_version_code = ENV['ANDROID_VERSION_CODE'].to_i
+
+    UI.message("Current version name: #{current_version_name}")
+    UI.message("Current version code: #{current_version_code}")
+
+    parts = current_version_name.split('.').map(&:to_i)
+    bump_type = options[:bump] || "patch"
+
+    case bump_type
+    when "major"
+      parts[0] += 1
+      parts[1] = 0
+      parts[2] = 0
+    when "minor"
+      parts[1] += 1
+      parts[2] = 0
+    else
+      parts[2] = (parts[2] || 0) + 1
     end
 
-    desc 'Upload the APK to Firebase App Distribution.'
-    private_lane :upload_to_fad do |options|
-        release_notes = "en.txt"
-        firebase_app_distribution(
-            app: ENV["APP_ID_ANDROID"],
-            android_artifact_type: "APK",
-            groups: ENV["TESTER_GROUPS"],
-            firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
-            release_notes_file: "fastlane/release-notes/#{release_notes}",
-            android_artifact_path: "android/app/build/outputs/apk/release/app-release.apk"
-        )
-    end
+    new_version_name = parts.join('.')
+    new_version_code = current_version_code + 1
 
-    # desc "Auto-increment Android versionName and versionCode"
-    # lane :increment_version do |options|
-    #     gradle_file = "android/app/build.gradle"
-        
-    #     # Get current version details
-    #     current_version_name = android_get_version_name(gradle_file: gradle_file)
-    #     current_version_code = android_get_version_code(gradle_file: gradle_file).to_i
-        
-    #     UI.message("Current version name: #{current_version_name}")
-    #     UI.message("Current version code: #{current_version_code}")
-        
-    #     # Parse current version name (assumes format x.y.z)
-    #     parts = current_version_name.split('.').map(&:to_i)
-    #     bump_type = options[:bump] || "patch"
-        
-    #     case bump_type
-    #     when "major"
-    #         parts[0] += 1
-    #         parts[1] = 0
-    #         parts[2] = 0
-    #     when "minor"
-    #         parts[1] += 1
-    #         parts[2] = 0
-    #     else # patch
-    #         parts[2] = (parts[2] || 0) + 1
-    #     end
-        
-    #     new_version_name = parts.join('.')
-    #     new_version_code = current_version_code + 1
-        
-    #     # Set new version name and code
-    #     android_set_version_name(version_name: new_version_name, gradle_file: gradle_file)
-    #     android_set_version_code(version_code: new_version_code, gradle_file: gradle_file)
-        
-    #     UI.success("Updated to versionName #{new_version_name}, versionCode #{new_version_code}")
-       
-    # desc "Auto-increment Android versionName and versionCode"
-    lane :increment_version do |options|
-        gradle_file = "android/app/build.gradle"
-        
-        # Get current version details
-        current_version_name = ENV['ANDROID_VERSION_NAME']
-        current_version_code = ENV['ANDROID_VERSION_CODE'].to_i
-        
-        UI.message("Current version name: #{current_version_name}")
-        UI.message("Current version code: #{current_version_code}")
-        
-        # Parse current version name (assumes format x.y.z)
-        parts = current_version_name.split('.').map(&:to_i)
-        bump_type = options[:bump] || "patch"
-        
-        case bump_type
-        when "major"
-            parts[0] += 1
-            parts[1] = 0
-            parts[2] = 0
-        when "minor"
-            parts[1] += 1
-            parts[2] = 0
-        else # patch
-            parts[2] = (parts[2] || 0) + 1
-        end
-        
-        new_version_name = parts.join('.')
-        new_version_code = current_version_code + 1
-        
-        # Set new version name and code
-        android_set_version_name(version_name: new_version_name, gradle_file: gradle_file)
-        android_set_version_code(version_code: new_version_code, gradle_file: gradle_file)
-        
-        # Read the current .env file content
-        env_file = File.read('.env')
+    android_set_version_name(
+      gradle_file: gradle_file,
+      version_name: new_version_name
+    )
 
-        # Update only VERSION_CODE and VERSION_NAME, while preserving other variables
-        env_file.gsub!(/ANDROID_VERSION_CODE=\d+/, "ANDROID_VERSION_CODE=#{new_version_code}")
-        env_file.gsub!(/ANDROID_VERSION_NAME=[^\n]+/, "ANDROID_VERSION_NAME=#{new_version_name}")
+    android_set_version_code(
+      gradle_file: gradle_file,
+      version_code: new_version_code
+    )
 
-        # Write the modified content back to the .env file
-        File.open('.env', 'w') { |file| file.puts env_file }
-          
+    env_file = File.read('.env')
 
-        UI.success("Updated to versionName #{new_version_name}, versionCode #{new_version_code}")
-       
+    env_file.gsub!(
+      /ANDROID_VERSION_CODE=\d+/,
+      "ANDROID_VERSION_CODE=#{new_version_code}"
+    )
 
-    end
-    
+    env_file.gsub!(
+      /ANDROID_VERSION_NAME=[^\n]+/,
+      "ANDROID_VERSION_NAME=#{new_version_name}"
+    )
 
-    desc "Build the APK"
-    lane :build do |options|
-        run_build_app(options) 
-    end
-  
-    desc 'Upload the APK to Firebase App Distribution.'
-    lane :upload do |options|
-        upload_to_fad(options) 
-    end
-  
-    desc 'Deploy the APK to Firebase App Distribution.'
-    lane :deploy do |options|
-        increment_version()
-        build(options) 
-        upload(options) 
-    end
+    File.write('.env.release', env_file)
+
+    UI.success(
+      "Updated versionName=#{new_version_name} versionCode=#{new_version_code}"
+    )
+  end
+
+  desc "Build Android Release APK"
+  lane :build do
+
+    gradle(
+      task: "clean",
+      project_dir: "android"
+    )
+
+    build_android_app(
+      task: "assemble",
+      project_dir: "android",
+      build_type: "Release",
+      properties: {
+        "RELEASE_STORE_FILE" => ENV["RELEASE_STORE_FILE"],
+        "RELEASE_KEY_ALIAS" => ENV["RELEASE_KEY_ALIAS"],
+        "RELEASE_STORE_PASSWORD" => ENV["RELEASE_STORE_PASSWORD"],
+        "RELEASE_KEY_PASSWORD" => ENV["RELEASE_KEY_PASSWORD"]
+      }
+    )
+  end
+
+  desc "Upload Android APK to Firebase"
+  lane :upload do
+
+    apk_path = Actions.lane_context[
+      SharedValues::GRADLE_APK_OUTPUT_PATH
+    ]
+
+    firebase_app_distribution(
+      app: ENV["APP_ID_ANDROID"],
+      groups: ENV["TESTER_GROUPS"],
+      firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
+      android_artifact_type: "APK",
+      android_artifact_path: apk_path,
+      release_notes_file: "fastlane/release-notes/en.txt"
+    )
+  end
+
+  desc "Deploy Android Release"
+  lane :deploy do |options|
+    increment_version(bump: options[:bump] || "patch")
+    build
+    upload
+  end
 
 end
 
 platform :ios do
 
-    desc "Run Build App task"
-    private_lane :run_build_app do |options|
-        build_ios_app(
-            scheme: "MIMSConsult2_0 #{options[:scheme]}", 
-            workspace: './ios/MimsMobileApp.xcworkspace', 
-            output_name: "MIMSConsult #{options[:scheme]}.ipa", 
-            output_directory: "./ios/build_ipa", 
-            silent: true,
-            clean: true,
-            export_method: "ad-hoc",
-            xcargs: "-allowProvisioningUpdates"
-        )
-    end
+  private_lane :build_app_scheme do |options|
 
-    desc 'Upload the IPA to Firebase App Distribution.'
-    private_lane :upload_to_fad do |options|
-        scheme = options[:scheme]
-        env_key = "APP_ID_IOS_#{scheme.upcase}"
+    scheme = options[:scheme]
 
-        if scheme === "ID"
-            release_notes = "id.txt"
-        elsif scheme === "VN"
-            release_notes = "vn.txt"
-        else
-            release_notes = "en.txt"
-        end
+    build_ios_app(
+      scheme: scheme,
+      workspace: "./ios/PointOfSsales.xcworkspace",
+      clean: true,
+      export_method: "development",
+      output_directory: "./ios/build_ipa",
+      output_name: "#{scheme}.ipa",
+      xcargs: "-allowProvisioningUpdates",
+    )
+  end
 
-        firebase_app_distribution(
-            app: ENV[env_key],
-            groups: ENV["TESTER_GROUPS"],
-            firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
-            ipa_path: "ios/build_ipa/MIMSConsult #{scheme}.ipa",
-            release_notes_file: "fastlane/release-notes/#{release_notes}"
-        )
-    end
+  private_lane :upload_app_scheme do |options|
 
-    desc "Build the IPA"
-    lane :build do |options|
-        scheme = options[:scheme] || "all"
-        
-        # Clean build_ipa directory
-        sh("rm -rf ../ios/build_ipa")
-        sh("mkdir -p ../ios/build_ipa")
+    scheme = options[:scheme]
 
-        if scheme === "all"
-            run_build_app(scheme: "TH")
-            run_build_app(scheme: "HK")
-            run_build_app(scheme: "PH")
-            run_build_app(scheme: "MY")
-            run_build_app(scheme: "ID")
-            run_build_app(scheme: "IN")
-            run_build_app(scheme: "VN")
-            run_build_app(scheme: "SG")
-        else
-            run_build_app(scheme: scheme)
-        end
-    end
+    firebase_app_distribution(
+      app: ENV["APP_ID_IOS"],
+      groups: ENV["TESTER_GROUPS"],
+      firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
+      ipa_path: "./ios/build_ipa/#{scheme}.ipa",
+      release_notes_file: "fastlane/release-notes/en.txt"
+    )
+  end
 
-    desc 'Upload the IPA to Firebase App Distribution.'
-    lane :upload do |options|
-        scheme = options[:scheme] || "all"
+  desc "Build iOS"
+  lane :build do |options|
 
-        if scheme === "all" 
-            upload_to_fad(scheme: "TH")
-            upload_to_fad(scheme: "HK")
-            upload_to_fad(scheme: "PH")
-            upload_to_fad(scheme: "MY")
-            upload_to_fad(scheme: "ID")
-            upload_to_fad(scheme: "IN")
-            upload_to_fad(scheme: "VN")
-            upload_to_fad(scheme: "SG")
-        else
-            upload_to_fad(scheme: scheme)
-        end
-    end
+    scheme = options[:scheme] || "Release PointOfSsales"
 
-    desc 'Deploy the IPA to Firebase App Distribution.'
-    lane :deploy do |options|
-        scheme = options[:scheme] || "all"
+    sh("rm -rf ios/build_ipa")
+    sh("mkdir -p ios/build_ipa")
 
-        build(scheme: scheme)
-        upload(scheme: scheme)
-    end
+    build_app_scheme(
+      scheme: scheme
+    )
+  end
+
+  desc "Upload iOS IPA"
+  lane :upload do |options|
+
+    scheme = options[:scheme] || "Release PointOfSsales"
+
+    upload_app_scheme(
+      scheme: scheme
+    )
+  end
+
+  desc "Deploy iOS to Firebase"
+  lane :deploy do |options|
+
+    scheme = options[:scheme] || "Release PointOfSsales"
+
+    build(
+      scheme: scheme
+    )
+
+    upload(
+      scheme: scheme
+    )
+  end
+
 end

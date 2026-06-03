@@ -11,10 +11,9 @@ import {RootState} from '../../redux/store';
 import {useSelector, useDispatch} from 'react-redux';
 import {getOrderStatuses} from '../../services';
 
-const SOCKET_URL = 'http://192.168.5.7:3000';
-
 const KitchenScreen = () => {
   const dispatch = useDispatch();
+  const {baseURL} = useSelector((state: RootState) => state.api);
   const {orderStatuses} = useSelector((state: RootState) => state.orders);
   const [orders, setOrders] = useState<Order[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -59,7 +58,7 @@ const KitchenScreen = () => {
   );
 
   useEffect(() => {
-    const s = io(SOCKET_URL);
+    const s = io(baseURL);
 
     dispatch(getOrderStatuses() as any);
 

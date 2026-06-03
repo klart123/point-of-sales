@@ -21,7 +21,7 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 [bundle exec] fastlane android increment_version
 ```
 
-
+Increment Android version
 
 ### android build
 
@@ -29,7 +29,7 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 [bundle exec] fastlane android build
 ```
 
-Build the APK
+Build Android Release APK
 
 ### android upload
 
@@ -37,7 +37,7 @@ Build the APK
 [bundle exec] fastlane android upload
 ```
 
-Upload the APK to Firebase App Distribution.
+Upload Android APK to Firebase
 
 ### android deploy
 
@@ -45,7 +45,7 @@ Upload the APK to Firebase App Distribution.
 [bundle exec] fastlane android deploy
 ```
 
-Deploy the APK to Firebase App Distribution.
+Deploy Android Release
 
 ----
 
@@ -58,7 +58,7 @@ Deploy the APK to Firebase App Distribution.
 [bundle exec] fastlane ios build
 ```
 
-Build the IPA
+Build iOS
 
 ### ios upload
 
@@ -66,7 +66,7 @@ Build the IPA
 [bundle exec] fastlane ios upload
 ```
 
-Upload the IPA to Firebase App Distribution.
+Upload iOS IPA
 
 ### ios deploy
 
@@ -74,7 +74,7 @@ Upload the IPA to Firebase App Distribution.
 [bundle exec] fastlane ios deploy
 ```
 
-Deploy the IPA to Firebase App Distribution.
+Deploy iOS to Firebase
 
 ----
 

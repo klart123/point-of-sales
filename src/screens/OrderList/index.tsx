@@ -5,21 +5,19 @@ import axiosInstance from '../../Api/axiosInstance';
 import {HeaderComponent} from '../../components';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import styles from './styles';
-import {Order, OrderItem} from './types';
+import {Order, OrderItem} from '../../types';
 import {Orders, ContainerView} from '../../components';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from '../../services';
 import {RootState} from '../../redux/store';
 
-const SOCKET_URL = 'http://192.168.5.7:3000';
-
 const OrderList = () => {
+  const {socketURL} = useSelector((state: RootState) => state.api);
   const {orderStatuses} = useSelector((state: RootState) => state.orders);
   const [orders, setOrders] = useState<Order[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [updatedAt, setUpdatedAt] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -55,13 +53,15 @@ const OrderList = () => {
   useFocusEffect(
     useCallback(() => {
       loadActiveOrders();
+      console.log('baseURL', socketURL);
     }, []),
   );
 
   useEffect(() => {
-    const s = io(SOCKET_URL);
+    console.log('baseURL', socketURL);
+    const s = io(socketURL);
 
-    dispatch(services.getOrderStatuses() as any);
+    dispatch(services.getOrderStatuses());
 
     s.on('connect', () => {
       s.emit('join_room', 'kitchen');
@@ -203,7 +203,7 @@ const OrderList = () => {
   };
 
   const onRefresh = () => {
-    dispatch(services.getOrderStatuses() as any);
+    dispatch(services.getOrderStatuses());
     setRefreshing(true);
     loadActiveOrders();
   };
@@ -215,7 +215,6 @@ const OrderList = () => {
       <View style={styles.header}>
         <Text style={styles.subtitle}>{activeOrders.length} active orders</Text>
       </View>
-
       <Orders
         orders={orders}
         updatedAt={updatedAt}
