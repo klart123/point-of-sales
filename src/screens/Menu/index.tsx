@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {View, Dimensions, Alert, ActivityIndicator} from 'react-native';
+import {View, Alert, ActivityIndicator} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import * as services from './services';
+import * as services from '../../services';
 import {AppDispatch, RootState} from '../../redux/store';
 import styles from './styles';
 import MenuModal from './components/menuModal';
@@ -9,7 +9,7 @@ import {orderActions} from '../../redux/slices/orderSlice';
 import OrderListModal from './components/ordersListModal';
 import {useNavigation} from '@react-navigation/native';
 import Product from '../../components/Product';
-import {HeaderComponent} from '../../components';
+import {HeaderComponent, ContainerView} from '../../components';
 
 const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -143,7 +143,7 @@ const MenuScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ContainerView style={styles.container}>
       <HeaderComponent label="Orders" onPress={handleHeaderPress} />
       <View style={styles.productContainer}>
         <Product
@@ -170,7 +170,7 @@ const MenuScreen = () => {
           <ActivityIndicator size="large" color="#1aF" />
         </View>
       )}
-    </View>
+    </ContainerView>
   );
 };
 

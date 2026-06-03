@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import styles from './styles';
 import {useSelector, useDispatch} from 'react-redux';
@@ -16,8 +17,12 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {
   addProductCategory,
   getCategories,
-  getProductCategories,
-} from '../Products/services';
+  resetError,
+  resetProductCategories,
+  addProducts,
+  resetAddProductState,
+} from '../../services';
+import {ContainerView} from '../../components';
 
 type Temperature = {
   value: 'hot' | 'cold' | 'blended';
@@ -59,14 +64,22 @@ const TEMP_COLORS: Record<string, {bg: string; text: string; border: string}> =
 const AddProductScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const {categories, isAddingLoading, isAddingSuccess, productCategories} =
-    useSelector((state: RootState) => state.products);
+  const {
+    error,
+    loading,
+    categories,
+    isAddingLoading,
+    isAddingSuccess,
+    prodCatLoading,
+    prodCatSuccess,
+  } = useSelector((state: RootState) => state.products);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState(null);
   const [subCategory, setSubCategory] = useState(null);
   const [prodCatModal, setProdCatModal] = useState(false);
+  const [productCategories, setProductCategories] = useState([]);
   const [variants, setVariants] = useState<VariantRow[]>([
     {temperature: '', size: '', price: ''},
   ]);
@@ -78,22 +91,42 @@ const AddProductScreen = () => {
   useFocusEffect(
     useCallback(() => {
       loadData();
+
+      return () => {
+        dispatch(resetError());
+      };
     }, []),
   );
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (prodCatLoading === false && prodCatSuccess === true) {
+      dispatch(resetProductCategories());
+
+      loadData();
+
+      setProdCatModal(false);
+    }
+  }, [prodCatLoading, prodCatSuccess]);
 
   useEffect(() => {
-    if (categories?.length > 0 && !category) {
-      setCategory(String(categories[0].id));
+    if (!loading && category) {
+      const selectedCat = categories.find((c: any) => c.id === category);
+      setProductCategories(selectedCat?.product_categories || []);
     }
-  }, [categories]);
+  }, [loading, categories]);
 
   useEffect(() => {
     if (isAddingLoading === false && isAddingSuccess === true) {
       resetForm();
+      dispatch(resetAddProductState());
+      Alert.alert('Success', 'Product added successfully', [
+        {
+          text: 'OK',
+          onPress: () => {
+            navigation.goBack();
+          },
+        },
+      ]);
     }
   }, [isAddingLoading, isAddingSuccess]);
 
@@ -119,17 +152,17 @@ const AddProductScreen = () => {
     });
   };
 
-  // ── Submit ───────────────────────────────────────────────────────────────
-
   const handleSubmit = () => {
     if (!name || !category) return;
-    console.log('onSubmit data:', {
+
+    const params = {
       name,
       description,
-      category_id: category?.id,
-      product_category_id: subCategory?.id,
+      category_id: category,
+      product_category_id: subCategory,
       variants,
-    });
+    };
+    dispatch(addProducts(params));
   };
 
   const handleCancel = () => {
@@ -140,15 +173,15 @@ const AddProductScreen = () => {
     category_id: number | number;
     name: string;
   }) => {
-    // Handle adding product category logic here
-    console.log('New Product Category:', data);
-
     dispatch(addProductCategory(data));
-    setProdCatModal(false);
+
+    /** closing of the modal is handled in the useEffect
+     * that listens to prodCatLoading and prodCatSuccess states */
   };
 
   const handleProdCatClose = () => {
     setProdCatModal(false);
+    dispatch(resetError());
   };
 
   const resetForm = () => {
@@ -160,7 +193,7 @@ const AddProductScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ContainerView style={styles.container}>
       <Text style={[styles.title, styles.modalTitleSpacing]}>Add Product</Text>
 
       <ScrollView
@@ -173,7 +206,10 @@ const AddProductScreen = () => {
             selectedTextStyle={styles.categoryDropdownText}
             placeholderStyle={styles.categoryDropdownPlaceholder}
             value={category}
-            onChange={value => setCategory(value)}
+            onChange={value => {
+              setCategory(value?.id);
+              setProductCategories(value?.product_categories || []);
+            }}
             data={categories}
             labelField="name"
             valueField="id"
@@ -193,13 +229,17 @@ const AddProductScreen = () => {
           </TouchableOpacity>
         </View>
         {/* Sub - Category picker */}
+
         <View style={styles.categoryRow}>
           <Dropdown
+            disable={category ? false : true}
             style={styles.categoryDropdown}
             selectedTextStyle={styles.categoryDropdownText}
             placeholderStyle={styles.categoryDropdownPlaceholder}
             value={subCategory}
-            onChange={value => setSubCategory(value)}
+            onChange={value => {
+              setSubCategory(value?.id);
+            }}
             data={productCategories}
             labelField="name"
             valueField="id"
@@ -307,6 +347,12 @@ const AddProductScreen = () => {
           <Text style={styles.addVariantText}>+ Add variant</Text>
         </TouchableOpacity>
 
+        {error && error?.error && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error?.error}</Text>
+          </View>
+        )}
+
         <View style={styles.buttons}>
           <TouchableOpacity onPress={handleCancel} style={styles.buttonCancel}>
             <Text style={styles.buttonText}>Cancel</Text>
@@ -318,11 +364,12 @@ const AddProductScreen = () => {
       </ScrollView>
 
       <AddProductCategoryModal
+        selectedCategory={category}
         visible={prodCatModal}
         onClose={handleProdCatClose}
         onSubmit={handleAddProdCat}
       />
-    </View>
+    </ContainerView>
   );
 };
 

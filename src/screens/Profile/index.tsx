@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, Button, Alert} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {logout} from '../../redux/slices/authSlice';
-import * as services from '../../Api/userService';
+import * as services from '../../services';
 import {AppDispatch, RootState} from '../../redux/store';
 import {navigation} from '../../types';
 

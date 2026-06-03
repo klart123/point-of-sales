@@ -1,7 +1,8 @@
 import React from 'react';
-import {View, Text, Button, StyleSheet} from 'react-native';
+import {View, Text, Button} from 'react-native';
 import {NavigationProp} from '@react-navigation/native';
 import styles from './styles';
+import {ContainerView} from '../../components';
 
 type Props = {
   navigation: NavigationProp<any>;
@@ -9,7 +10,7 @@ type Props = {
 
 const LandingScreen: React.FC<Props> = ({navigation}) => {
   return (
-    <View style={styles.container}>
+    <ContainerView style={styles.container}>
       <Text style={styles.title}>Welcome!</Text>
       <View style={styles.buttonGroup}>
         <Button title="Login" onPress={() => navigation.navigate('Login')} />
@@ -18,7 +19,7 @@ const LandingScreen: React.FC<Props> = ({navigation}) => {
           onPress={() => navigation.navigate('Register')}
         />
       </View>
-    </View>
+    </ContainerView>
   );
 };
 

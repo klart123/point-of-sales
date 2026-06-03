@@ -1,5 +1,7 @@
 export const COLORS = {
   primary: '#e08f7f',
+  secondary: '#dea397',
+  containerBackground: '#dea397',
   background: '#ffffff',
   card: '#ffffff',
   cardSoft: '#fdf1ee',
@@ -17,4 +19,6 @@ export const COLORS = {
   cream: '#fff8f6',
   peach: '#fff3ef',
   placeholder: '#4e4b4b',
+  textError: '#ea4848',
+  errorBg: '#ffebee',
 };

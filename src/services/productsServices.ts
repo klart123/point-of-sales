@@ -1,6 +1,6 @@
-import {AppDispatch} from '../../redux/store'; // adjust path if needed
-import {productActions} from '../../redux/slices/productSlice';
-import axiosInstance from '../../Api/axiosInstance';
+import {AppDispatch} from '../redux/store'; // adjust path if needed
+import {productActions} from '../redux/slices/productSlice';
+import axiosInstance from '../Api/axiosInstance';
 
 // Types
 type Variant = {
@@ -46,7 +46,7 @@ export const resetProducts = () => {
   };
 };
 
-export const addProducts = (payload: any) => {
+export const addProducts: any = (payload: any) => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.addProductStart());
     axiosInstance
@@ -56,7 +56,7 @@ export const addProducts = (payload: any) => {
           return dispatch(productActions.addProductSuccess(response?.data));
         }
 
-        return dispatch(productActions.addProductFailed(response));
+        return dispatch(productActions.addProductFailed(response?.data));
       })
       .catch(error => {
         dispatch(productActions.addProductFailed(error));
@@ -132,13 +132,14 @@ export const getProductsGrouped = () => {
   };
 };
 
-export const addProductCategory = (payload: any) => {
+export const addProductCategory: any = (payload: any) => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.addProductCategoryStart());
     axiosInstance
       .post('/product-categories', payload)
       .then(response => {
-        if (response?.status) {
+        console.log('response', response);
+        if (response?.status === 200 || response?.status === 201) {
           return dispatch(
             productActions.addProductCategorySuccess(response?.data),
           );
@@ -147,6 +148,7 @@ export const addProductCategory = (payload: any) => {
         return dispatch(productActions.addProductCategoryFailed(response));
       })
       .catch(error => {
+        console.log('error', error);
         dispatch(productActions.addProductCategoryFailed(error));
       });
   };
@@ -158,14 +160,20 @@ export const resetCategories = () => {
   };
 };
 
-export const resetAddProductState = () => {
+export const resetAddProductState: any = () => {
   return (dispatch: AppDispatch) => {
-    dispatch(productActions.addProductFailed(''));
+    dispatch(productActions.resetAddProductState());
   };
 };
 
-export const resetProductCategories = () => {
+export const resetProductCategories: any = () => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.resetProductCategories());
+  };
+};
+
+export const resetError: any = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productActions.resetError());
   };
 };

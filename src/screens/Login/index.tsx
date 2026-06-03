@@ -12,9 +12,14 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import styles from './styles';
 import {navigation} from '../../types';
-import {loginUser} from './service';
+import {loginUser} from '../../services';
 import {RootState} from '../../redux/store';
-import {ApiSettingsModal, HeaderComponent, Button} from '../../components';
+import {
+  ApiSettingsModal,
+  HeaderComponent,
+  Button,
+  ContainerView,
+} from '../../components';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   navigation.RootStackParamList,
@@ -48,7 +53,7 @@ const LoginScreen = () => {
   }, [isAuthenticated]);
 
   return (
-    <View style={styles.container}>
+    <ContainerView style={styles.container}>
       <HeaderComponent icon="⚙️" onPress={() => setShowModal(true)} />
       <View>
         <Text style={styles.title}>Login</Text>
@@ -87,7 +92,7 @@ const LoginScreen = () => {
         visible={showModal}
         onClose={() => setShowModal(false)}
       />
-    </View>
+    </ContainerView>
   );
 };
 

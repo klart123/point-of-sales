@@ -3,9 +3,7 @@ import {COLORS} from '../../theme/colors';
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: COLORS.primary,
-    padding: 20,
+    padding: 10,
   },
   title: {
     fontSize: 24,
@@ -135,5 +133,17 @@ export default StyleSheet.create({
   },
   tempDropdownItem: {
     padding: 10,
+  },
+  errorContainer: {
+    width: '100%',
+    paddingVertical: 20,
+  },
+  errorText: {
+    textAlign: 'center',
+    color: COLORS.textError,
+    backgroundColor: COLORS.errorBg,
+    padding: 5,
+    borderRadius: 5,
+    width: '100%',
   },
 });

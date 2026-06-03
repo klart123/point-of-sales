@@ -8,11 +8,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import * as services from './services';
+import * as services from '../../services';
 import {AppDispatch, RootState} from '../../redux/store';
 import styles from './styles';
-import Product from '../../components/Product';
-import ProductItem from '../../components/ProductItem';
+import {Product, ContainerView} from '../../components/';
 import ProductModal from './components/productModal';
 import {useNavigation} from '@react-navigation/native';
 
@@ -77,24 +76,23 @@ const ProductScreen = () => {
   };
 
   return (
-    <>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>🧾 Products</Text>
-          <TouchableOpacity onPress={handleAddModal}>
-            <Text style={styles.addButton}>+ Add</Text>
-          </TouchableOpacity>
-        </View>
-
-        <Product
-          list={list}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          onPress={item => {
-            console.log('pressed item', item);
-          }}
-        />
+    <ContainerView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>🧾 Products</Text>
+        <TouchableOpacity onPress={handleAddModal}>
+          <Text style={styles.addButton}>+ Add</Text>
+        </TouchableOpacity>
       </View>
+
+      <Product
+        list={list}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        onPress={item => {
+          console.log('pressed item', item);
+        }}
+      />
+
       <ProductModal
         visible={addModal}
         onClose={() => {
@@ -102,7 +100,7 @@ const ProductScreen = () => {
         }}
         onSubmit={handleAddSubmit}
       />
-    </>
+    </ContainerView>
   );
 };
 

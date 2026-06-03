@@ -1,17 +1,15 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {View, Text, FlatList, Alert} from 'react-native';
+import {View, Text, Alert} from 'react-native';
 import {io, Socket} from 'socket.io-client';
 import axiosInstance from '../../Api/axiosInstance';
-import {HeaderComponent} from '../../components';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import styles from './styles';
-import {renderOrderCard} from '../../components/RenderOrderCard';
-import {Order, OrderItem} from './types';
-import Orders from '../../components/Orders';
+import {Order, OrderItem} from '../../types';
+import {Orders, ContainerView} from '../../components';
 
 import {RootState} from '../../redux/store';
 import {useSelector, useDispatch} from 'react-redux';
-import {getOrderStatuses} from '../OrderList/service';
+import {getOrderStatuses} from '../../services';
 
 const SOCKET_URL = 'http://192.168.5.7:3000';
 
@@ -37,8 +35,10 @@ const KitchenScreen = () => {
 
   const sortOrders = (orders: Order[]): Order[] => {
     return [...orders].sort((a, b) => {
-      const priorityA = orderStatuses[a.status]?.priority ?? 999;
-      const priorityB = orderStatuses[b.status]?.priority ?? 999;
+      const priorityA =
+        (orderStatuses as Record<string, any>)[a.status]?.priority ?? 999;
+      const priorityB =
+        (orderStatuses as Record<string, any>)[b.status]?.priority ?? 999;
 
       // Sort by status priority first
       if (priorityA !== priorityB) {
@@ -188,7 +188,7 @@ const KitchenScreen = () => {
 
   // ── Render ─────────────────────────────────────────────────────────────
   return (
-    <View style={styles.container}>
+    <ContainerView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.subtitle}>{activeOrders.length} active orders</Text>
       </View>
@@ -207,7 +207,7 @@ const KitchenScreen = () => {
           orderStatuses={orderStatuses}
         />
       )}
-    </View>
+    </ContainerView>
   );
 };
 

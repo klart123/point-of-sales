@@ -82,6 +82,7 @@ export default StyleSheet.create({
   buttons: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    paddingTop: 10,
   },
   buttonCancel: {
     padding: 10,
@@ -178,9 +179,7 @@ export default StyleSheet.create({
   },
 
   // ScrollView content
-  scrollContent: {
-    paddingBottom: 20,
-  },
+  scrollContent: {},
 
   // Category row
   categoryRow: {
@@ -262,5 +261,17 @@ export default StyleSheet.create({
   },
   tempDropdownItem: {
     padding: 10,
+  },
+  errorContainer: {
+    width: '100%',
+    paddingVertical: 20,
+  },
+  errorText: {
+    textAlign: 'center',
+    color: COLORS.textError,
+    backgroundColor: COLORS.errorBg,
+    padding: 5,
+    borderRadius: 5,
+    width: '100%',
   },
 });

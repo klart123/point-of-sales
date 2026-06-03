@@ -9,6 +9,7 @@ import {
   registerFailure,
 } from '../../redux/slices/authSlice';
 import {registerUser} from '../../Api/authService';
+import {ContainerView} from '../../components';
 
 const RegisterScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -48,7 +49,7 @@ const RegisterScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ContainerView style={styles.container}>
       <Text style={styles.title}>Register</Text>
 
       <TextInput
@@ -89,7 +90,7 @@ const RegisterScreen: React.FC = () => {
       />
 
       {errors && <Text style={{color: 'red', marginTop: 10}}>{errors}</Text>}
-    </View>
+    </ContainerView>
   );
 };
 

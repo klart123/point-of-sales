@@ -4,18 +4,18 @@ import styles from './styles';
 import {HomeScreenProps, MenuItem} from './types';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {useDispatch} from 'react-redux';
-import * as orderServices from '../OrderList/service';
+import * as orderServices from '../../services';
+import {ContainerView} from '../../components';
 
 const menuItems = [
   {label: 'Orders', screen: 'Orders', style: {backgroundColor: 'red'}},
-  {label: 'Summary', screen: 'OrderSummary', style: {backgroundColor: '#12a'}},
-  {label: 'Products', screen: 'Products', style: {backgroundColor: '#4CAF50'}},
-  {label: 'Kitchen', screen: 'Kitchen', style: {backgroundColor: '#FF9800'}},
+  {label: 'Products', screen: 'Products', style: {backgroundColor: '#FF9800'}},
   {
-    label: 'Add Product',
-    screen: 'AddProduct',
-    style: {backgroundColor: '#2196F3'},
+    label: 'Summary',
+    screen: 'OrderSummary',
+    style: {backgroundColor: 'rgb(172, 154, 15)'},
   },
+  // {label: 'Kitchen', screen: 'Kitchen', style: {backgroundColor: '#FF9800'}},
 ];
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
@@ -46,7 +46,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   );
 
   return (
-    <View style={styles.container}>
+    <ContainerView>
       <FlatList
         data={menuItems}
         keyExtractor={(item, index) => index.toString()}
@@ -54,7 +54,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         contentContainerStyle={styles.list}
         renderItem={renderItem}
       />
-    </View>
+    </ContainerView>
   );
 };
 

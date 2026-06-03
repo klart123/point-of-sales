@@ -22,6 +22,9 @@ export type ProductState = {
   productsGrouped: object[];
   isAddingLoading: boolean;
   isAddingSuccess: boolean;
+  prodCatLoading: boolean;
+  prodCatSuccess: boolean;
+  prodCatError: string | null | Record<string, any>;
 };
 
 export type ProductItemProps = {

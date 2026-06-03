@@ -3,10 +3,8 @@ import {COLORS} from '../../../theme/colors';
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
     paddingTop: 20,
     paddingHorizontal: 10,
-    backgroundColor: COLORS.primary,
   },
   productContainer: {},
   title: {

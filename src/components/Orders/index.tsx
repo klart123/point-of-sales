@@ -15,9 +15,9 @@ interface OrderListProps {
 
   contentContainerStyle?: ViewStyle;
   hideCompleteButton?: boolean;
-  refreshing: boolean;
-  onRefresh: () => void;
-  orderStatuses: object;
+  refreshing?: boolean;
+  onRefresh?: () => void;
+  orderStatuses?: object;
 }
 
 const OrderList: React.FC<OrderListProps> = ({

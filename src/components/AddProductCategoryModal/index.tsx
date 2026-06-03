@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   Modal,
   View,
@@ -11,75 +11,51 @@ import styles from './styles';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../redux/store';
 import {Dropdown} from 'react-native-element-dropdown';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type Temperature = {
-  value: 'hot' | 'cold' | 'blended';
-  label: string;
-};
-
-type VariantRow = {
-  temperature: string;
-  size: string;
-  price: string;
-};
-
-type ProductFormData = {
-  name: string;
-  description: string;
-  category_id: string | number;
-  variants: VariantRow[];
-};
+import {useFocusEffect} from '@react-navigation/native';
 
 type Props = {
+  selectedCategory: number | null;
   visible: boolean;
   onClose: () => void;
   onSubmit: (data: {category_id: number | number; name: string}) => void;
 };
 
-const TEMPERATURES: Temperature[] = [
-  {value: 'hot', label: 'Hot'},
-  {value: 'cold', label: 'Cold'},
-  {value: 'blended', label: 'Blended'},
-];
-
-const TEMP_COLORS: Record<string, {bg: string; text: string; border: string}> =
-  {
-    hot: {bg: '#FFF3E0', text: '#E65100', border: '#FFCC80'},
-    cold: {bg: '#E3F2FD', text: '#1565C0', border: '#90CAF9'},
-    blended: {bg: '#F3E5F5', text: '#6A1B9A', border: '#CE93D8'},
-  };
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const AddProductCategoryModal: React.FC<Props> = ({
+  selectedCategory,
   visible,
   onClose,
   onSubmit,
 }) => {
-  const {categories, isAddingLoading, isAddingSuccess, productCategories} =
+  const {categories, prodCatLoading, prodCatSuccess, prodCatError} =
     useSelector((state: RootState) => state.products);
 
   const [name, setName] = useState('');
-  const [category, setCategory] = useState(null);
+  const [category, setCategory] = useState(0);
 
   useEffect(() => {
-    if (categories?.length > 0 && !category) {
-      setCategory(String(categories[0].id));
+    if (selectedCategory) {
+      setCategory(selectedCategory);
     }
   }, [categories]);
 
   useEffect(() => {
-    if (isAddingLoading === false && isAddingSuccess === true) {
+    if (selectedCategory) {
+      setCategory(selectedCategory);
+    }
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    if (prodCatLoading === false && prodCatSuccess === true) {
       resetForm();
     }
-  }, [isAddingLoading, isAddingSuccess]);
+  }, [prodCatLoading, prodCatSuccess]);
 
   const handleSubmit = () => {
     if (!name || !category) return;
     onSubmit({
-      category_id: category?.id,
+      category_id: category,
       name,
     });
   };
@@ -91,10 +67,7 @@ const AddProductCategoryModal: React.FC<Props> = ({
 
   const resetForm = () => {
     setName('');
-    setCategory(null);
   };
-
-  // ── Render ───────────────────────────────────────────────────────────────
 
   return (
     <Modal
@@ -108,9 +81,7 @@ const AddProductCategoryModal: React.FC<Props> = ({
             Add Product Category
           </Text>
 
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}>
+          <View style={styles.scrollContent}>
             {/* Category picker */}
             <View style={styles.categoryRow}>
               <Dropdown
@@ -118,7 +89,10 @@ const AddProductCategoryModal: React.FC<Props> = ({
                 selectedTextStyle={styles.categoryDropdownText}
                 placeholderStyle={styles.categoryDropdownPlaceholder}
                 value={category}
-                onChange={value => setCategory(value)}
+                onChange={value => {
+                  console.log('selected category', value);
+                  setCategory(value?.id);
+                }}
                 data={categories}
                 labelField="name"
                 valueField="id"
@@ -138,7 +112,13 @@ const AddProductCategoryModal: React.FC<Props> = ({
               value={name}
               onChangeText={setName}
             />
-          </ScrollView>
+          </View>
+
+          {prodCatError && prodCatError?.error && (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{prodCatError?.error}</Text>
+            </View>
+          )}
 
           {/* Footer buttons */}
           <View style={styles.buttons}>

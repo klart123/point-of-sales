@@ -1,5 +1,5 @@
 // src/api/authService.ts
-import axiosInstance from './axiosInstance';
+import axiosInstance from '../Api/axiosInstance';
 import * as types from '../types';
 import {AppDispatch} from '../redux/store';
 import {userActions} from '../redux/slices/userSlice';
@@ -20,5 +20,11 @@ export const getUserProfile = () => {
       .catch(error => {
         return dispatch(userActions.getUserFailed(error.data.error));
       });
+  };
+};
+
+export const resetUserProfile = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(userActions.resetUser());
   };
 };

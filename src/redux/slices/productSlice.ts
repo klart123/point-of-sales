@@ -12,6 +12,9 @@ const initialState: products.ProductState = {
   categories: [],
   isAddingLoading: false,
   isAddingSuccess: false,
+  prodCatLoading: false,
+  prodCatSuccess: false,
+  prodCatError: null,
 };
 
 const productSlice = createSlice({
@@ -48,13 +51,10 @@ const productSlice = createSlice({
       state.isAddingLoading = false;
       state.isAddingSuccess = false;
     },
-    resetProducts: state => {
-      state.products = null;
-      state.hasMore = true;
-      state.loading = false;
-    },
+
     getCategoriesStart: state => {
       state.loading = true;
+      state.categories = [];
     },
     getCategoriesSuccess: (
       state,
@@ -107,26 +107,44 @@ const productSlice = createSlice({
       state.error = action.payload;
     },
     addProductCategoryStart: state => {
-      state.loading = true;
+      state.prodCatLoading = true;
+      state.prodCatSuccess = false;
+      state.prodCatError = null;
     },
     addProductCategorySuccess: state => {
-      state.loading = false;
+      console.log('addProductCategorySuccess reducer called');
+      state.prodCatLoading = false;
+      state.prodCatSuccess = true;
     },
     addProductCategoryFailed: (
       state,
       action: PayloadAction<products.ErrorPayload>,
     ) => {
-      state.loading = false;
-      state.error = action.payload;
+      state.prodCatLoading = false;
+      state.prodCatSuccess = false;
+      state.prodCatError = action.payload;
     },
     resetCategories: state => {
       state.categories = [];
     },
     resetProductCategories: state => {
-      state.productCategories = [];
+      state.prodCatLoading = false;
+      state.prodCatSuccess = false;
     },
     resetProductsGrouped: state => {
       state.productsGrouped = [];
+    },
+    resetError: state => {
+      state.error = null;
+    },
+    resetProducts: state => {
+      state.products = null;
+      state.hasMore = true;
+      state.loading = false;
+    },
+    resetAddProductState: state => {
+      state.isAddingLoading = false;
+      state.isAddingSuccess = false;
     },
   },
 });

@@ -9,6 +9,7 @@ import {
 import axiosInstance from '../../Api/axiosInstance';
 import styles from './styles';
 import DateRow, {renderDateRow} from './components/OrderDateCard';
+import {ContainerView} from '../../components';
 
 type DateSummary = {
   date: string;
@@ -111,7 +112,7 @@ const OrderSummary = () => {
     const {summary: s, by_status, top_products} = summary;
 
     return (
-      <View style={styles.summaryPanel}>
+      <ContainerView style={styles.summaryPanel}>
         {/* Stats row */}
         <View style={styles.statsRow}>
           <View style={styles.statBox}>
@@ -185,7 +186,7 @@ const OrderSummary = () => {
             </View>
           </View>
         ))}
-      </View>
+      </ContainerView>
     );
   };
 

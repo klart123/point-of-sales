@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native';
 import {COLORS} from '../../../theme/colors';
 
 export default StyleSheet.create({
-  container: {flex: 1},
+  container: {},
   // title: {fontSize: 20, marginBottom: 10},
 
   item: {

@@ -5,11 +5,10 @@ import axiosInstance from '../../Api/axiosInstance';
 import {HeaderComponent} from '../../components';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import styles from './styles';
-import {renderOrderCard} from '../../components/RenderOrderCard';
 import {Order, OrderItem} from './types';
-import Orders from '../../components/Orders';
+import {Orders, ContainerView} from '../../components';
 import {useDispatch, useSelector} from 'react-redux';
-import * as services from './service';
+import * as services from '../../services';
 import {RootState} from '../../redux/store';
 
 const SOCKET_URL = 'http://192.168.5.7:3000';
@@ -20,6 +19,7 @@ const OrderList = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [updatedAt, setUpdatedAt] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -109,8 +109,25 @@ const OrderList = () => {
   }, []);
 
   const loadActiveOrders = async () => {
+    // Get today's date
+    const today = new Date();
+
+    // Go back 3 days (including today)
+    const threeDaysAgo = new Date(today);
+    threeDaysAgo.setDate(today.getDate() - 2); // -2 because we include today
+
+    // Format as YYYY-MM-DD
+    const from = threeDaysAgo.toISOString().slice(0, 10);
+    const to = today.toISOString().slice(0, 10);
+
     axiosInstance
-      .get('/orders')
+      .get('/orders', {
+        params: {
+          status: 'preparing,pending,ready',
+          from: from,
+          to: to,
+        },
+      })
       .then(response => {
         const sortedOrders = sortOrders(response.data);
         const sorted = sortedOrders.map((o: Order) => ({
@@ -193,7 +210,7 @@ const OrderList = () => {
 
   // ── Render ─────────────────────────────────────────────────────────────
   return (
-    <View style={styles.container}>
+    <ContainerView style={styles.container}>
       <HeaderComponent label="Add Order" onPress={handleHeaderPress} />
       <View style={styles.header}>
         <Text style={styles.subtitle}>{activeOrders.length} active orders</Text>
@@ -208,7 +225,7 @@ const OrderList = () => {
         onRefresh={onRefresh}
         orderStatuses={orderStatuses}
       />
-    </View>
+    </ContainerView>
   );
 };
 
