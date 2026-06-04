@@ -6,8 +6,6 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     borderRadius: 5,
-    // backgroundColor: COLORS.cardSoft,
-    // marginBottom: 5,
   },
   itemName: {
     fontSize: 20,

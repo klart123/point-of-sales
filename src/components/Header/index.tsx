@@ -2,6 +2,7 @@ import React, {useLayoutEffect} from 'react';
 import {TouchableOpacity, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import styles from './styles';
+import {COLORS} from '../../theme';
 
 type Props = {
   label?: string;
@@ -24,6 +25,7 @@ const HeaderComponent: React.FC<Props> = ({
         <TouchableOpacity
           onPress={onPress}
           style={{
+            flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
           }}>
@@ -33,7 +35,7 @@ const HeaderComponent: React.FC<Props> = ({
             <View>
               <Text
                 style={{
-                  color: '#7af',
+                  color: COLORS.text,
                   textAlign: 'center',
                   fontSize: 18,
                   fontWeight: 'bold',

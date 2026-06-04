@@ -5,6 +5,7 @@ import * as services from '../../services';
 import {AppDispatch, RootState} from '../../redux/store';
 import styles from './styles';
 import MenuModal from './components/menuModal';
+import OrderDrawer from './components/oderDrawer';
 import {orderActions} from '../../redux/slices/orderSlice';
 import OrderListModal from './components/ordersListModal';
 import {useNavigation} from '@react-navigation/native';
@@ -144,15 +145,15 @@ const MenuScreen = () => {
 
   return (
     <ContainerView style={styles.container}>
-      <HeaderComponent label="Orders" onPress={handleHeaderPress} />
-      <View style={styles.productContainer}>
-        <Product
-          list={list}
-          refreshing={loading}
-          onRefresh={onRefresh}
-          onPress={handleOpenModal}
-        />
-      </View>
+      {/* <HeaderComponent label="Orders" onPress={handleHeaderPress} /> */}
+
+      <Product
+        list={list}
+        refreshing={loading}
+        onRefresh={onRefresh}
+        onPress={handleOpenModal}
+      />
+
       <MenuModal
         visible={viewModal}
         item={selectedItem}
@@ -164,6 +165,13 @@ const MenuScreen = () => {
         onClose={() => setOrderModal(false)}
         onSubmit={handleSubmitOrder}
         onEdit={handleEditOrderItem}
+      />
+
+      <OrderDrawer
+        visible={true}
+        onClose={() => {}}
+        onSubmit={payload => console.log(payload)}
+        onEdit={item => console.log('navigate to Edit Order')}
       />
       {loadingOrder && (
         <View style={styles.loadingOverlay}>

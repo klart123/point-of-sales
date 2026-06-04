@@ -10,6 +10,7 @@ import {
 } from '../../redux/slices/authSlice';
 import {registerUser} from '../../Api/authService';
 import {ContainerView} from '../../components';
+import {COLORS} from '../../theme';
 
 const RegisterScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -57,6 +58,7 @@ const RegisterScreen: React.FC = () => {
         style={styles.input}
         value={name}
         onChangeText={setName}
+        placeholderTextColor={COLORS.placeholder}
       />
 
       <TextInput
@@ -66,6 +68,7 @@ const RegisterScreen: React.FC = () => {
         autoCapitalize="none"
         value={email}
         onChangeText={setEmail}
+        placeholderTextColor={COLORS.placeholder}
       />
 
       <TextInput
@@ -74,6 +77,7 @@ const RegisterScreen: React.FC = () => {
         secureTextEntry
         value={password}
         onChangeText={setPassword}
+        placeholderTextColor={COLORS.placeholder}
       />
       <TextInput
         placeholder="Confirm Password"
@@ -81,6 +85,7 @@ const RegisterScreen: React.FC = () => {
         secureTextEntry
         value={confirmPassword}
         onChangeText={setConfirmPassword}
+        placeholderTextColor={COLORS.placeholder}
       />
 
       <Button

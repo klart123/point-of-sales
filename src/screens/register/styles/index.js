@@ -1,11 +1,10 @@
 import {StyleSheet} from 'react-native';
+import {COLORS} from '../../../theme';
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
     padding: 24,
-    backgroundColor: '#fff',
+    paddingTop: '10%',
   },
   title: {
     fontSize: 32,
@@ -15,10 +14,11 @@ export default StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#aaa',
+    borderColor: COLORS.border,
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
     fontSize: 16,
+    color: COLORS.text,
   },
 });

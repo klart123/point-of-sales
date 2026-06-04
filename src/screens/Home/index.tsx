@@ -15,7 +15,7 @@ const menuItems = [
     screen: 'OrderSummary',
     style: {backgroundColor: 'rgb(172, 154, 15)'},
   },
-  // {label: 'Kitchen', screen: 'Kitchen', style: {backgroundColor: '#FF9800'}},
+  {label: 'Menu', screen: 'Store', style: {backgroundColor: '#af0b57'}},
 ];
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {

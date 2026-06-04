@@ -20,7 +20,8 @@ const AppNavigator = () => {
         screenOptions={{
           headerStyle: {backgroundColor: COLORS.primary},
           headerTitleStyle: {color: COLORS.text},
-          headerBackTitleStyle: {color: COLORS.text},
+          // headerBackTitleStyle: {color: COLORS.text},
+
           headerTintColor: COLORS.text,
         }}>
         <Stack.Screen name="Login" component={screens.LoginScreen} />

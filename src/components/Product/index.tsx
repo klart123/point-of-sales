@@ -19,6 +19,10 @@ const Product: React.FC<ProductProps> = ({
 }) => {
   return (
     <FlatList
+      style={{
+        borderRadius: 6,
+        paddingBottom: 15,
+      }}
       data={list}
       keyExtractor={item => item?.id.toString()}
       renderItem={({item}) => (
@@ -29,6 +33,7 @@ const Product: React.FC<ProductProps> = ({
         />
       )}
       contentContainerStyle={styles.list}
+      showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }

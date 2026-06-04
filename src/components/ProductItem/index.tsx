@@ -19,7 +19,6 @@ const ProductItem: React.FC<products.ProductItemProps> = ({
         contentContainerStyle={{
           flex: 1,
           width: '100%',
-          backgroundColor: 'yellow',
         }}
         renderItem={({item, index}) => (
           <View style={styles.categoryBadge} key={`product_${index}`}>

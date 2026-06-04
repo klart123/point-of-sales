@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {COLORS} from '../../../theme';
 
 export default StyleSheet.create({
   container: {
@@ -13,11 +14,12 @@ export default StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#aaa',
+    borderColor: COLORS.border,
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
     fontSize: 16,
+    color: COLORS.text,
   },
   settingsButton: {
     position: 'absolute',

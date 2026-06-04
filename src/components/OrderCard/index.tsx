@@ -45,7 +45,7 @@ const OrderCard: React.FC<Props> = ({
           {doneCount}/{order.items.length}
         </Text>
       </View>
-      z
+
       {order.customer_name ? (
         <Text style={styles.customerName}>{order.order_number}</Text>
       ) : null}

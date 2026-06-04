@@ -20,6 +20,7 @@ import {
   Button,
   ContainerView,
 } from '../../components';
+import {COLORS} from '../../theme';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   navigation.RootStackParamList,
@@ -65,6 +66,7 @@ const LoginScreen = () => {
           autoCapitalize="none"
           value={email}
           onChangeText={setEmail}
+          placeholderTextColor={COLORS.placeholder}
         />
 
         <TextInput
@@ -73,6 +75,7 @@ const LoginScreen = () => {
           secureTextEntry
           value={password}
           onChangeText={setPassword}
+          placeholderTextColor={COLORS.placeholder}
         />
 
         <View style={styles.buttonContainer}>
