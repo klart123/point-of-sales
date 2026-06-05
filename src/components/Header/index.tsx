@@ -22,15 +22,20 @@ const HeaderComponent: React.FC<Props> = ({
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={onPress} style={{}}>
+        <TouchableOpacity onPress={onPress} style={{width: 'auto'}}>
           {icon ? (
             <Text style={styles.settingsIcon}>⚙️</Text>
           ) : (
-            <View>
+            <View
+              style={{
+                flex: 1,
+                padding: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
               <Text
                 style={{
                   color: COLORS.text,
-                  textAlign: 'center',
                   fontSize: 18,
                   fontWeight: 'bold',
                 }}>

@@ -160,18 +160,20 @@ const MenuScreen = () => {
         onClose={handleCloseMenuModal}
         onSubmit={handleEditItem}
       />
-      <OrderListModal
+      {/* <OrderListModal
         visible={orderModal}
         onClose={() => setOrderModal(false)}
         onSubmit={handleSubmitOrder}
         onEdit={handleEditOrderItem}
-      />
+      /> */}
 
       <OrderDrawer
         visible={true}
         onClose={() => {}}
-        onSubmit={payload => console.log(payload)}
-        onEdit={item => console.log('navigate to Edit Order')}
+        onSubmit={handleSubmitOrder}
+        onEdit={() => {
+          console.log('no function yet');
+        }}
       />
       {loadingOrder && (
         <View style={styles.loadingOverlay}>

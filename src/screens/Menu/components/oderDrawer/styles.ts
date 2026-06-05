@@ -31,7 +31,6 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingBottom: 10,
     gap: 10,
   },
   badge: {

@@ -22,6 +22,7 @@ const Product: React.FC<ProductProps> = ({
       style={{
         borderRadius: 6,
         paddingBottom: 15,
+        marginBottom: 101,
       }}
       data={list}
       keyExtractor={item => item?.id.toString()}

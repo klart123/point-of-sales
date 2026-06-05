@@ -48,13 +48,17 @@ const OrderDrawer = ({
   const {orderCustomerName, orders} = useSelector(
     (state: RootState) => state.orders,
   );
-
   const dispatch = useDispatch();
 
   const [customerName, setCustomerName] = useState(orderCustomerName);
   const [cash, setCash] = useState('0');
   const [isGcash, setIsGcash] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const totalItems = orders.reduce(
+    (sum, order) => sum + order?.items.length,
+    0,
+  );
+
   // REANIMATED STATE
   const height = useSharedValue(COLLAPSED_HEIGHT);
   const startHeight = useSharedValue(COLLAPSED_HEIGHT);
@@ -100,7 +104,7 @@ const OrderDrawer = ({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      height: height.value,
+      height: height.value + 20,
     };
   });
 
@@ -162,7 +166,7 @@ const OrderDrawer = ({
   };
 
   return (
-    <>
+    <View>
       {expanded && (
         <Pressable
           style={StyleSheet.absoluteFillObject}
@@ -180,10 +184,21 @@ const OrderDrawer = ({
             <View style={styles.handleArea}>
               <View style={styles.handleBar} />
 
-              <View style={styles.collapsedRow}>
+              <View
+                style={[
+                  styles.collapsedRow,
+                  expanded
+                    ? {
+                        paddingBottom: 10,
+                      }
+                    : {
+                        paddingBottom: 80,
+                      },
+                ]}>
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>
-                    {orders.length} item{orders.length !== 1 ? 's' : ''}
+                    {totalItems} item
+                    {orders.length !== 1 ? 's' : ''}
                   </Text>
                 </View>
 
@@ -319,7 +334,7 @@ const OrderDrawer = ({
           </Animated.View>
         </GestureDetector>
       </KeyboardAvoidingView>
-    </>
+    </View>
   );
 };
 
