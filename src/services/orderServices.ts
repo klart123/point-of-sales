@@ -155,60 +155,27 @@ export const getOrderStatuses: any = () => {
   };
 };
 
-export const submitOrder =
-  (data: {
-    cash: string;
-    customerName: string;
-    isGcash: boolean;
-    orders: any[];
-  }) =>
-  async (dispatch: AppDispatch) => {
-    dispatch(orderActions.orderStart());
+export const submitOrder = (data: any) => async (dispatch: AppDispatch) => {
+  dispatch(orderActions.orderStart());
 
-    // Each item becomes its own row — no grouping, no quantity
-    const items = data.orders.flatMap(order =>
-      order.items.map((item: any) => ({
-        sku: order.sku,
-        name: order.name,
-        type: item.temp, // hot / cold / blended
-        size: item.size, // 8oz / 16oz / 22oz
-        price: item.price,
-        quantity: 1, // always 1 per row
-      })),
-    );
+  axiosInstance
+    .post('/orders', data)
+    .then(response => {
+      if (response?.status === 200 || response?.status === 201) {
+        dispatch(orderActions.orderSuccess(response.data));
+      }
+    })
+    .catch(error => {
+      console.log('error', error);
+      dispatch(orderActions.orderFailed(error?.data?.error));
+    });
+};
 
-    const payload = {
-      customer_name: data.customerName || null,
-      payment_method: data.isGcash ? 'gcash' : 'cash',
-      items,
-    };
-
-    axiosInstance
-      .post('/orders', payload)
-      .then(response => {
-        if (response?.status === 200 || response?.status === 201) {
-          dispatch(orderActions.orderSuccess(response.data));
-        }
-      })
-      .catch(error => {
-        console.log('error', error);
-        dispatch(orderActions.orderFailed(error?.data?.error));
-      });
-  };
-
-export const updateOrder = ({
-  id,
-  items,
-  customer_name,
-}: {
-  id: number | string;
-  items: any;
-  customer_name: string;
-}) => {
+export const updateOrder = (orderId, data: any) => {
   return (dispatch: AppDispatch) => {
     dispatch(orderActions.editOrderStart());
     axiosInstance
-      .put(`/orders/${id}`, {customer_name, items})
+      .put(`/orders/${orderId}`, data)
       .then(response => {
         if (response.status === 200 || response.status === 201) {
           return dispatch(orderActions.editOrderSuccess());

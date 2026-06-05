@@ -89,10 +89,10 @@ const orderSlice = createSlice({
       state.message = '';
     },
     orderSuccess: (state, action: PayloadAction<any | object>) => {
-      const {order_id, message} = action.payload;
+      const {id} = action.payload;
       state.loading = false;
       state.isSubmitted = true;
-      state.message = `${message} ID: ${order_id}`;
+      state.message = `Order ID: ${id}`;
     },
     orderFailed: (state, action: PayloadAction<string>) => {
       state.loading = false;

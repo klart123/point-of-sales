@@ -44,7 +44,7 @@ type DaySummary = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: '#F5A623',
+  pending: '#fafafa',
   preparing: '#1565C0',
   ready: '#6A1B9A',
   served: '#1D9E75',
@@ -112,7 +112,7 @@ const OrderSummary = () => {
     const {summary: s, by_status, top_products} = summary;
 
     return (
-      <ContainerView style={styles.summaryPanel}>
+      <View style={styles.summaryPanel}>
         {/* Stats row */}
         <View style={styles.statsRow}>
           <View style={styles.statBox}>
@@ -186,7 +186,7 @@ const OrderSummary = () => {
             </View>
           </View>
         ))}
-      </ContainerView>
+      </View>
     );
   };
 
@@ -201,7 +201,7 @@ const OrderSummary = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <ContainerView style={styles.container}>
       <FlatList
         data={dates}
         keyExtractor={item => item.date}
@@ -230,7 +230,7 @@ const OrderSummary = () => {
         ListFooterComponent={selectedDate ? renderSummary() : null}
         contentContainerStyle={{paddingBottom: 40}}
       />
-    </View>
+    </ContainerView>
   );
 };
 export default OrderSummary;

@@ -5,7 +5,7 @@ import * as services from '../../services';
 import {AppDispatch, RootState} from '../../redux/store';
 import styles from './styles';
 import MenuModal from './components/menuModal';
-import OrderDrawer from './components/oderDrawer';
+import OrderDrawer from './components/orderDrawer';
 import {orderActions} from '../../redux/slices/orderSlice';
 import OrderListModal from './components/ordersListModal';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -103,18 +103,10 @@ const MenuScreen = () => {
 
   const handleSubmitOrder = data => {
     if (isEdit) {
-      dispatch(
-        services.updateOrder({
-          id: orderId,
-          items: orders,
-          customer_name: data.customerName,
-          notes: '',
-        }),
-      );
+      dispatch(services.updateOrder(orderId, data));
 
       return;
     }
-
     return dispatch(services.submitOrder(data));
   };
 

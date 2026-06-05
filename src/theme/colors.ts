@@ -19,7 +19,7 @@ export const COLORS = {
   beige: '#f6e7e3',
   cream: '#fff8f6',
   peach: '#fff3ef',
-  placeholder: '#4e4b4b',
+  placeholder: '#aaa',
   textError: '#ea4848',
   errorBg: '#ffebee',
 };

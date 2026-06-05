@@ -27,6 +27,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import {RootState} from '../../../../redux/store';
 import {orderActions} from '../../../../redux/slices/orderSlice';
 import styles from './styles';
+import {COLORS} from '../../../../theme';
 
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
@@ -56,6 +57,7 @@ const OrderDrawer = ({
   const [cash, setCash] = useState('0');
   const [isGcash, setIsGcash] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [notes, setNotes] = useState('');
   const totalItems = orders?.reduce(
     (sum, order) => sum + order?.items?.length,
     0,
@@ -307,6 +309,17 @@ const OrderDrawer = ({
                 </TouchableOpacity>
               </View>
 
+              <Text style={styles.fieldLabel}>Notes</Text>
+              <View style={styles.cashRow}>
+                <TextInput
+                  style={[styles.input, {flex: 1}]}
+                  placeholderTextColor={COLORS.placeholder}
+                  placeholder="Notes"
+                  value={notes}
+                  onChangeText={setNotes}
+                />
+              </View>
+
               <View style={styles.actions}>
                 <TouchableOpacity
                   style={styles.clearBtn}
@@ -329,9 +342,16 @@ const OrderDrawer = ({
                     orders?.length === 0 && styles.btnDisabled,
                   ]}
                   disabled={orders?.length === 0}
-                  onPress={() =>
-                    onSubmit({customerName, orders, cash, isGcash})
-                  }>
+                  onPress={() => {
+                    console.log('orders', orders);
+                    onSubmit({
+                      customer_name: customerName,
+                      orders: orders,
+                      cash,
+                      payment_method: isGcash ? 'gcash' : 'cash',
+                      notes,
+                    });
+                  }}>
                   <Text style={styles.submitBtnText}>
                     {isEdit ? 'Update' : 'Submit'} Order
                   </Text>

@@ -1,9 +1,9 @@
 import {StyleSheet} from 'react-native';
+import {COLORS} from '../../theme';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F0',
   },
   loader: {
     flex: 1,
@@ -20,11 +20,12 @@ export default StyleSheet.create({
     color: '#fff',
   },
   empty: {
+    flex: 1,
     padding: 32,
     alignItems: 'center',
   },
   emptyText: {
-    color: '#aaa',
+    color: COLORS.text,
     fontSize: 14,
   },
 

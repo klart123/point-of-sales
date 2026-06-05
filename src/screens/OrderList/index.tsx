@@ -229,6 +229,7 @@ const OrderList = () => {
         temp: item.type ?? '',
         size: item.size ?? '',
         price: item.price ?? 0,
+        status: item.status ?? 'pending',
       });
 
       // Accumulate total price
@@ -255,6 +256,7 @@ const OrderList = () => {
       dispatch(
         orderActions.editOrder({items: converted, orderId: orderItem?.id}),
       );
+      console.log('converted', converted);
     }
     navigation.navigate('Store');
   };
