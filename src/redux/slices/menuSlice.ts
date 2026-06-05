@@ -1,16 +1,15 @@
-// src/redux/slices/authSlice.ts
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
 type ErrorPayload = string | Record<string, any>;
 
-type AuthState = {
+type MenuState = {
   menu: null | object[];
   loading: boolean;
   error: string | null | Record<string, any>;
   hasMore: boolean;
 };
 
-const initialState: AuthState = {
+const initialState: MenuState = {
   menu: null,
   loading: false,
   error: null,

@@ -26,6 +26,7 @@ const MenuScreen = () => {
     isEditUpdated,
     isSubmitted,
     message,
+    orderItem,
     loading: loadingOrder,
   } = useSelector((state: RootState) => state.orders);
   const [list, setList] = useState([]);
@@ -102,6 +103,7 @@ const MenuScreen = () => {
   };
 
   const handleSubmitOrder = data => {
+    console.log('data', data);
     if (isEdit) {
       dispatch(services.updateOrder(orderId, data));
 
@@ -186,6 +188,7 @@ const MenuScreen = () => {
         isEdit={isEdit}
         onSubmit={handleSubmitOrder}
         onEdit={handleEditOrderItem}
+        orderItem={orderItem}
       />
       {loadingOrder && (
         <View style={styles.loadingOverlay}>

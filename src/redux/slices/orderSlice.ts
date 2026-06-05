@@ -26,11 +26,13 @@ interface OrderState {
   isEdit: Boolean;
   orderId: number | null;
   orderCustomerName: string;
+  cashTendered: number | null;
   isEditUpdated: boolean;
   message: string;
   isStatusesPending: boolean;
   orderStatusesError: string;
   orderStatuses: object;
+  orderItem: object;
 }
 
 const initialState: OrderState = {
@@ -49,6 +51,8 @@ const initialState: OrderState = {
   isStatusesPending: false,
   orderStatusesError: '',
   orderStatuses: [],
+  cashTendered: 0,
+  orderItem: {},
 };
 
 const orderSlice = createSlice({
@@ -65,14 +69,14 @@ const orderSlice = createSlice({
       state.isEdit = true;
     },
     updateOrder: (state, action: PayloadAction<OrderItem>) => {
-      console.log(state.orders);
-      console.log('action.payload.id', action.payload.id);
       const index = state.orders.findIndex(o => o.sku === action.payload.sku);
-      console.log(' index', index);
-      console.log(' state.orders[index]', state.orders[index]);
+
       if (index !== -1) {
         state.orders[index] = action.payload;
       }
+    },
+    addOrderItem: (state, action: PayloadAction<any>) => {
+      state.orderItem = action.payload;
     },
     removeOrder: (state, action: PayloadAction<number>) => {
       state.orders.splice(action.payload, 1);
@@ -82,6 +86,9 @@ const orderSlice = createSlice({
     },
     addCustomerName: (state, action: PayloadAction<string>) => {
       state.orderCustomerName = action.payload;
+    },
+    addCashTendered: (state, action: PayloadAction<number>) => {
+      state.cashTendered = action.payload;
     },
     orderStart: state => {
       // state.loading = true;
@@ -103,7 +110,7 @@ const orderSlice = createSlice({
       state.loading = true;
       state.ordersList = [];
     },
-    getOrderSuccess: (state, action: PayloadAction<OrderItem>) => {
+    getOrderSuccess: (state, action: PayloadAction<any>) => {
       state.loading = false;
       state.ordersList = action.payload;
     },

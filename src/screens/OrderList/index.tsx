@@ -117,6 +117,12 @@ const OrderList = () => {
     const from = threeDaysAgo.toISOString().slice(0, 10);
     const to = today.toISOString().slice(0, 10);
 
+    const params = {
+      status: 'preparing,pending,ready',
+      from: from,
+      to: to,
+    };
+    // dispatch(services.getOrders(params));
     axiosInstance
       .get('/orders', {
         params: {
@@ -126,12 +132,15 @@ const OrderList = () => {
         },
       })
       .then(response => {
-        const sortedOrders = sortOrders(response.data);
-        const sorted = sortedOrders.map((o: Order) => ({
-          ...o,
-          items: sortItems(o.items),
-        }));
-        setOrders(sorted);
+        if (response.status === 200 || response.status === 201) {
+          const sortedOrders = sortOrders(response.data);
+          const sorted = sortedOrders.map((o: Order) => ({
+            ...o,
+            items: sortItems(o.items),
+          }));
+          setOrders(sorted);
+        }
+        dispatch(orderActions.getOrderSuccess(response.data));
         setUpdatedAt(Date.now());
       })
       .catch(error => {
@@ -252,6 +261,7 @@ const OrderList = () => {
   const handleEditOrder = (orderItem: any) => {
     if (orderItem) {
       const converted = convertBackendOrder(orderItem);
+      dispatch(orderActions.addOrderItem(orderItem));
       dispatch(orderActions.addCustomerName(orderItem.customer_name));
       dispatch(
         orderActions.editOrder({items: converted, orderId: orderItem?.id}),

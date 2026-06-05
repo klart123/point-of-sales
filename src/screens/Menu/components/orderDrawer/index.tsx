@@ -7,11 +7,9 @@ import {
   TextInput,
   StyleSheet,
   Dimensions,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
   Alert,
   Pressable,
+  ScrollView,
 } from 'react-native';
 
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
@@ -22,6 +20,7 @@ import Animated, {
   Easing,
   runOnJS,
 } from 'react-native-reanimated';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {RootState} from '../../../../redux/store';
@@ -33,7 +32,7 @@ const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 const COLLAPSED_HEIGHT = 80;
 const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.85;
-const ANIMATION_DURATION = 300; // milliseconds
+const ANIMATION_DURATION = 300;
 
 const OrderDrawer = ({
   visible,
@@ -48,23 +47,42 @@ const OrderDrawer = ({
   onSubmit: (payload: any) => void;
   onEdit: (item: any) => void;
 }) => {
-  const {orderCustomerName, orders} = useSelector(
-    (state: RootState) => state.orders,
-  );
+  const {orderCustomerName, orders, ordersList, orderId, orderItem} =
+    useSelector((state: RootState) => state.orders);
   const dispatch = useDispatch();
 
   const [customerName, setCustomerName] = useState(orderCustomerName);
-  const [cash, setCash] = useState('0');
+  const [isPaid, setIsPaid] = useState(0);
+  const [cashTendered, setCashTendered] = useState('0');
   const [isGcash, setIsGcash] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [notes, setNotes] = useState('');
+  const [orderItemTotal, setOrderItemTotal] = useState(0);
+
   const totalItems = orders?.reduce(
     (sum, order) => sum + order?.items?.length,
     0,
   );
+
   // REANIMATED STATE
   const height = useSharedValue(COLLAPSED_HEIGHT);
   const startHeight = useSharedValue(COLLAPSED_HEIGHT);
+
+  useEffect(() => {
+    if (orderItem && isEdit) {
+      setCustomerName(orderItem.customer_name ?? '');
+      setCashTendered(orderItem.cash_tendered?.toString() ?? '0');
+      setIsGcash(orderItem.payment_method === 'gcash');
+      setNotes(orderItem.notes ?? '');
+      setOrderItemTotal(orderItem.total_price);
+      setIsPaid(orderItem?.is_paid || 0);
+    } else {
+      setCustomerName(orderCustomerName ?? '');
+      setCashTendered('0');
+      setIsGcash(false);
+      setNotes('');
+    }
+  }, [isEdit, orderItem]);
 
   useEffect(() => {
     if (!visible) {
@@ -83,7 +101,6 @@ const OrderDrawer = ({
     })
     .onUpdate(event => {
       const nextHeight = startHeight.value - event.translationY;
-
       height.value = Math.max(
         COLLAPSED_HEIGHT,
         Math.min(EXPANDED_HEIGHT, nextHeight),
@@ -94,7 +111,6 @@ const OrderDrawer = ({
         event.velocityY < -500 ||
         height.value > (COLLAPSED_HEIGHT + EXPANDED_HEIGHT) / 2;
 
-      // Smooth animation without bounce
       height.value = withTiming(
         shouldExpand ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT,
         {
@@ -105,11 +121,9 @@ const OrderDrawer = ({
       runOnJS(setExpanded)(shouldExpand);
     });
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      height: height.value + 20,
-    };
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    height: height.value + 20,
+  }));
 
   // BUSINESS LOGIC
   const total = orders?.reduce((sum, order) => {
@@ -120,14 +134,21 @@ const OrderDrawer = ({
     return sum + base + addOns;
   }, 0);
 
-  const change = (parseFloat(cash) || 0) - total;
+  const newTotal = useMemo(() => {
+    return total - orderItemTotal;
+  }, [total, orderItemTotal]);
+
+  const change = useMemo(() => {
+    if (isEdit) {
+      return (parseFloat(cashTendered) || 0) - newTotal;
+    }
+    return (parseFloat(cashTendered) || 0) - total;
+  }, [total, newTotal, cashTendered, isEdit]);
 
   const groupItemsByVariant = (items: any[]) => {
     const map = new Map();
-
     items?.forEach(item => {
       const key = `${item.temp}-${item.size}`;
-
       if (!map.has(key)) {
         map.set(key, {
           temp: item.temp,
@@ -141,7 +162,6 @@ const OrderDrawer = ({
         e.price += Number(item.price);
       }
     });
-
     return Array.from(map.values());
   };
 
@@ -150,8 +170,6 @@ const OrderDrawer = ({
       orders?.map(o => ({...o, groupedItems: groupItemsByVariant(o.items)})),
     [orders],
   );
-
-  if (!visible) return null;
 
   const handleSaveOrder = () => {
     height.value = withTiming(EXPANDED_HEIGHT, {
@@ -169,8 +187,48 @@ const OrderDrawer = ({
     setExpanded(false);
   };
 
+  const handleSubmitOrder = () => {
+    const params = {
+      customer_name: customerName,
+      orders,
+      cash: cashTendered,
+      payment_method: isGcash ? 'gcash' : 'cash',
+      notes,
+      cash_tendered: cashTendered,
+      is_paid: isPaid,
+    };
+
+    if (isEdit) {
+      onSubmit({...params});
+      return;
+    }
+
+    if (isGcash) {
+      onSubmit({...params, is_paid: 1});
+      return;
+    }
+
+    Alert.alert(
+      'Order Payment Status',
+      'Is this order already paid?',
+      [
+        {
+          text: 'No',
+          onPress: () => onSubmit({...params, is_paid: 0}),
+        },
+        {
+          text: 'Yes',
+          onPress: () => onSubmit({...params, is_paid: 1}),
+        },
+      ],
+      {cancelable: true},
+    );
+  };
+
+  if (!visible) return null;
+
   return (
-    <View>
+    <>
       {expanded && (
         <Pressable
           style={StyleSheet.absoluteFillObject}
@@ -178,96 +236,121 @@ const OrderDrawer = ({
         />
       )}
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.kvWrapper}
-        pointerEvents="box-none">
-        <GestureDetector gesture={panGesture}>
-          <Animated.View style={[styles.drawer, animatedStyle]}>
-            {/* HANDLE */}
-            <View style={styles.handleArea}>
-              <View style={styles.handleBar} />
-
-              <View
-                style={[
-                  styles.collapsedRow,
-                  expanded
-                    ? {
-                        paddingBottom: 10,
-                      }
-                    : {
-                        paddingBottom: 80,
-                      },
-                ]}>
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>
-                    {totalItems} item
-                    {orders?.length !== 1 ? 's' : ''}
-                  </Text>
-                </View>
-
-                <Text style={styles.totalPill}>₱{total?.toFixed(2)}</Text>
-
-                {expanded ? (
-                  <TouchableOpacity
-                    style={styles.closeBtn}
-                    onPress={handleCloseDrawer}>
-                    <Text style={styles.closeBtnText}>▼ Close</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    style={[
-                      styles.saveBtn,
-                      orders?.length === 0 && styles.btnDisabled,
-                    ]}
-                    disabled={orders?.length === 0}
-                    onPress={handleSaveOrder}>
-                    <Text style={styles.saveBtnText}>
-                      {isEdit ? 'Update' : 'Save'} Order
-                    </Text>
-                  </TouchableOpacity>
-                )}
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[styles.drawer, animatedStyle]}>
+          {/* HANDLE */}
+          <View style={styles.handleArea}>
+            <View style={styles.handleBar} />
+            <View
+              style={[
+                styles.collapsedRow,
+                expanded ? {paddingBottom: 10} : {paddingBottom: 80},
+              ]}>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>
+                  {totalItems} item{orders?.length !== 1 ? 's' : ''}
+                </Text>
               </View>
-            </View>
 
-            {/* CONTENT */}
-            <ScrollView
-              style={styles.expandedScroll}
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}>
-              {groupedOrders?.map((item, index) => (
+              <Text style={styles.totalPill}>₱{total?.toFixed(2)}</Text>
+
+              {expanded ? (
                 <TouchableOpacity
-                  key={item.id?.toString() + index}
-                  style={styles.orderRow}
-                  onPress={() => onEdit(item)}>
-                  <View style={styles.orderRowHead}>
-                    <Text style={styles.orderName}>{item?.name}</Text>
-                    <Text style={styles.orderPrice}>₱{item?.totalPrice}</Text>
-                  </View>
+                  style={styles.closeBtn}
+                  onPress={handleCloseDrawer}>
+                  <Text style={styles.closeBtnText}>▼ Close</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={[
+                    styles.saveBtn,
+                    orders?.length === 0 && styles.btnDisabled,
+                  ]}
+                  disabled={orders?.length === 0}
+                  onPress={handleSaveOrder}>
+                  <Text style={styles.saveBtnText}>
+                    {isEdit ? 'Update' : 'Save'} Order
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
 
-                  {item?.groupedItems?.map((g: any, i: number) => (
-                    <Text key={i} style={styles.subText}>
-                      {g?.temp} {g?.size} — {g.quantity} × ₱
-                      {g?.price?.toFixed(2)}
-                    </Text>
-                  ))}
+          {/* CONTENT — KeyboardAwareScrollView handles everything */}
+          <KeyboardAwareScrollView
+            style={styles.expandedScroll}
+            contentContainerStyle={{
+              flexGrow: 1,
+              // paddingBottom: 40
+            }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            enableOnAndroid={true}
+            extraScrollHeight={20}
+            enableAutomaticScroll={true}>
+            {/* Order items list */}
+            <View style={{flex: 1}}>
+              <ScrollView
+                style={{flex: 1, maxHeight: 299}}
+                contentContainerStyle={{paddingBottom: 20}}>
+                {groupedOrders?.map((item, index) => (
+                  <TouchableOpacity
+                    key={item.id?.toString() + index}
+                    style={styles.orderRow}
+                    onPress={() => onEdit(item)}>
+                    <View style={styles.orderRowHead}>
+                      <Text style={styles.orderName}>{item?.name}</Text>
+                      <Text style={styles.orderPrice}>₱{item?.totalPrice}</Text>
+                    </View>
 
-                  {item.addOns?.length > 0 &&
-                    item.addOns.map((a: any, i: number) => (
-                      <Text key={i} style={styles.addOnText}>
-                        + {a.name} (₱{a.price})
+                    {item?.groupedItems?.map((g: any, i: number) => (
+                      <Text key={i} style={styles.subText}>
+                        {g?.temp} {g?.size} — {g.quantity} × ₱
+                        {g?.price?.toFixed(2)}
                       </Text>
                     ))}
-                </TouchableOpacity>
-              ))}
 
-              <View style={{height: 40}} />
-            </ScrollView>
+                    {item.addOns?.length > 0 &&
+                      item.addOns.map((a: any, i: number) => (
+                        <Text key={i} style={styles.addOnText}>
+                          + {a.name} (₱{a.price})
+                        </Text>
+                      ))}
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+
+            {/* expandedActions now inside scroll — moves above keyboard */}
             <View style={styles.expandedActions}>
-              <View style={styles.totalRow}>
-                <Text style={styles.totalLabel}>Total</Text>
-                <Text style={styles.totalAmount}>₱{total?.toFixed(2)}</Text>
-              </View>
+              {isEdit ? (
+                <View style={styles.editTotalContainer}>
+                  <View style={styles.editTotalRow}>
+                    <Text style={styles.totalLabel} />
+                    <Text style={styles.totalAmount}>
+                      ₱ {total?.toFixed(2)}
+                    </Text>
+                  </View>
+                  <View style={styles.editTotalRow} />
+                  <View style={styles.editTotalRow}>
+                    <Text style={styles.totalLabel}>Previous Total</Text>
+                    <Text style={styles.totalAmount}>
+                      ₱ {orderItemTotal?.toFixed(2)}
+                    </Text>
+                  </View>
+                  <View style={[styles.editTotalRow, {paddingTop: 10}]}>
+                    <Text style={styles.totalLabel}>Total</Text>
+                    <Text style={styles.totalAmount}>
+                      ₱ {newTotal?.toFixed(2)}
+                    </Text>
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>Total</Text>
+                  <Text style={styles.totalAmount}>₱{total?.toFixed(2)}</Text>
+                </View>
+              )}
 
               <Text style={styles.fieldLabel}>Customer name</Text>
               <TextInput
@@ -285,12 +368,12 @@ const OrderDrawer = ({
                   placeholder="0.00"
                   placeholderTextColor="#aaa"
                   keyboardType="decimal-pad"
-                  value={cash}
-                  onChangeText={setCash}
+                  value={cashTendered}
+                  onChangeText={setCashTendered}
                 />
                 <TouchableOpacity
                   style={styles.exactBtn}
-                  onPress={() => setCash(total?.toFixed(2))}>
+                  onPress={() => setCashTendered(total?.toFixed(2))}>
                   <Text style={styles.exactBtnText}>Exact</Text>
                 </TouchableOpacity>
               </View>
@@ -300,7 +383,6 @@ const OrderDrawer = ({
                   style={[styles.changeText, change < 0 && {color: '#E24B4A'}]}>
                   Change: ₱{change?.toFixed(2)}
                 </Text>
-
                 <TouchableOpacity onPress={() => setIsGcash(p => !p)}>
                   <Text
                     style={[styles.gcashText, isGcash && styles.gcashActive]}>
@@ -342,26 +424,17 @@ const OrderDrawer = ({
                     orders?.length === 0 && styles.btnDisabled,
                   ]}
                   disabled={orders?.length === 0}
-                  onPress={() => {
-                    console.log('orders', orders);
-                    onSubmit({
-                      customer_name: customerName,
-                      orders: orders,
-                      cash,
-                      payment_method: isGcash ? 'gcash' : 'cash',
-                      notes,
-                    });
-                  }}>
+                  onPress={handleSubmitOrder}>
                   <Text style={styles.submitBtnText}>
                     {isEdit ? 'Update' : 'Submit'} Order
                   </Text>
                 </TouchableOpacity>
               </View>
             </View>
-          </Animated.View>
-        </GestureDetector>
-      </KeyboardAvoidingView>
-    </View>
+          </KeyboardAwareScrollView>
+        </Animated.View>
+      </GestureDetector>
+    </>
   );
 };
 

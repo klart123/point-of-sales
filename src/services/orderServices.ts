@@ -56,12 +56,12 @@ export const getSummaryDates = () => {
   };
 };
 
-export const getOrders = () => {
+export const getOrders: any = (params: any) => {
   return async (dispatch: AppDispatch) => {
     dispatch(orderActions.getOrderStart());
 
     axiosInstance
-      .get('/orders')
+      .get('/orders', params)
       .then(response => {
         if (response?.status === 200) {
           return dispatch(orderActions.getOrderSuccess(response?.data));

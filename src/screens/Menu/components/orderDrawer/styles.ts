@@ -77,7 +77,6 @@ export default StyleSheet.create({
     paddingHorizontal: 16,
   },
   expandedActions: {
-    paddingHorizontal: 16,
     marginBottom: 40,
   },
   orderRow: {
@@ -115,6 +114,14 @@ export default StyleSheet.create({
     borderTopWidth: 1.5,
     borderTopColor: '#222',
     marginTop: 4,
+  },
+  editTotalContainer: {
+    borderTopWidth: 1.5,
+    borderTopColor: '#222',
+  },
+  editTotalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   totalLabel: {
     fontSize: 15,
