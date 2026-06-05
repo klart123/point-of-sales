@@ -16,6 +16,7 @@ interface OrderListProps {
   refreshing?: boolean;
   onRefresh?: () => void;
   orderStatuses?: object;
+  onEditOrder: (orderItem: any) => void;
 }
 
 const OrderList: React.FC<OrderListProps> = ({
@@ -28,6 +29,7 @@ const OrderList: React.FC<OrderListProps> = ({
   refreshing,
   onRefresh,
   orderStatuses,
+  onEditOrder,
 }) => {
   return (
     <FlatList
@@ -47,6 +49,7 @@ const OrderList: React.FC<OrderListProps> = ({
           onPressItem={onPressItem}
           onCompleteOrder={onCompleteOrder}
           hideCompleteButton={hideCompleteButton}
+          onEditOrder={onEditOrder}
           orderStatuses={orderStatuses}
         />
       )}

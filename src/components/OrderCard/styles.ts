@@ -153,18 +153,33 @@ export default StyleSheet.create({
     fontWeight: '700',
     color: '#1D1D1B',
   },
+  actionsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  editOrder: {
+    padding: 10,
+    marginTop: 4,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    borderRadius: 6,
+    backgroundColor: COLORS.primary,
+  },
   totalPriceContainer: {
     flex: 1,
     marginTop: 4,
     padding: 10,
-    backgroundColor: COLORS.secondary,
     borderRadius: 6,
-    alignSelf: 'flex-end',
+    justifyContent: 'center',
+  },
+  alignCenter: {
+    alignItems: 'center',
   },
   totalPrice: {
     fontSize: 16,
     fontWeight: '700',
     color: '#1D1D1B',
+    textAlign: 'right',
   },
   progress: {
     fontSize: 12,

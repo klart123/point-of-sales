@@ -56,10 +56,20 @@ const orderSlice = createSlice({
   initialState,
   reducers: {
     addOrder: (state, action: PayloadAction<OrderItem>) => {
+      console.log('add Order', action.payload);
       state.orders.push(action.payload);
     },
+    editOrder: (state, action: PayloadAction<any>) => {
+      state.orders = action.payload?.items;
+      state.orderId = action.payload?.orderId;
+      state.isEdit = true;
+    },
     updateOrder: (state, action: PayloadAction<OrderItem>) => {
-      const index = state.orders.findIndex(o => o.id === action.payload.id);
+      console.log(state.orders);
+      console.log('action.payload.id', action.payload.id);
+      const index = state.orders.findIndex(o => o.sku === action.payload.sku);
+      console.log(' index', index);
+      console.log(' state.orders[index]', state.orders[index]);
       if (index !== -1) {
         state.orders[index] = action.payload;
       }
@@ -69,6 +79,9 @@ const orderSlice = createSlice({
     },
     clearOrders: state => {
       state.orders = [];
+    },
+    addCustomerName: (state, action: PayloadAction<string>) => {
+      state.orderCustomerName = action.payload;
     },
     orderStart: state => {
       // state.loading = true;

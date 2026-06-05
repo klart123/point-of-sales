@@ -208,7 +208,7 @@ export const updateOrder = ({
   return (dispatch: AppDispatch) => {
     dispatch(orderActions.editOrderStart());
     axiosInstance
-      .put(`/orders/${id}`, {items, customer_name})
+      .put(`/orders/${id}`, {customer_name, items})
       .then(response => {
         if (response.status === 200 || response.status === 201) {
           return dispatch(orderActions.editOrderSuccess());

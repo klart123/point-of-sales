@@ -10,6 +10,7 @@ import {Orders, ContainerView} from '../../components';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from '../../services';
 import {RootState} from '../../redux/store';
+import {orderActions} from '../../redux/slices/orderSlice';
 
 const OrderList = () => {
   const {socketURL} = useSelector((state: RootState) => state.api);
@@ -53,12 +54,10 @@ const OrderList = () => {
   useFocusEffect(
     useCallback(() => {
       loadActiveOrders();
-      console.log('baseURL', socketURL);
     }, []),
   );
 
   useEffect(() => {
-    console.log('baseURL', socketURL);
     const s = io(socketURL);
 
     dispatch(services.getOrderStatuses());
@@ -94,8 +93,6 @@ const OrderList = () => {
           newList = prev;
         }
 
-        // Re-sort the whole list after every update
-        // so FIFO order is always maintained
         return sortOrders(newList);
       });
       setUpdatedAt(Date.now());
@@ -114,7 +111,7 @@ const OrderList = () => {
 
     // Go back 3 days (including today)
     const threeDaysAgo = new Date(today);
-    threeDaysAgo.setDate(today.getDate() - 2); // -2 because we include today
+    threeDaysAgo.setDate(today.getDate() - 2);
 
     // Format as YYYY-MM-DD
     const from = threeDaysAgo.toISOString().slice(0, 10);
@@ -208,6 +205,61 @@ const OrderList = () => {
     loadActiveOrders();
   };
 
+  const convertBackendOrder = (orderItem: any) => {
+    // Group flat items array by sku
+    const grouped = new Map<string, any>();
+
+    orderItem.items.forEach((item: any) => {
+      if (!grouped.has(item.sku)) {
+        grouped.set(item.sku, {
+          id: item.order_id, // use first item's id as the order entry id
+          sku: item.sku,
+          name: item.name,
+          isUpdate: true, // flag so your slice knows this is an edit
+          totalPrice: 0,
+          items: [],
+          addOns: [],
+        });
+      }
+
+      const entry = grouped.get(item.sku);
+
+      // Add to items array (temp/size/price per row)
+      entry.items.push({
+        temp: item.type ?? '',
+        size: item.size ?? '',
+        price: item.price ?? 0,
+      });
+
+      // Accumulate total price
+      entry.totalPrice += item.price ?? 0;
+
+      // Map add_ons if they exist
+      if (item.add_ons && item.add_ons.length > 0) {
+        item.add_ons.forEach((addOn: any) => {
+          entry.addOns.push({
+            name: addOn.name,
+            price: addOn.price,
+          });
+        });
+      }
+    });
+
+    return Array.from(grouped.values());
+  };
+
+  const handleEditOrder = (orderItem: any) => {
+    if (orderItem) {
+      const converted = convertBackendOrder(orderItem);
+      console.log('orderItem', orderItem);
+      console.log('converted', converted);
+      dispatch(orderActions.addCustomerName(orderItem.customer_name));
+      dispatch(
+        orderActions.editOrder({items: converted, orderId: orderItem?.id}),
+      );
+    }
+    navigation.navigate('Store');
+  };
   // ── Render ─────────────────────────────────────────────────────────────
   return (
     <ContainerView style={styles.container}>
@@ -215,6 +267,7 @@ const OrderList = () => {
       <View style={styles.header}>
         <Text style={styles.subtitle}>{activeOrders.length} active orders</Text>
       </View>
+
       <Orders
         orders={orders}
         updatedAt={updatedAt}
@@ -223,6 +276,7 @@ const OrderList = () => {
         refreshing={refreshing}
         onRefresh={onRefresh}
         orderStatuses={orderStatuses}
+        onEditOrder={handleEditOrder}
       />
     </ContainerView>
   );

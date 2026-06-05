@@ -13,6 +13,7 @@ interface Props {
   onPressItem: (order: Order, item: OrderItem) => void;
   onCompleteOrder: (order: Order) => void;
   hideCompleteButton: boolean;
+  onEditOrder: (orderItem: any) => void;
   orderStatuses?: object;
 }
 
@@ -21,6 +22,7 @@ const OrderCard: React.FC<Props> = ({
   onPressItem,
   onCompleteOrder,
   hideCompleteButton,
+  onEditOrder,
   //   orderStatuses,
 }) => {
   const {orderStatuses} = useSelector((state: RootState) => state.orders);
@@ -31,7 +33,8 @@ const OrderCard: React.FC<Props> = ({
   return (
     <TouchableOpacity
       style={[styles.card, {borderColor: borderColor}]}
-      disabled={order.status === 'completed'}
+      // disabled={order.status === 'completed'}
+      disabled={true} // future plan to edit?
       onPress={() => {
         console.log('navigate to order', order);
       }}>
@@ -113,12 +116,18 @@ const OrderCard: React.FC<Props> = ({
           </TouchableOpacity>
         ))}
       </View>
-      {/* TOTAL */}
-      {order.total_price && (
+      <View style={styles.actionsContainer}>
+        <TouchableOpacity
+          style={[styles.editOrder]}
+          onPress={() => {
+            onEditOrder(order);
+          }}>
+          <Text style={styles.totalPrice}>Edit</Text>
+        </TouchableOpacity>
         <View style={styles.totalPriceContainer}>
           <Text style={styles.totalPrice}>Total: ₱{order.total_price}</Text>
         </View>
-      )}
+      </View>
       {/* COMPLETE BUTTON */}
       {order.status !== 'completed' && allDone && (
         <View>

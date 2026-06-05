@@ -37,11 +37,13 @@ const ANIMATION_DURATION = 300; // milliseconds
 const OrderDrawer = ({
   visible,
   onClose = () => {},
+  isEdit = false,
   onSubmit = () => {},
   onEdit = () => {},
 }: {
   visible: boolean;
   onClose: () => void;
+  isEdit: boolean;
   onSubmit: (payload: any) => void;
   onEdit: (item: any) => void;
 }) => {
@@ -54,11 +56,10 @@ const OrderDrawer = ({
   const [cash, setCash] = useState('0');
   const [isGcash, setIsGcash] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const totalItems = orders.reduce(
-    (sum, order) => sum + order?.items.length,
+  const totalItems = orders?.reduce(
+    (sum, order) => sum + order?.items?.length,
     0,
   );
-
   // REANIMATED STATE
   const height = useSharedValue(COLLAPSED_HEIGHT);
   const startHeight = useSharedValue(COLLAPSED_HEIGHT);
@@ -109,8 +110,8 @@ const OrderDrawer = ({
   });
 
   // BUSINESS LOGIC
-  const total = orders.reduce((sum, order) => {
-    const base = parseFloat(order.totalPrice) || 0;
+  const total = orders?.reduce((sum, order) => {
+    const base = parseFloat(order?.totalPrice) || 0;
     const addOns =
       order.addOns?.reduce((s: number, a: any) => s + parseFloat(a.price), 0) ||
       0;
@@ -122,7 +123,7 @@ const OrderDrawer = ({
   const groupItemsByVariant = (items: any[]) => {
     const map = new Map();
 
-    items.forEach(item => {
+    items?.forEach(item => {
       const key = `${item.temp}-${item.size}`;
 
       if (!map.has(key)) {
@@ -143,7 +144,8 @@ const OrderDrawer = ({
   };
 
   const groupedOrders = useMemo(
-    () => orders.map(o => ({...o, groupedItems: groupItemsByVariant(o.items)})),
+    () =>
+      orders?.map(o => ({...o, groupedItems: groupItemsByVariant(o.items)})),
     [orders],
   );
 
@@ -198,11 +200,11 @@ const OrderDrawer = ({
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>
                     {totalItems} item
-                    {orders.length !== 1 ? 's' : ''}
+                    {orders?.length !== 1 ? 's' : ''}
                   </Text>
                 </View>
 
-                <Text style={styles.totalPill}>₱{total.toFixed(2)}</Text>
+                <Text style={styles.totalPill}>₱{total?.toFixed(2)}</Text>
 
                 {expanded ? (
                   <TouchableOpacity
@@ -214,11 +216,13 @@ const OrderDrawer = ({
                   <TouchableOpacity
                     style={[
                       styles.saveBtn,
-                      orders.length === 0 && styles.btnDisabled,
+                      orders?.length === 0 && styles.btnDisabled,
                     ]}
-                    disabled={orders.length === 0}
+                    disabled={orders?.length === 0}
                     onPress={handleSaveOrder}>
-                    <Text style={styles.saveBtnText}>Save Order</Text>
+                    <Text style={styles.saveBtnText}>
+                      {isEdit ? 'Update' : 'Save'} Order
+                    </Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -229,19 +233,20 @@ const OrderDrawer = ({
               style={styles.expandedScroll}
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}>
-              {groupedOrders.map((item, index) => (
+              {groupedOrders?.map((item, index) => (
                 <TouchableOpacity
                   key={item.id?.toString() + index}
                   style={styles.orderRow}
                   onPress={() => onEdit(item)}>
                   <View style={styles.orderRowHead}>
-                    <Text style={styles.orderName}>{item.name}</Text>
-                    <Text style={styles.orderPrice}>₱{item.totalPrice}</Text>
+                    <Text style={styles.orderName}>{item?.name}</Text>
+                    <Text style={styles.orderPrice}>₱{item?.totalPrice}</Text>
                   </View>
 
-                  {item.groupedItems.map((g: any, i: number) => (
+                  {item?.groupedItems?.map((g: any, i: number) => (
                     <Text key={i} style={styles.subText}>
-                      {g.temp} {g.size} — {g.quantity} × ₱{g.price.toFixed(2)}
+                      {g?.temp} {g?.size} — {g.quantity} × ₱
+                      {g?.price?.toFixed(2)}
                     </Text>
                   ))}
 
@@ -259,7 +264,7 @@ const OrderDrawer = ({
             <View style={styles.expandedActions}>
               <View style={styles.totalRow}>
                 <Text style={styles.totalLabel}>Total</Text>
-                <Text style={styles.totalAmount}>₱{total.toFixed(2)}</Text>
+                <Text style={styles.totalAmount}>₱{total?.toFixed(2)}</Text>
               </View>
 
               <Text style={styles.fieldLabel}>Customer name</Text>
@@ -283,7 +288,7 @@ const OrderDrawer = ({
                 />
                 <TouchableOpacity
                   style={styles.exactBtn}
-                  onPress={() => setCash(total.toFixed(2))}>
+                  onPress={() => setCash(total?.toFixed(2))}>
                   <Text style={styles.exactBtnText}>Exact</Text>
                 </TouchableOpacity>
               </View>
@@ -291,7 +296,7 @@ const OrderDrawer = ({
               <View style={styles.changeRow}>
                 <Text
                   style={[styles.changeText, change < 0 && {color: '#E24B4A'}]}>
-                  Change: ₱{change.toFixed(2)}
+                  Change: ₱{change?.toFixed(2)}
                 </Text>
 
                 <TouchableOpacity onPress={() => setIsGcash(p => !p)}>
@@ -321,13 +326,15 @@ const OrderDrawer = ({
                 <TouchableOpacity
                   style={[
                     styles.submitBtn,
-                    orders.length === 0 && styles.btnDisabled,
+                    orders?.length === 0 && styles.btnDisabled,
                   ]}
-                  disabled={orders.length === 0}
+                  disabled={orders?.length === 0}
                   onPress={() =>
                     onSubmit({customerName, orders, cash, isGcash})
                   }>
-                  <Text style={styles.submitBtnText}>Submit Order</Text>
+                  <Text style={styles.submitBtnText}>
+                    {isEdit ? 'Update' : 'Submit'} Order
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>

@@ -8,13 +8,15 @@ import MenuModal from './components/menuModal';
 import OrderDrawer from './components/oderDrawer';
 import {orderActions} from '../../redux/slices/orderSlice';
 import OrderListModal from './components/ordersListModal';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import Product from '../../components/Product';
 import {HeaderComponent, ContainerView} from '../../components';
 
 const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
+  const route = useRoute();
+
   const {loading, menu} = useSelector((state: RootState) => state.menu);
   const {
     orders,
@@ -80,6 +82,7 @@ const MenuScreen = () => {
   };
 
   const handleEditItem = (item: any) => {
+    console.log('item', item);
     if (item?.isUpdate) {
       dispatch(
         orderActions.updateOrder({
@@ -99,13 +102,13 @@ const MenuScreen = () => {
   };
 
   const handleSubmitOrder = data => {
-    console.log('data', data);
     if (isEdit) {
       dispatch(
         services.updateOrder({
           id: orderId,
           items: orders,
-          customer_name: data,
+          customer_name: data.customerName,
+          notes: '',
         }),
       );
 
@@ -133,11 +136,16 @@ const MenuScreen = () => {
   };
 
   const handleEditOrderItem = item => {
+    console.log('orders', orders);
+    console.log('item', item);
+    console.log('list', list);
+
     const productData = list
       .flatMap(group => group.product_categories || [])
       .flatMap(cat => cat.products || [])
       .find(product => product.sku === item?.sku);
 
+    console.log('productData', productData);
     setOrderModal(false);
     handleOpenModal(productData);
     setIsEditing(true);
@@ -170,10 +178,9 @@ const MenuScreen = () => {
       <OrderDrawer
         visible={true}
         onClose={() => {}}
+        isEdit={isEdit}
         onSubmit={handleSubmitOrder}
-        onEdit={() => {
-          console.log('no function yet');
-        }}
+        onEdit={handleEditOrderItem}
       />
       {loadingOrder && (
         <View style={styles.loadingOverlay}>
