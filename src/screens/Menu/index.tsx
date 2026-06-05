@@ -11,6 +11,7 @@ import OrderListModal from './components/ordersListModal';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Product from '../../components/Product';
 import {HeaderComponent, ContainerView} from '../../components';
+import axiosInstance from '../../Api/axiosInstance';
 
 const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -82,7 +83,6 @@ const MenuScreen = () => {
   };
 
   const handleEditItem = (item: any) => {
-    console.log('item', item);
     if (item?.isUpdate) {
       dispatch(
         orderActions.updateOrder({
@@ -132,20 +132,33 @@ const MenuScreen = () => {
   };
 
   const handleHeaderPress = () => {
-    setOrderModal(true);
+    Alert.alert('Cancel Order', 'Are you sure you want to CANCEL this order?', [
+      {text: 'Close', style: 'default'},
+      {
+        text: 'Yes',
+        onPress: () => {
+          axiosInstance
+            .patch(`/orders/${orderId}/status`, {
+              status: 'cancelled',
+            })
+            .then(response => {
+              if (response.status === 200 || response.status === 201) {
+                if (navigation.canGoBack()) {
+                  navigation.goBack();
+                }
+              }
+            });
+        },
+      },
+    ]);
   };
 
   const handleEditOrderItem = item => {
-    console.log('orders', orders);
-    console.log('item', item);
-    console.log('list', list);
-
     const productData = list
       .flatMap(group => group.product_categories || [])
       .flatMap(cat => cat.products || [])
       .find(product => product.sku === item?.sku);
 
-    console.log('productData', productData);
     setOrderModal(false);
     handleOpenModal(productData);
     setIsEditing(true);
@@ -153,7 +166,7 @@ const MenuScreen = () => {
 
   return (
     <ContainerView style={styles.container}>
-      {/* <HeaderComponent label="Orders" onPress={handleHeaderPress} /> */}
+      {isEdit && <HeaderComponent label="Cancel" onPress={handleHeaderPress} />}
 
       <Product
         list={list}

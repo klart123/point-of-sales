@@ -251,8 +251,6 @@ const OrderList = () => {
   const handleEditOrder = (orderItem: any) => {
     if (orderItem) {
       const converted = convertBackendOrder(orderItem);
-      console.log('orderItem', orderItem);
-      console.log('converted', converted);
       dispatch(orderActions.addCustomerName(orderItem.customer_name));
       dispatch(
         orderActions.editOrder({items: converted, orderId: orderItem?.id}),

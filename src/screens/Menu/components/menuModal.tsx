@@ -260,9 +260,9 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
               onPress={handleSubmit}
               style={[
                 styles.buttonAdd,
-                selectedItems.length === 0 && {opacity: 0.5},
+                !isUpdate && selectedItems.length === 0 && {opacity: 0.5},
               ]}
-              disabled={selectedItems.length === 0}>
+              disabled={isUpdate ? false : selectedItems.length === 0}>
               <Text style={styles.buttonText}>
                 {isUpdate ? 'Update' : 'Add to Order'}
               </Text>
