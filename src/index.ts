@@ -10,6 +10,7 @@ import ProfileScreen from './screens/Profile';
 import OrderSummary from './screens/OrderSummary';
 import KitchenScreen from './screens/Kitchen';
 import AddProductScreen from './screens/AddProduct';
+import EditProductScreen from './screens/EditProduct';
 
 export {
   HomeScreen,
@@ -24,4 +25,5 @@ export {
   OrderSummary,
   KitchenScreen,
   AddProductScreen,
+  EditProductScreen,
 };

@@ -13,14 +13,18 @@ import {RootState} from '../../redux/store';
 import {Dropdown} from 'react-native-element-dropdown';
 import {COLORS} from '../../theme/colors';
 import AddProductCategoryModal from '../../components/AddProductCategoryModal';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import {
   addProductCategory,
   getCategories,
   resetError,
-  resetProductCategories,
-  addProducts,
-  resetAddProductState,
+  editProducts,
+  getProduct,
+  resetUpdateProduct,
 } from '../../services';
 import {ContainerView} from '../../components';
 
@@ -61,7 +65,8 @@ const TEMP_COLORS: Record<string, {bg: string; text: string; border: string}> =
     blended: {bg: '#F3E5F5', text: '#6A1B9A', border: '#CE93D8'},
   };
 
-const AddProductScreen = () => {
+const editProductScreen = () => {
+  const route = useRoute();
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const {
@@ -72,7 +77,14 @@ const AddProductScreen = () => {
     isAddingSuccess,
     prodCatLoading,
     prodCatSuccess,
+    isEditLoading,
+    isEditSuccess,
+    productItem,
   } = useSelector((state: RootState) => state.products);
+
+  /** parameters for edit products */
+  const {productId} = route.params;
+  console.log('productData', productId);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -99,14 +111,46 @@ const AddProductScreen = () => {
   );
 
   useEffect(() => {
-    if (prodCatLoading === false && prodCatSuccess === true) {
-      dispatch(resetProductCategories());
-
-      loadData();
-
-      setProdCatModal(false);
+    if (productId) {
+      console.log('productId', productId);
+      dispatch(getProduct(productId));
     }
-  }, [prodCatLoading, prodCatSuccess]);
+  }, [productId]);
+
+  useEffect(() => {
+    if (productItem) {
+      console.log('productItems', productItem);
+      setCategory(productItem.category_id);
+      const selectedCat = categories.find(
+        (c: any) => c.id === productItem.category_id,
+      );
+      setProductCategories(selectedCat?.product_categories || []);
+      setName(productItem?.name);
+      setDescription(productItem?.description);
+      setSubCategory(productItem?.product_category_id);
+
+      setVariants(
+        productItem?.items?.map(item => ({
+          temperature: item.temperature,
+          size: item.size,
+          price: String(item.price),
+        })) || [],
+      );
+    }
+  }, [productItem]);
+
+  useEffect(() => {
+    if (isEditLoading === false && isEditSuccess === true) {
+      Alert.alert('Success', 'Product added successfully', [
+        {
+          text: 'OK',
+          onPress: () => {
+            dispatch(resetUpdateProduct());
+          },
+        },
+      ]);
+    }
+  }, [isEditLoading, isEditSuccess]);
 
   useEffect(() => {
     if (!loading && category) {
@@ -114,21 +158,6 @@ const AddProductScreen = () => {
       setProductCategories(selectedCat?.product_categories || []);
     }
   }, [loading, categories]);
-
-  useEffect(() => {
-    if (isAddingLoading === false && isAddingSuccess === true) {
-      resetForm();
-      dispatch(resetAddProductState());
-      Alert.alert('Success', 'Product added successfully', [
-        {
-          text: 'OK',
-          onPress: () => {
-            navigation.goBack();
-          },
-        },
-      ]);
-    }
-  }, [isAddingLoading, isAddingSuccess]);
 
   // ── Variant helpers ──────────────────────────────────────────────────────
 
@@ -162,7 +191,7 @@ const AddProductScreen = () => {
       product_category_id: subCategory,
       items: variants,
     };
-    dispatch(addProducts(params));
+    dispatch(editProducts(productItem?.id, params));
   };
 
   const handleCancel = () => {
@@ -194,12 +223,11 @@ const AddProductScreen = () => {
 
   return (
     <ContainerView style={styles.container}>
-      <Text style={[styles.title, styles.modalTitleSpacing]}>Add Product</Text>
+      <Text style={[styles.title, styles.modalTitleSpacing]}>Edit Product</Text>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}>
-        {/* Category picker */}
         <View style={styles.categoryRow}>
           <Dropdown
             style={styles.categoryDropdown}
@@ -220,13 +248,10 @@ const AddProductScreen = () => {
               </View>
             )}
           />
-          <TouchableOpacity
-            style={styles.addCategoryBtn}
-            onPress={() => {
-              /* open add category modal */
-            }}>
+
+          {/* <TouchableOpacity style={styles.addCategoryBtn} onPress={() => {}}>
             <Text style={styles.addCategoryBtnText}>+</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         {/* Sub - Category picker */}
 
@@ -358,7 +383,7 @@ const AddProductScreen = () => {
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleSubmit} style={styles.buttonAdd}>
-            <Text style={styles.buttonText}>Add</Text>
+            <Text style={styles.buttonText}>Update</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -373,4 +398,4 @@ const AddProductScreen = () => {
   );
 };
 
-export default AddProductScreen;
+export default editProductScreen;

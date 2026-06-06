@@ -64,13 +64,53 @@ export const addProducts: any = (payload: any) => {
   };
 };
 
+export const getProduct: any = (productId: number) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productActions.getProductStart());
+
+    axiosInstance
+      .put(`/products/${productId}`)
+      .then(response => {
+        if (response.status === 200 || response.status === 201) {
+          dispatch(productActions.getProductSuccess(response.data));
+          return;
+        }
+
+        return dispatch(productActions.getProductFailed(response.data));
+      })
+      .catch(error => {
+        return dispatch(productActions.getProductFailed(error));
+      });
+  };
+};
+
+export const editProducts: any = (productId: number, payload: any) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productActions.updateProductStart());
+
+    axiosInstance
+      .put(`/products/${productId}`, payload)
+      .then(response => {
+        if (response.status === 200 || response.status === 201) {
+          dispatch(productActions.updateProductSuccess(response.data));
+          return;
+        }
+
+        return dispatch(productActions.updateProductFailed(response.data));
+      })
+      .catch(error => {
+        return dispatch(productActions.updateProductFailed(error));
+      });
+  };
+};
+
 export const getCategories = () => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.getCategoriesStart());
     axiosInstance
       .get('/categories')
       .then(response => {
-        if (response?.status === 200) {
+        if (response?.status === 200 || response?.status === 201) {
           return dispatch(productActions.getCategoriesSuccess(response?.data));
         }
 
@@ -175,5 +215,11 @@ export const resetProductCategories: any = () => {
 export const resetError: any = () => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.resetError());
+  };
+};
+
+export const resetUpdateProduct: any = () => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productActions.resetUpdateProduct());
   };
 };

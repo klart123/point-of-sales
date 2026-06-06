@@ -35,6 +35,10 @@ const AppNavigator = () => {
         <Stack.Screen name="OrderSummary" component={screens.OrderSummary} />
         <Stack.Screen name="Kitchen" component={screens.KitchenScreen} />
         <Stack.Screen name="AddProduct" component={screens.AddProductScreen} />
+        <Stack.Screen
+          name="EditProduct"
+          component={screens.EditProductScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

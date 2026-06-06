@@ -8,7 +8,7 @@ export const COLORS = {
   cardSoft: '#fdf1ee',
   border: '#f1d5cf',
 
-  text: '#2f2f2f',
+  text: '#0e0d0d',
   textSecondary: '#757575',
 
   success: '#7bbf9a',
@@ -19,7 +19,7 @@ export const COLORS = {
   beige: '#f6e7e3',
   cream: '#fff8f6',
   peach: '#fff3ef',
-  placeholder: '#aaa',
+  placeholder: '#4e4646',
   textError: '#ea4848',
   errorBg: '#ffebee',
 };

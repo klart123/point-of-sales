@@ -15,6 +15,8 @@ const initialState: products.ProductState = {
   prodCatLoading: false,
   prodCatSuccess: false,
   prodCatError: null,
+  isEditLoading: false,
+  isEditSuccess: false,
 };
 
 const productSlice = createSlice({
@@ -123,6 +125,43 @@ const productSlice = createSlice({
       state.prodCatLoading = false;
       state.prodCatSuccess = false;
       state.prodCatError = action.payload;
+    },
+
+    updateProductStart: state => {
+      state.isEditLoading = true;
+      state.isEditSuccess = false;
+    },
+    updateProductSuccess: (state, action: Payload<any>) => {
+      state.isEditLoading = false;
+      state.isEditSuccess = true;
+    },
+    updateProductFailed: (state, action: Payload<any>) => {
+      state.isEditLoading = false;
+      state.isEditSuccess = false;
+      state.editError = action.payload;
+    },
+    getProductStart: state => {
+      state.loading = true;
+      state.productItem = {};
+    },
+    getProductSuccess: (state, action: Payload<any>) => {
+      state.loading = false;
+      state.productItem = action.payload;
+    },
+    getProductFailed: (state, action: Payload<any>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    resetGetProduct: state => {
+      state.loading = false;
+      state.productItem = {};
+      state.error = {};
+    },
+
+    resetUpdateProduct: state => {
+      state.isEditLoading = false;
+      state.isEditSuccess = false;
+      state.editError = '';
     },
     resetCategories: state => {
       state.categories = [];

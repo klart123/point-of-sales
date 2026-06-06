@@ -39,7 +39,7 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [isUpdate, setIsUpdate] = useState(false);
 
-  const {name, variant, category} = item || {};
+  const {name, variant, category, items} = item || {};
 
   // ── Derived state ──────────────────────────────────────────────────────────
 
@@ -162,12 +162,12 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
             contentContainerStyle={{paddingBottom: 8}}
             keyboardShouldPersistTaps="handled">
             {/* Variant item buttons */}
-            {category?.type !== 'pastry' && variant && (
+            {category?.type !== 'pastry' && items && (
               <View style={styles.optionGroup}>
                 <Text style={styles.optionLabel}>Select Items:</Text>
                 <View style={styles.buttonGroup}>
                   <FlatList
-                    data={variant.items}
+                    data={items}
                     keyExtractor={(_, index) => index.toString()}
                     numColumns={2}
                     scrollEnabled={false}

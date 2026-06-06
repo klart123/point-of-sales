@@ -6,7 +6,7 @@ import OrderCard from './OrderCard';
 import ContainerView from './ContainerView';
 import Product from './Product';
 import ProductItem from './ProductItem';
-import ProductModal from './ProductModal';
+import AddProductCategoryModal from './AddProductCategoryModal';
 
 export {
   HeaderComponent,
@@ -17,4 +17,5 @@ export {
   ContainerView,
   Product,
   ProductItem,
+  AddProductCategoryModal,
 };

@@ -11,7 +11,11 @@ import {useDispatch, useSelector} from 'react-redux';
 import * as services from '../../services';
 import {AppDispatch, RootState} from '../../redux/store';
 import styles from './styles';
-import {Product, ContainerView} from '../../components/';
+import {
+  Product,
+  ContainerView,
+  AddProductCategoryModal,
+} from '../../components/';
 import ProductModal from './components/productModal';
 import {useNavigation} from '@react-navigation/native';
 
@@ -72,6 +76,8 @@ const ProductScreen = () => {
   };
 
   const handleAddSubmit = (data: any) => {
+    console.log('data', data);
+    return;
     dispatch(services.addProducts(data));
   };
 
@@ -89,16 +95,8 @@ const ProductScreen = () => {
         refreshing={refreshing}
         onRefresh={onRefresh}
         onPress={item => {
-          console.log('pressed item', item);
+          navigation.navigate('EditProduct', {productId: item.id});
         }}
-      />
-
-      <ProductModal
-        visible={addModal}
-        onClose={() => {
-          setAddModal(false);
-        }}
-        onSubmit={handleAddSubmit}
       />
     </ContainerView>
   );

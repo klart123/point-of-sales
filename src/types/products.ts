@@ -25,6 +25,10 @@ export type ProductState = {
   prodCatLoading: boolean;
   prodCatSuccess: boolean;
   prodCatError: string | null | Record<string, any>;
+  isEditLoading: boolean;
+  isEditSuccess: boolean;
+  editError: string | null | Record<string, any>;
+  productItem: {};
 };
 
 export type ProductItemProps = {

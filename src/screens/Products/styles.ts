@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {COLORS} from '../../../theme/colors';
+import {COLORS} from '../../theme/colors';
 
 export default StyleSheet.create({
   container: {
@@ -71,6 +71,7 @@ export default StyleSheet.create({
     elevation: 10,
   },
   input: {
+    color: COLORS.text,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,

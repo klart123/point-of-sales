@@ -11,6 +11,7 @@ import styles from '../styles';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store';
 import {Dropdown} from 'react-native-element-dropdown';
+import {COLORS} from '../../../theme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -114,7 +115,7 @@ const ProductModal: React.FC<Props> = ({visible, onClose, onSubmit}) => {
       description,
       category_id: category?.id,
       product_category_id: subCategory?.id,
-      variants,
+      items: variants,
     });
   };
 
@@ -208,6 +209,7 @@ const ProductModal: React.FC<Props> = ({visible, onClose, onSubmit}) => {
               style={styles.input}
               value={name}
               onChangeText={setName}
+              placeholderTextColor={COLORS.placeholder}
             />
 
             {/* Description */}
@@ -216,6 +218,7 @@ const ProductModal: React.FC<Props> = ({visible, onClose, onSubmit}) => {
               style={styles.input}
               value={description}
               onChangeText={setDescription}
+              placeholderTextColor={COLORS.placeholder}
             />
 
             {/* Variants header */}
@@ -267,6 +270,7 @@ const ProductModal: React.FC<Props> = ({visible, onClose, onSubmit}) => {
                     style={[styles.input, styles.variantInput]}
                     value={v.size}
                     onChangeText={val => updateVariantRow(i, 'size', val)}
+                    placeholderTextColor={COLORS.placeholder}
                   />
 
                   {/* Price */}
@@ -276,6 +280,7 @@ const ProductModal: React.FC<Props> = ({visible, onClose, onSubmit}) => {
                     keyboardType="numeric"
                     value={v.price}
                     onChangeText={val => updateVariantRow(i, 'price', val)}
+                    placeholderTextColor={COLORS.placeholder}
                   />
 
                   {/* Remove */}
