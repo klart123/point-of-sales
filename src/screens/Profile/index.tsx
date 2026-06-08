@@ -6,6 +6,7 @@ import {logout} from '../../redux/slices/authSlice';
 import * as services from '../../services';
 import {AppDispatch, RootState} from '../../redux/store';
 import {navigation} from '../../types';
+import axiosInstance from '../../Api/axiosInstance';
 
 type Props = NativeStackScreenProps<navigation.RootStackParamList, 'Profile'>;
 
@@ -42,10 +43,30 @@ const ProfileScreen: React.FC<Props> = ({navigation}) => {
     ]);
   };
 
+  const handleSeedDatabase = () => {
+    axiosInstance
+      .post(`seed`)
+      .then(response => {
+        if (response.status === 200 || response.status === 201) {
+          Alert.alert('Successfully seeded database');
+          return;
+        }
+        console.error('Unable to seed database', response.data);
+      })
+      .catch(error => {
+        console.error('Error seeding database', error);
+      });
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Profile</Text>
       {/* You can add user info here */}
+      <Button
+        title="Seed database"
+        color="#d9534f"
+        onPress={handleSeedDatabase}
+      />
       <Button title="Logout" color="#d9534f" onPress={handleLogout} />
     </View>
   );
