@@ -182,30 +182,61 @@ const OrderList = () => {
   };
 
   const handleCompleteOrder = (order: Order) => {
-    Alert.alert(
-      'Complete Order',
-      'Are you sure you want to mark this order as complete?',
-      [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Yes',
-          onPress: () => {
-            axiosInstance
-              .patch(`/orders/${order.id}/status`, {
-                status: 'completed',
-              })
-              .then(() => {
-                loadActiveOrders();
-                setOrders((prev: any[]) => prev.filter(o => o.id !== order.id));
-              })
-              .catch(error => {
-                console.error('Failed to complete order', error);
-                Alert.alert('Error', 'Failed to complete order.');
-              });
+    if (order?.is_paid === 0) {
+      Alert.alert(
+        'Order is NOT PAID',
+        'Are you sure you want to mark this order as complete?',
+        [
+          {text: 'Cancel', style: 'cancel'},
+          {
+            text: 'Yes',
+            onPress: () => {
+              axiosInstance
+                .patch(`/orders/${order.id}/status`, {
+                  status: 'completed',
+                })
+                .then(() => {
+                  loadActiveOrders();
+                  setOrders((prev: any[]) =>
+                    prev.filter(o => o.id !== order.id),
+                  );
+                })
+                .catch(error => {
+                  console.error('Failed to complete order', error);
+                  Alert.alert('Error', 'Failed to complete order.');
+                });
+            },
           },
-        },
-      ],
-    );
+        ],
+      );
+    } else {
+      Alert.alert(
+        'Complete Order',
+        'Are you sure you want to mark this order as complete?',
+        [
+          {text: 'Cancel', style: 'cancel'},
+          {
+            text: 'Yes',
+            onPress: () => {
+              axiosInstance
+                .patch(`/orders/${order.id}/status`, {
+                  status: 'completed',
+                })
+                .then(() => {
+                  loadActiveOrders();
+                  setOrders((prev: any[]) =>
+                    prev.filter(o => o.id !== order.id),
+                  );
+                })
+                .catch(error => {
+                  console.error('Failed to complete order', error);
+                  Alert.alert('Error', 'Failed to complete order.');
+                });
+            },
+          },
+        ],
+      );
+    }
   };
 
   const onRefresh = () => {
@@ -266,7 +297,6 @@ const OrderList = () => {
       dispatch(
         orderActions.editOrder({items: converted, orderId: orderItem?.id}),
       );
-      console.log('converted', converted);
     }
     navigation.navigate('Store');
   };

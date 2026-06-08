@@ -60,7 +60,6 @@ const orderSlice = createSlice({
   initialState,
   reducers: {
     addOrder: (state, action: PayloadAction<OrderItem>) => {
-      console.log('add Order', action.payload);
       state.orders.push(action.payload);
     },
     editOrder: (state, action: PayloadAction<any>) => {
@@ -96,10 +95,10 @@ const orderSlice = createSlice({
       state.message = '';
     },
     orderSuccess: (state, action: PayloadAction<any | object>) => {
-      const {id} = action.payload;
+      const {order_number} = action.payload;
       state.loading = false;
       state.isSubmitted = true;
-      state.message = `Order ID: ${id}`;
+      state.message = `Order ID: ${order_number}`;
     },
     orderFailed: (state, action: PayloadAction<string>) => {
       state.loading = false;

@@ -103,7 +103,6 @@ const MenuScreen = () => {
   };
 
   const handleSubmitOrder = data => {
-    console.log('data', data);
     if (isEdit) {
       dispatch(services.updateOrder(orderId, data));
 

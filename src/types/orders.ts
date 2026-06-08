@@ -17,4 +17,5 @@ export type Order = {
   status: string;
   created_at: string;
   items: OrderItem[];
+  is_paid: number;
 };

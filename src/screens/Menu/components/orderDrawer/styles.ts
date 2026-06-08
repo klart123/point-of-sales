@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {COLORS} from '../../../../theme';
 
 export default StyleSheet.create({
   kvWrapper: {
@@ -167,6 +168,11 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 8,
+    paddingTop: 10,
+  },
+  gcashButton: {
+    borderRadius: 6,
+    padding: 10,
   },
   changeText: {
     fontSize: 13,
@@ -178,8 +184,11 @@ export default StyleSheet.create({
     color: '#888',
   },
   gcashActive: {
-    color: '#0F6E56',
+    backgroundColor: COLORS.active,
+  },
+  gcashActiveText: {
     fontWeight: '500',
+    color: COLORS.text,
   },
   actions: {
     flexDirection: 'row',

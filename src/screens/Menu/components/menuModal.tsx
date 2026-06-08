@@ -179,7 +179,6 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
                     style={{flex: 1, width: '100%'}}
                     renderItem={({item: variantItem, index}) => {
                       const {temperature, size, price} = variantItem;
-                      console.log('variantItem item', variantItem.id, item.id);
                       return (
                         <TouchableOpacity
                           key={`temp_${temperature}_${index}`}
@@ -193,8 +192,8 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
                             )
                           }>
                           <Text style={styles.optionButtonText}>
-                            {temperature.charAt(0).toUpperCase() +
-                              temperature.slice(1)}{' '}
+                            {temperature?.charAt(0)?.toUpperCase() +
+                              temperature?.slice(1)}{' '}
                             {size} ₱{price}
                           </Text>
                         </TouchableOpacity>

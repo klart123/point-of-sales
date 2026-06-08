@@ -53,7 +53,7 @@ const OrderDrawer = ({
 
   const [customerName, setCustomerName] = useState(orderCustomerName);
   const [isPaid, setIsPaid] = useState(0);
-  const [cashTendered, setCashTendered] = useState('0');
+  const [cashTendered, setCashTendered] = useState('');
   const [isGcash, setIsGcash] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [notes, setNotes] = useState('');
@@ -78,7 +78,7 @@ const OrderDrawer = ({
       setIsPaid(orderItem?.is_paid || 0);
     } else {
       setCustomerName(orderCustomerName ?? '');
-      setCashTendered('0');
+      setCashTendered('');
       setIsGcash(false);
       setNotes('');
     }
@@ -191,11 +191,10 @@ const OrderDrawer = ({
     const params = {
       customer_name: customerName,
       orders,
-      cash: cashTendered,
       payment_method: isGcash ? 'gcash' : 'cash',
       notes,
       cash_tendered: cashTendered,
-      is_paid: isPaid,
+      is_paid: cashTendered ? 1 : isPaid,
     };
 
     if (isEdit) {
@@ -208,21 +207,7 @@ const OrderDrawer = ({
       return;
     }
 
-    Alert.alert(
-      'Order Payment Status',
-      'Is this order already paid?',
-      [
-        {
-          text: 'No',
-          onPress: () => onSubmit({...params, is_paid: 0}),
-        },
-        {
-          text: 'Yes',
-          onPress: () => onSubmit({...params, is_paid: 1}),
-        },
-      ],
-      {cancelable: true},
-    );
+    onSubmit({...params, is_paid: 0});
   };
 
   if (!visible) return null;
@@ -383,9 +368,17 @@ const OrderDrawer = ({
                   style={[styles.changeText, change < 0 && {color: '#E24B4A'}]}>
                   Change: ₱{change?.toFixed(2)}
                 </Text>
-                <TouchableOpacity onPress={() => setIsGcash(p => !p)}>
+                <TouchableOpacity
+                  onPress={value => {
+                    setIsGcash(p => !p);
+                    setCashTendered(isGcash ? 0 : total?.toFixed(2));
+                  }}
+                  style={[styles.gcashButton, isGcash && styles.gcashActive]}>
                   <Text
-                    style={[styles.gcashText, isGcash && styles.gcashActive]}>
+                    style={[
+                      styles.gcashText,
+                      isGcash && styles.gcashActiveText,
+                    ]}>
                     {isGcash ? '✓ ' : ''}Paid with GCash
                   </Text>
                 </TouchableOpacity>

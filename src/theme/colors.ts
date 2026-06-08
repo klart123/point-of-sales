@@ -22,4 +22,5 @@ export const COLORS = {
   placeholder: '#4e4646',
   textError: '#ea4848',
   errorBg: '#ffebee',
+  active: '#00b0f5',
 };
