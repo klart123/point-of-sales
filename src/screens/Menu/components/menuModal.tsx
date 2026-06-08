@@ -87,13 +87,13 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
   }, [visible, item]);
 
   const handleAddItem = (
-    productItemId: number,
+    id: number,
     temp: string,
     size: string,
     price: string,
   ) => {
     setSelectedItems(prev =>
-      [...prev, {productItemId, temp, size, price}].sort((a, b) => {
+      [...prev, {id, temp, size, price}].sort((a, b) => {
         if (a.temp < b.temp) return -1;
         if (a.temp > b.temp) return 1;
         if (a.size < b.size) return -1;

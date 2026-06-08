@@ -34,6 +34,7 @@ type Temperature = {
 };
 
 type VariantRow = {
+  id: number | string;
   temperature: string;
   size: string;
   price: string;
@@ -93,7 +94,7 @@ const editProductScreen = () => {
   const [prodCatModal, setProdCatModal] = useState(false);
   const [productCategories, setProductCategories] = useState([]);
   const [variants, setVariants] = useState<VariantRow[]>([
-    {temperature: '', size: '', price: ''},
+    {id: '', temperature: '', size: '', price: ''},
   ]);
 
   const loadData = () => {
@@ -131,6 +132,7 @@ const editProductScreen = () => {
 
       setVariants(
         productItem?.items?.map(item => ({
+          productId: item?.id,
           temperature: item.temperature,
           size: item.size,
           price: String(item.price),
