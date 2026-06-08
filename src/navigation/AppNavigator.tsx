@@ -26,11 +26,7 @@ const AppNavigator = () => {
           headerBackButtonDisplayMode: 'minimal',
         }}>
         {/* Public screens — no drawer */}
-        <Stack.Screen
-          name="Login"
-          component={screens.LoginScreen}
-          options={{headerShown: false}} // usually login has no header
-        />
+        <Stack.Screen name="Login" component={screens.LoginScreen} />
         <Stack.Screen name="Register" component={screens.RegisterScreen} />
         <Stack.Screen name="Details" component={screens.DetailsScreen} />
 
