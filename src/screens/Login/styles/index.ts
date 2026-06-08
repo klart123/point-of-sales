@@ -40,4 +40,17 @@ export default StyleSheet.create({
     color: 'blue',
     textAlign: 'center',
   },
+
+  errorContainer: {
+    width: '100%',
+    paddingVertical: 20,
+  },
+  errorText: {
+    textAlign: 'center',
+    color: COLORS.textError,
+    backgroundColor: COLORS.errorBg,
+    padding: 5,
+    borderRadius: 5,
+    width: '100%',
+  },
 });

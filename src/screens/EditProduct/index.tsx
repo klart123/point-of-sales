@@ -66,7 +66,7 @@ const TEMP_COLORS: Record<string, {bg: string; text: string; border: string}> =
     blended: {bg: '#F3E5F5', text: '#6A1B9A', border: '#CE93D8'},
   };
 
-const editProductScreen = () => {
+const EditProductScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -85,7 +85,6 @@ const editProductScreen = () => {
 
   /** parameters for edit products */
   const {productId} = route.params;
-  console.log('productData', productId);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -113,14 +112,12 @@ const editProductScreen = () => {
 
   useEffect(() => {
     if (productId) {
-      console.log('productId', productId);
       dispatch(getProduct(productId));
     }
   }, [productId]);
 
   useEffect(() => {
     if (productItem) {
-      console.log('productItems', productItem);
       setCategory(productItem.category_id);
       const selectedCat = categories.find(
         (c: any) => c.id === productItem.category_id,
@@ -400,4 +397,4 @@ const editProductScreen = () => {
   );
 };
 
-export default editProductScreen;
+export default EditProductScreen;

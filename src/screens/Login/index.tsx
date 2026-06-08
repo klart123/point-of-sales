@@ -34,7 +34,7 @@ const LoginScreen = () => {
 
   const dispatch = useDispatch();
   const navigation = useNavigation<LoginScreenNavigationProp>();
-  const {loading, isAuthenticated} = useSelector(
+  const {loading, isAuthenticated, error} = useSelector(
     (state: RootState) => state.auth,
   );
 
@@ -48,11 +48,11 @@ const LoginScreen = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (!loading && isAuthenticated) {
       // navigation.replace('Home');
       navigation.replace('MainDrawer', {screen: 'Orders'});
     }
-  }, [isAuthenticated]);
+  }, [loading, isAuthenticated]);
 
   return (
     <ContainerView style={styles.container}>
@@ -78,6 +78,11 @@ const LoginScreen = () => {
           onChangeText={setPassword}
           placeholderTextColor={COLORS.placeholder}
         />
+        {error && error?.error && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error?.error}</Text>
+          </View>
+        )}
 
         <View style={styles.buttonContainer}>
           <Button title="Login" onPress={handleLogin} />
