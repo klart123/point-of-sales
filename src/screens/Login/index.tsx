@@ -49,7 +49,8 @@ const LoginScreen = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigation.replace('Home');
+      // navigation.replace('Home');
+      navigation.replace('MainDrawer', {screen: 'Orders'});
     }
   }, [isAuthenticated]);
 

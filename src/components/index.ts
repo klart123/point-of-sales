@@ -7,6 +7,7 @@ import ContainerView from './ContainerView';
 import Product from './Product';
 import ProductItem from './ProductItem';
 import AddProductCategoryModal from './AddProductCategoryModal';
+import DrawerNavigator from './DrawerNavigator';
 
 export {
   HeaderComponent,
@@ -18,4 +19,5 @@ export {
   Product,
   ProductItem,
   AddProductCategoryModal,
+  DrawerNavigator,
 };

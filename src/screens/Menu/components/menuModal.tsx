@@ -86,9 +86,14 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
     }
   }, [visible, item]);
 
-  const handleAddItem = (temp: string, size: string, price: string) => {
+  const handleAddItem = (
+    productItemId: number,
+    temp: string,
+    size: string,
+    price: string,
+  ) => {
     setSelectedItems(prev =>
-      [...prev, {temp, size, price}].sort((a, b) => {
+      [...prev, {productItemId, temp, size, price}].sort((a, b) => {
         if (a.temp < b.temp) return -1;
         if (a.temp > b.temp) return 1;
         if (a.size < b.size) return -1;
@@ -174,12 +179,18 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
                     style={{flex: 1, width: '100%'}}
                     renderItem={({item: variantItem, index}) => {
                       const {temperature, size, price} = variantItem;
+                      console.log('variantItem item', variantItem.id, item.id);
                       return (
                         <TouchableOpacity
                           key={`temp_${temperature}_${index}`}
                           style={styles.optionButton}
                           onPress={() =>
-                            handleAddItem(temperature, size, price)
+                            handleAddItem(
+                              variantItem.id,
+                              temperature,
+                              size,
+                              price,
+                            )
                           }>
                           <Text style={styles.optionButtonText}>
                             {temperature.charAt(0).toUpperCase() +

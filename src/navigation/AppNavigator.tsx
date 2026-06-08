@@ -5,6 +5,7 @@ import * as screens from '../index';
 import {navigation} from '../types';
 import SplashScreen from 'react-native-splash-screen';
 import {COLORS} from '../theme/colors';
+import DrawerNavigator from '../components/DrawerNavigator';
 
 const Stack = createNativeStackNavigator<navigation.RootStackParamList>();
 
@@ -20,20 +21,30 @@ const AppNavigator = () => {
         screenOptions={{
           headerStyle: {backgroundColor: COLORS.primary},
           headerTitleStyle: {color: COLORS.text},
-          // headerBackTitleStyle: {color: COLORS.text},
-
           headerTintColor: COLORS.text,
+          headerBackTitle: ' ',
+          headerBackButtonDisplayMode: 'minimal',
         }}>
-        <Stack.Screen name="Login" component={screens.LoginScreen} />
-        <Stack.Screen name="Home" component={screens.HomeScreen} />
-        <Stack.Screen name="Details" component={screens.DetailsScreen} />
+        {/* Public screens — no drawer */}
+        <Stack.Screen
+          name="Login"
+          component={screens.LoginScreen}
+          options={{headerShown: false}} // usually login has no header
+        />
         <Stack.Screen name="Register" component={screens.RegisterScreen} />
-        <Stack.Screen name="Orders" component={screens.OrderListScreen} />
-        <Stack.Screen name="Store" component={screens.MenuScreen} />
-        <Stack.Screen name="Products" component={screens.ProductScreen} />
-        <Stack.Screen name="Profile" component={screens.ProfileScreen} />
-        <Stack.Screen name="OrderSummary" component={screens.OrderSummary} />
-        <Stack.Screen name="Kitchen" component={screens.KitchenScreen} />
+        <Stack.Screen name="Details" component={screens.DetailsScreen} />
+
+        {/* All authenticated screens live inside the drawer */}
+        <Stack.Screen
+          name="MainDrawer"
+          component={DrawerNavigator}
+          options={{headerShown: false}} // ← drawer manages its own header
+        />
+        <Stack.Screen
+          name="Store"
+          component={screens.MenuScreen}
+          options={{title: 'Menu'}}
+        />
         <Stack.Screen name="AddProduct" component={screens.AddProductScreen} />
         <Stack.Screen
           name="EditProduct"
