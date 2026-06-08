@@ -49,5 +49,12 @@
 	<false/>
 	<key>UIDesignRequiresCompatibility</key>
 	<true/>
+	<key>UIAppFonts</key>
+	<array>
+	<string>Ionicons.ttf</string>
+	<string>MaterialIcons.ttf</string>
+	<string>FontAwesome.ttf</string>
+	<!-- add others as needed -->
+	</array>
 </dict>
 </plist>
