@@ -8,6 +8,7 @@ import Product from './Product';
 import ProductItem from './ProductItem';
 import AddProductCategoryModal from './AddProductCategoryModal';
 import DrawerNavigator from './DrawerNavigator';
+import ServerDiscoveryModal from './Servers';
 
 export {
   HeaderComponent,
@@ -20,4 +21,5 @@ export {
   ProductItem,
   AddProductCategoryModal,
   DrawerNavigator,
+  ServerDiscoveryModal,
 };

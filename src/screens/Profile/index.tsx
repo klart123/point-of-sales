@@ -7,13 +7,17 @@ import * as services from '../../services';
 import {AppDispatch, RootState} from '../../redux/store';
 import {navigation} from '../../types';
 import axiosInstance from '../../Api/axiosInstance';
+import ServerDiscoveryModal from '../../components/Servers';
+import {apiActions} from '../../redux/slices/apiSlice';
 
 type Props = NativeStackScreenProps<navigation.RootStackParamList, 'Profile'>;
 
 const ProfileScreen: React.FC<Props> = ({navigation}) => {
   const dispatch = useDispatch<AppDispatch>();
+  const {baseURL} = useSelector(state => state.api);
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [userProfile, setUserProfile] = useState<object | null>(null);
+  const [serversModal, setServersModal] = useState<boolean>(false);
 
   const {user} = useSelector((state: RootState) => state.user);
 
@@ -58,6 +62,10 @@ const ProfileScreen: React.FC<Props> = ({navigation}) => {
       });
   };
 
+  const handleOpenServer = () => {
+    setServersModal(true);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Profile</Text>
@@ -67,7 +75,19 @@ const ProfileScreen: React.FC<Props> = ({navigation}) => {
         color="#d9534f"
         onPress={handleSeedDatabase}
       />
+
+      <Button title="Servers" color="#d9534f" onPress={handleOpenServer} />
       <Button title="Logout" color="#d9534f" onPress={handleLogout} />
+      <ServerDiscoveryModal
+        visible={serversModal}
+        currentBaseURL={baseURL}
+        onSelect={value => {
+          dispatch(apiActions.setSocketURL(value));
+        }}
+        onClose={() => {
+          setServersModal(false);
+        }}
+      />
     </View>
   );
 };
@@ -78,6 +98,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 24,
     backgroundColor: '#fff',
+    gap: 20,
   },
   title: {
     fontSize: 28,

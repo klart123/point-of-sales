@@ -19,8 +19,10 @@ import {
   HeaderComponent,
   Button,
   ContainerView,
+  ServerDiscoveryModal,
 } from '../../components';
 import {COLORS} from '../../theme';
+import {apiActions} from '../../redux/slices/apiSlice';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   navigation.RootStackParamList,
@@ -37,6 +39,7 @@ const LoginScreen = () => {
   const {loading, isAuthenticated, error} = useSelector(
     (state: RootState) => state.auth,
   );
+  const {baseURL} = useSelector((state: RootState) => state.api);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -97,9 +100,19 @@ const LoginScreen = () => {
         </View>
       </View>
 
-      <ApiSettingsModal
+      {/* <ApiSettingsModal
         visible={showModal}
         onClose={() => setShowModal(false)}
+      /> */}
+      <ServerDiscoveryModal
+        visible={showModal}
+        currentBaseURL={baseURL}
+        onSelect={value => {
+          dispatch(apiActions.setSocketURL(value));
+        }}
+        onClose={() => {
+          setShowModal(false);
+        }}
       />
     </ContainerView>
   );
