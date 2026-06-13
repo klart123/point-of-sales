@@ -9,6 +9,12 @@ import {navigation} from '../../types';
 import axiosInstance from '../../Api/axiosInstance';
 import ServerDiscoveryModal from '../../components/Servers';
 import {apiActions} from '../../redux/slices/apiSlice';
+import {
+  removeSocketeUrl,
+  saveSocketUrl,
+  removeApiBaseUrl,
+  saveApiBaseUrl,
+} from '../../../env';
 
 type Props = NativeStackScreenProps<navigation.RootStackParamList, 'Profile'>;
 
@@ -66,6 +72,23 @@ const ProfileScreen: React.FC<Props> = ({navigation}) => {
     setServersModal(true);
   };
 
+  const handleSaveUrl = async url => {
+    if (!url.startsWith('http')) {
+      Alert.alert('Invalid URL', 'Please enter a valid API URL');
+      return;
+    }
+    dispatch(apiActions.setSocketURL(url));
+
+    await removeSocketeUrl();
+    await saveSocketUrl(url);
+
+    dispatch(apiActions.setBaseURL(`${url}/api`));
+    await removeApiBaseUrl();
+    await saveApiBaseUrl(url);
+
+    Alert.alert('Success', 'API Base URL updated!');
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Profile</Text>
@@ -81,9 +104,7 @@ const ProfileScreen: React.FC<Props> = ({navigation}) => {
       <ServerDiscoveryModal
         visible={serversModal}
         currentBaseURL={baseURL}
-        onSelect={value => {
-          dispatch(apiActions.setSocketURL(value));
-        }}
+        onSelect={handleSaveUrl}
         onClose={() => {
           setServersModal(false);
         }}
