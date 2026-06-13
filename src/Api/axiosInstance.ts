@@ -10,9 +10,15 @@ const axiosInstance = axios.create({
   },
 });
 
+axiosInstance.defaults.headers.common['Authorization'] =
+  `Bearer ${store.getState().auth.token}`;
+
 // 🧠 Always pull latest baseURL before each request
 axiosInstance.interceptors.request.use(
   config => {
+    const token = store.getState().auth.token; // wherever you store it
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+
     const latestBaseURL = store.getState().api.baseURL;
     config.baseURL = latestBaseURL;
 
@@ -22,6 +28,7 @@ axiosInstance.interceptors.request.use(
       config.baseURL,
       config.url,
       config.data,
+      config.headers,
     );
 
     return config;
@@ -45,12 +52,13 @@ axiosInstance.interceptors.response.use(
   },
   error => {
     if (error.response) {
-      const {status, data, config} = error.response;
+      const {status, data, config, headers} = error.response;
 
       console.log(`[Axios Response Error] ${status}`, {
         url: config.baseURL + config.url,
         method: config.method,
         data,
+        headers,
       });
 
       switch (status) {
