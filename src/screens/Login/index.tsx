@@ -23,6 +23,12 @@ import {
 } from '../../components';
 import {COLORS} from '../../theme';
 import {apiActions} from '../../redux/slices/apiSlice';
+import {
+  removeSocketeUrl,
+  saveSocketUrl,
+  removeApiBaseUrl,
+  saveApiBaseUrl,
+} from '../../../env';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   navigation.RootStackParamList,
@@ -56,6 +62,23 @@ const LoginScreen = () => {
       navigation.replace('MainDrawer', {screen: 'Orders'});
     }
   }, [loading, isAuthenticated]);
+
+  const handleSaveBaseUrl = async url => {
+    if (!url.startsWith('http')) {
+      Alert.alert('Invalid URL', 'Please enter a valid API URL');
+      return;
+    }
+    dispatch(apiActions.setSocketURL(url));
+
+    await removeSocketeUrl();
+    await saveSocketUrl(url);
+
+    dispatch(apiActions.setBaseURL(`${url}/api`));
+    await removeApiBaseUrl();
+    await saveApiBaseUrl(url);
+
+    Alert.alert('Success', 'API Base URL updated!');
+  };
 
   return (
     <ContainerView style={styles.container}>
@@ -107,9 +130,7 @@ const LoginScreen = () => {
       <ServerDiscoveryModal
         visible={showModal}
         currentBaseURL={baseURL}
-        onSelect={value => {
-          dispatch(apiActions.setSocketURL(value));
-        }}
+        onSelect={handleSaveBaseUrl}
         onClose={() => {
           setShowModal(false);
         }}
