@@ -58,7 +58,6 @@ export const submitOrder =
         }
       })
       .catch(error => {
-        console.log('error', error);
         dispatch(orderActions.orderFailed(error?.data?.error));
       });
   };

@@ -166,7 +166,6 @@ export const submitOrder = (data: any) => async (dispatch: AppDispatch) => {
       }
     })
     .catch(error => {
-      console.log('error', error);
       dispatch(orderActions.orderFailed(error?.data?.error));
     });
 };

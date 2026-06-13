@@ -1,22 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {
-  FlatList,
-  View,
-  Text,
-  // ActivityIndicator,
-  RefreshControl,
-  TouchableOpacity,
-} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from '../../services';
 import {AppDispatch, RootState} from '../../redux/store';
 import styles from './styles';
-import {
-  Product,
-  ContainerView,
-  AddProductCategoryModal,
-} from '../../components/';
-import ProductModal from './components/productModal';
+import {Product, ContainerView} from '../../components/';
 import {useNavigation} from '@react-navigation/native';
 
 const ProductScreen = () => {
@@ -65,20 +53,8 @@ const ProductScreen = () => {
     setRefreshing(false);
   };
 
-  const handleLoadMore = () => {
-    if (hasMore && !loading) {
-      setPage(prevPage => prevPage + 1);
-    }
-  };
-
   const handleAddModal = () => {
     navigation.navigate('AddProduct');
-  };
-
-  const handleAddSubmit = (data: any) => {
-    console.log('data', data);
-    return;
-    dispatch(services.addProducts(data));
   };
 
   return (

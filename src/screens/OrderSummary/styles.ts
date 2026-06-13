@@ -72,7 +72,8 @@ export default StyleSheet.create({
 
   // Summary panel
   summaryPanel: {
-    padding: 16,
+    padding: 10,
+    gap: 5,
   },
   summaryLoader: {
     padding: 32,
@@ -100,6 +101,17 @@ export default StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#eee',
   },
+  cashStatBox: {
+    flex: 1,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 12,
+    alignItems: 'center',
+    borderWidth: 0.5,
+    borderColor: '#eee',
+    gap: 10,
+  },
+  inStatBox: {flex: 1, alignItems: 'center'},
   statValue: {
     fontSize: 18,
     fontWeight: '700',
@@ -109,6 +121,7 @@ export default StyleSheet.create({
     fontSize: 10,
     color: '#aaa',
     marginTop: 2,
+    textAlign: 'center',
   },
 
   // Status badges
@@ -143,8 +156,7 @@ export default StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 8,
     padding: 12,
-    marginBottom: 6,
-    borderWidth: 0.5,
+    // borderWidth: 0.5,
     borderColor: '#eee',
   },
   productRank: {

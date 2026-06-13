@@ -339,7 +339,7 @@ export default function SyncScreen({port = 3000}: SyncScreenProps) {
 
       if (selectedTarget.type === 'node') body.targetUrl = selectedTarget.url;
       if (since) body.since = since;
-      console.log('baseURL', baseURL);
+
       const {data} = await axiosInstance.post(
         `${baseURL}/sync/push-to-target`,
         body,
@@ -349,7 +349,6 @@ export default function SyncScreen({port = 3000}: SyncScreenProps) {
       );
       setSyncResult(data);
     } catch (err: any) {
-      console.log('err', err);
       setSyncResult({
         ok: false,
         error: err?.response?.data?.error ?? err?.message ?? 'Unknown error',

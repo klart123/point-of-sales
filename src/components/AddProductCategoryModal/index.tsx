@@ -90,7 +90,6 @@ const AddProductCategoryModal: React.FC<Props> = ({
                 placeholderStyle={styles.categoryDropdownPlaceholder}
                 value={category}
                 onChange={value => {
-                  console.log('selected category', value);
                   setCategory(value?.id);
                 }}
                 data={categories}

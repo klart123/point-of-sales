@@ -178,7 +178,6 @@ export const addProductCategory: any = (payload: any) => {
     axiosInstance
       .post('/product-categories', payload)
       .then(response => {
-        console.log('response', response);
         if (response?.status === 200 || response?.status === 201) {
           return dispatch(
             productActions.addProductCategorySuccess(response?.data),
@@ -188,7 +187,6 @@ export const addProductCategory: any = (payload: any) => {
         return dispatch(productActions.addProductCategoryFailed(response));
       })
       .catch(error => {
-        console.log('error', error);
         dispatch(productActions.addProductCategoryFailed(error));
       });
   };

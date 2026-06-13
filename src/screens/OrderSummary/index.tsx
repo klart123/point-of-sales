@@ -21,6 +21,11 @@ type DateSummary = {
   pending: number;
 };
 
+type SummaryCash = {
+  total: number;
+  count: number;
+};
+
 type DaySummary = {
   date_range: {from: string; to: string};
   summary: {
@@ -28,6 +33,8 @@ type DaySummary = {
     total_revenue: number;
     total_paid_orders: number;
     total_items_sold: number;
+    total_gcash_paid: SummaryCash;
+    total_cash_paid: SummaryCash;
   };
   by_status: {
     status: string;
@@ -122,13 +129,13 @@ const OrderSummary = () => {
     return (
       <View style={styles.summaryPanel}>
         {/* Stats row */}
+        <View style={styles.statBox}>
+          <Text style={styles.statValue}>
+            ₱{s.total_revenue.toLocaleString()}
+          </Text>
+          <Text style={styles.statLabel}>Revenue</Text>
+        </View>
         <View style={styles.statsRow}>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>
-              ₱{s.total_revenue.toLocaleString()}
-            </Text>
-            <Text style={styles.statLabel}>Revenue</Text>
-          </View>
           <View style={styles.statBox}>
             <Text style={styles.statValue}>{s.total_orders}</Text>
             <Text style={styles.statLabel}>Orders</Text>
@@ -137,14 +144,32 @@ const OrderSummary = () => {
             <Text style={styles.statValue}>{s.total_items_sold}</Text>
             <Text style={styles.statLabel}>Items Sold</Text>
           </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>{s.total_paid_orders}</Text>
-            <Text style={styles.statLabel}>Paid</Text>
+        </View>
+        <View style={styles.statsRow}>
+          <View style={styles.cashStatBox}>
+            <View style={styles.inStatBox}>
+              <Text style={styles.statValue}>{s?.total_cash_paid?.total}</Text>
+              <Text style={styles.statLabel}>Cash</Text>
+            </View>
+            <View style={styles.inStatBox}>
+              <Text style={styles.statValue}>{s?.total_cash_paid?.count}</Text>
+              <Text style={styles.statLabel}>Count</Text>
+            </View>
+          </View>
+          <View style={styles.cashStatBox}>
+            <View style={styles.inStatBox}>
+              <Text style={styles.statValue}>{s?.total_gcash_paid?.total}</Text>
+              <Text style={styles.statLabel}>Gcash</Text>
+            </View>
+            <View style={styles.inStatBox}>
+              <Text style={styles.statValue}>{s?.total_gcash_paid?.count}</Text>
+              <Text style={styles.statLabel}>Count</Text>
+            </View>
           </View>
         </View>
 
         {/* Orders by status */}
-        <Text style={styles.sectionTitle}>Orders by Status</Text>
+        {/* <Text style={styles.sectionTitle}>Orders by Status</Text>
         <View style={styles.statusRow}>
           {by_status.map(s => (
             <View key={s.status} style={styles.statusBadgeWrapper}>
@@ -173,7 +198,7 @@ const OrderSummary = () => {
               </View>
             </View>
           ))}
-        </View>
+        </View> */}
 
         {/* Top products */}
         <Text style={styles.sectionTitle}>Top Products</Text>

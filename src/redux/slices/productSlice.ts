@@ -114,7 +114,6 @@ const productSlice = createSlice({
       state.prodCatError = null;
     },
     addProductCategorySuccess: state => {
-      console.log('addProductCategorySuccess reducer called');
       state.prodCatLoading = false;
       state.prodCatSuccess = true;
     },
