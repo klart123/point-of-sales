@@ -320,7 +320,6 @@ export default function ServerDiscoveryModal({
           <View style={styles.header}>
             <View>
               <Text style={styles.title}>Server Discovery</Text>
-              <Text style={styles.subtitle}>Current {currentBaseURL}</Text>
               <Text style={styles.subtitle}>
                 Scanning {subnet}.x:{port}
               </Text>

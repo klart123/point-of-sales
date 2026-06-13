@@ -46,6 +46,7 @@ const AppNavigator = () => {
           name="EditProduct"
           component={screens.EditProductScreen}
         />
+        <Stack.Screen name="Sync" component={screens.SyncScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

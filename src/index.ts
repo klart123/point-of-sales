@@ -11,6 +11,7 @@ import OrderSummary from './screens/OrderSummary';
 import KitchenScreen from './screens/Kitchen';
 import AddProductScreen from './screens/AddProduct';
 import EditProductScreen from './screens/EditProduct';
+import SyncScreen from './screens/Sync';
 
 export {
   HomeScreen,
@@ -26,4 +27,5 @@ export {
   KitchenScreen,
   AddProductScreen,
   EditProductScreen,
+  SyncScreen,
 };

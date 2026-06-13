@@ -7,7 +7,7 @@ import * as services from '../../services';
 import {AppDispatch, RootState} from '../../redux/store';
 import {navigation} from '../../types';
 import axiosInstance from '../../Api/axiosInstance';
-import ServerDiscoveryModal from '../../components/Servers';
+import {ServerDiscoveryModal} from '../../components';
 import {apiActions} from '../../redux/slices/apiSlice';
 import {
   removeSocketeUrl,
@@ -93,6 +93,11 @@ const ProfileScreen: React.FC<Props> = ({navigation}) => {
     <View style={styles.container}>
       <Text style={styles.title}>Profile</Text>
       {/* You can add user info here */}
+      <Button
+        title="Sync"
+        color="#d9534f"
+        onPress={() => navigation.navigate('Sync')}
+      />
       <Button
         title="Seed database"
         color="#d9534f"

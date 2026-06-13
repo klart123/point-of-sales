@@ -32,4 +32,5 @@ export type RootStackParamList = {
   Store: undefined;
   AddProduct: undefined;
   EditProduct: undefined;
+  Sync: undefined;
 };

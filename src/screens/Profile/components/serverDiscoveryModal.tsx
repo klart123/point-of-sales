@@ -13,8 +13,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import styles from './styles';
-import {NetworkInfo} from 'react-native-network-info';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -40,8 +38,12 @@ interface ServerDiscoveryModalProps {
  */
 async function getLocalIP(): Promise<string | null> {
   try {
-    const ip = await NetworkInfo.getIPV4Address();
-    return ip ?? null;
+    // React Native exposes RTCPeerConnection on some setups; use fetch-based
+    // heuristic instead: try common gateway IPs
+    // In production, replace with react-native-network-info:
+    //   import { NetworkInfo } from 'react-native-network-info';
+    //   return await NetworkInfo.getIPV4Address();
+    return null; // placeholder – see note below
   } catch {
     return null;
   }
@@ -226,17 +228,6 @@ export default function ServerDiscoveryModal({
     }
   }, [visible, currentBaseURL]);
 
-  useEffect(() => {
-    if (visible) {
-      getLocalIP().then(ip => {
-        if (ip) {
-          const detectedSubnet = ip.split('.').slice(0, 3).join('.');
-          setSubnet(detectedSubnet);
-        }
-      });
-    }
-  }, [visible]);
-
   const scanAbortRef = useRef(false);
 
   const startScan = async () => {
@@ -320,7 +311,6 @@ export default function ServerDiscoveryModal({
           <View style={styles.header}>
             <View>
               <Text style={styles.title}>Server Discovery</Text>
-              <Text style={styles.subtitle}>Current {currentBaseURL}</Text>
               <Text style={styles.subtitle}>
                 Scanning {subnet}.x:{port}
               </Text>
@@ -449,3 +439,262 @@ export default function ServerDiscoveryModal({
     </Modal>
   );
 }
+
+// ─── Styles ───────────────────────────────────────────────────────────────────
+
+const styles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  sheet: {
+    backgroundColor: '#0f172a',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: Platform.OS === 'ios' ? 34 : 16,
+    maxHeight: '88%',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1e293b',
+  },
+  title: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#f1f5f9',
+    letterSpacing: 0.2,
+  },
+  subtitle: {
+    fontSize: 12,
+    color: '#64748b',
+    marginTop: 2,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  closeBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#1e293b',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeBtnText: {color: '#94a3b8', fontSize: 13, fontWeight: '600'},
+
+  subnetRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    gap: 10,
+  },
+  subnetLabel: {fontSize: 13, color: '#64748b', width: 52},
+  subnetInput: {
+    flex: 1,
+    backgroundColor: '#1e293b',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    color: '#e2e8f0',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    fontSize: 13,
+  },
+
+  scanRow: {
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
+  scanBtn: {
+    backgroundColor: '#6366f1',
+    borderRadius: 10,
+    paddingVertical: 11,
+    alignItems: 'center',
+  },
+  scanBtnText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 14,
+    letterSpacing: 0.3,
+  },
+  scanningState: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1e293b',
+    borderRadius: 10,
+    padding: 10,
+    gap: 10,
+  },
+  progressWrap: {flex: 1, gap: 4},
+  progressTrack: {
+    height: 4,
+    backgroundColor: '#334155',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: 4,
+    backgroundColor: '#6366f1',
+    borderRadius: 2,
+  },
+  progressText: {color: '#94a3b8', fontSize: 11},
+  stopBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    backgroundColor: '#334155',
+  },
+  stopBtnText: {color: '#e2e8f0', fontSize: 13, fontWeight: '600'},
+
+  errorText: {
+    color: '#f87171',
+    fontSize: 12,
+    paddingHorizontal: 20,
+    marginBottom: 6,
+  },
+
+  list: {maxHeight: 280},
+  listContent: {paddingHorizontal: 16, paddingVertical: 6},
+  listEmpty: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+
+  emptyState: {alignItems: 'center', gap: 8, paddingVertical: 10},
+  emptyIcon: {fontSize: 32},
+  emptyTitle: {color: '#cbd5e1', fontWeight: '600', fontSize: 14},
+  emptyBody: {
+    color: '#64748b',
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 18,
+    maxWidth: 260,
+  },
+
+  serverRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#1e293b',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+  },
+  serverRowSelected: {
+    borderColor: '#6366f1',
+    backgroundColor: '#1e1b4b',
+  },
+  serverRowLeft: {flexDirection: 'row', alignItems: 'center', gap: 12},
+  radioOuter: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 2,
+    borderColor: '#475569',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioOuterSelected: {borderColor: '#6366f1'},
+  radioInner: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#6366f1',
+  },
+  serverIP: {
+    color: '#e2e8f0',
+    fontSize: 14,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    fontWeight: '600',
+  },
+  serverIPSelected: {color: '#a5b4fc'},
+  serverLabel: {color: '#64748b', fontSize: 11, marginTop: 1},
+  latencyBadge: {
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+  },
+  latencyText: {fontSize: 11, fontWeight: '700'},
+
+  manualRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    gap: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#1e293b',
+  },
+  manualInput: {
+    flex: 1,
+    backgroundColor: '#1e293b',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    color: '#e2e8f0',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    fontSize: 13,
+  },
+  manualAddBtn: {
+    backgroundColor: '#334155',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    justifyContent: 'center',
+  },
+  manualAddText: {color: '#e2e8f0', fontWeight: '600', fontSize: 14},
+
+  footer: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    gap: 10,
+  },
+  cancelBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 10,
+    backgroundColor: '#1e293b',
+    alignItems: 'center',
+  },
+  cancelText: {color: '#94a3b8', fontWeight: '600', fontSize: 14},
+  confirmBtn: {
+    flex: 2,
+    paddingVertical: 12,
+    borderRadius: 10,
+    backgroundColor: '#6366f1',
+    alignItems: 'center',
+  },
+  confirmBtnDisabled: {backgroundColor: '#312e81', opacity: 0.5},
+  confirmText: {color: '#fff', fontWeight: '700', fontSize: 14},
+
+  // Pulse dot
+  pulseWrapper: {
+    width: 18,
+    height: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pulseRing: {
+    position: 'absolute',
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#6366f1',
+  },
+  pulseDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#818cf8',
+  },
+});

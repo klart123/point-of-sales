@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import axiosInstance from '../../Api/axiosInstance';
 import styles from './styles';
 import DateRow, {renderDateRow} from './components/OrderDateCard';
 import {ContainerView} from '../../components';
+import {useFocusEffect} from '@react-navigation/native';
 
 type DateSummary = {
   date: string;
@@ -59,13 +60,20 @@ const OrderSummary = () => {
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    loadDates();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      loadDates();
+      setSelectedDate(null);
+    }, []),
+  );
   const loadDates = (isPullDown = false) => {
-    if (isPullDown) setRefreshing(true);
-    else setLoadingDates(true);
+    if (isPullDown) {
+      setDates([]);
+      setRefreshing(true);
+    } else {
+      setDates([]);
+      setLoadingDates(true);
+    }
 
     axiosInstance
       .get('/orders/dates')
