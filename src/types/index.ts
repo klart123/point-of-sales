@@ -10,5 +10,6 @@ export * from './menu';
 export * from './products';
 export * from './orders';
 export * from './orders';
+export * from './server';
 
 export {navigation, auth, products, menu, orders};

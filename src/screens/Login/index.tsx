@@ -63,21 +63,26 @@ const LoginScreen = () => {
     }
   }, [loading, isAuthenticated]);
 
-  const handleSaveBaseUrl = async url => {
-    if (!url.startsWith('http')) {
-      Alert.alert('Invalid URL', 'Please enter a valid API URL');
-      return;
+  const handleSaveBaseUrl = async (url: string) => {
+    if (url.includes('supabase.co')) {
+      dispatch(apiActions.setBackendMode('supabase'));
+    } else {
+      if (!url.startsWith('http')) {
+        Alert.alert('Invalid URL', 'Please enter a valid API URL');
+        return;
+      }
+      dispatch(apiActions.setBackendMode('lan'));
+      dispatch(apiActions.setSocketURL(url));
+
+      await removeSocketeUrl();
+      await saveSocketUrl(url);
+
+      dispatch(apiActions.setBaseURL(`${url}/api`));
+      await removeApiBaseUrl();
+      await saveApiBaseUrl(url);
+
+      Alert.alert('Success', 'API Base URL updated!');
     }
-    dispatch(apiActions.setSocketURL(url));
-
-    await removeSocketeUrl();
-    await saveSocketUrl(url);
-
-    dispatch(apiActions.setBaseURL(`${url}/api`));
-    await removeApiBaseUrl();
-    await saveApiBaseUrl(url);
-
-    Alert.alert('Success', 'API Base URL updated!');
   };
 
   return (

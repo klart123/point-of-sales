@@ -1,203 +1,18 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
-  Animated,
-  Easing,
   FlatList,
   Modal,
-  Platform,
   Pressable,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import styles from './styles';
-import {NetworkInfo} from 'react-native-network-info';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface ServerEntry {
-  ip: string;
-  latencyMs?: number;
-  label?: string;
-}
-
-interface ServerDiscoveryModalProps {
-  visible: boolean;
-  currentBaseURL: string | null;
-  onSelect: (baseURL: string) => void;
-  onClose: () => void;
-  port?: number;
-}
-
-// ─── Network Helpers ─────────────────────────────────────────────────────────
-
-/**
- * Get the device's local IP via a dummy UDP trick using fetch.
- * Falls back to null if unavailable.
- */
-async function getLocalIP(): Promise<string | null> {
-  try {
-    const ip = await NetworkInfo.getIPV4Address();
-    return ip ?? null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Check if a host:port is reachable by timing a fetch HEAD request.
- * Returns latency in ms, or null if unreachable.
- */
-async function probeHost(
-  ip: string,
-  port: number,
-  timeoutMs = 1200,
-): Promise<number | null> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  const start = Date.now();
-  try {
-    await fetch(`http://${ip}:${port}/health`, {
-      method: 'GET',
-      signal: controller.signal,
-    });
-    clearTimeout(timer);
-    return Date.now() - start;
-  } catch {
-    clearTimeout(timer);
-    return null;
-  }
-}
-
-async function scanSubnet(
-  subnet: string,
-  port: number,
-  onFound: (entry: ServerEntry) => void,
-  onProgress: (scanned: number, total: number) => void,
-  concurrency = 25,
-): Promise<void> {
-  const hosts = Array.from({length: 254}, (_, i) => `${subnet}.${i + 1}`);
-  let scanned = 0;
-
-  for (let i = 0; i < hosts.length; i += concurrency) {
-    const chunk = hosts.slice(i, i + concurrency);
-    await Promise.all(
-      chunk.map(async host => {
-        const latency = await probeHost(host, port);
-        scanned++;
-        onProgress(scanned, hosts.length);
-        if (latency !== null) {
-          onFound({ip: host, latencyMs: latency});
-        }
-      }),
-    );
-  }
-}
-
-// ─── Pulse animation for scanning indicator ───────────────────────────────────
-
-function PulsingDot() {
-  const scale = useRef(new Animated.Value(1)).current;
-  const opacity = useRef(new Animated.Value(0.9)).current;
-
-  useEffect(() => {
-    const anim = Animated.loop(
-      Animated.sequence([
-        Animated.parallel([
-          Animated.timing(scale, {
-            toValue: 1.6,
-            duration: 700,
-            easing: Easing.out(Easing.ease),
-            useNativeDriver: true,
-          }),
-          Animated.timing(opacity, {
-            toValue: 0,
-            duration: 700,
-            useNativeDriver: true,
-          }),
-        ]),
-        Animated.parallel([
-          Animated.timing(scale, {
-            toValue: 1,
-            duration: 0,
-            useNativeDriver: true,
-          }),
-          Animated.timing(opacity, {
-            toValue: 0.9,
-            duration: 0,
-            useNativeDriver: true,
-          }),
-        ]),
-      ]),
-    );
-    anim.start();
-    return () => anim.stop();
-  }, [opacity, scale]);
-
-  return (
-    <View style={styles.pulseWrapper}>
-      <Animated.View
-        style={[styles.pulseRing, {transform: [{scale}], opacity}]}
-      />
-      <View style={styles.pulseDot} />
-    </View>
-  );
-}
-
-// ─── Server Row ───────────────────────────────────────────────────────────────
-
-function ServerRow({
-  entry,
-  selected,
-  onPress,
-}: {
-  entry: ServerEntry;
-  selected: boolean;
-  onPress: () => void;
-}) {
-  const latencyColor =
-    entry.latencyMs == null
-      ? '#94a3b8'
-      : entry.latencyMs < 100
-        ? '#22c55e'
-        : entry.latencyMs < 400
-          ? '#f59e0b'
-          : '#ef4444';
-
-  return (
-    <TouchableOpacity
-      style={[styles.serverRow, selected && styles.serverRowSelected]}
-      onPress={onPress}
-      activeOpacity={0.75}>
-      <View style={styles.serverRowLeft}>
-        <View
-          style={[styles.radioOuter, selected && styles.radioOuterSelected]}>
-          {selected && <View style={styles.radioInner} />}
-        </View>
-        <View>
-          <Text style={[styles.serverIP, selected && styles.serverIPSelected]}>
-            {entry.ip}
-          </Text>
-          {entry.label ? (
-            <Text style={styles.serverLabel}>{entry.label}</Text>
-          ) : null}
-        </View>
-      </View>
-      {entry.latencyMs != null && (
-        <View style={[styles.latencyBadge, {borderColor: latencyColor}]}>
-          <Text style={[styles.latencyText, {color: latencyColor}]}>
-            {entry.latencyMs}ms
-          </Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-}
-
-// ─── Main Modal ───────────────────────────────────────────────────────────────
+import {ServerEntry, ServerDiscoveryModalProps} from '../../types';
+import {getLocalIP, probeSupabase, scanSubnet} from '../../utils';
+import {PulsingDot, ServerRow} from './components';
 
 export default function ServerDiscoveryModal({
   visible,
@@ -228,6 +43,8 @@ export default function ServerDiscoveryModal({
 
   useEffect(() => {
     if (visible) {
+      supabaseServer();
+
       getLocalIP().then(ip => {
         if (ip) {
           const detectedSubnet = ip.split('.').slice(0, 3).join('.');
@@ -239,13 +56,34 @@ export default function ServerDiscoveryModal({
 
   const scanAbortRef = useRef(false);
 
+  const supabaseServer = () => {
+    console.log('process.env.SUPABASE_URL', process.env.SUPABASE_URL);
+    const supabaseUrl = process.env.SUPABASE_URL ?? '';
+    setServers([
+      {
+        ip: 'Supabase Cloud',
+        label: supabaseUrl,
+        type: 'supabase',
+        baseURL: supabaseUrl,
+      },
+    ]);
+
+    probeSupabase(supabaseUrl).then(latency => {
+      setServers(prev =>
+        prev.map(s =>
+          s.type === 'supabase' ? {...s, latencyMs: latency ?? undefined} : s,
+        ),
+      );
+    });
+  };
+
   const startScan = async () => {
     setServers([]);
     setError(null);
     setScanning(true);
     scanAbortRef.current = false;
     setProgress({scanned: 0, total: 254});
-
+    supabaseServer();
     try {
       // Try to get real IP; fall back to letting user set subnet manually
       const localIP = await getLocalIP();
@@ -285,10 +123,13 @@ export default function ServerDiscoveryModal({
   };
 
   const handleConfirm = () => {
-    if (selectedIP) {
-      onSelect(`http://${selectedIP}:${port}`);
-      onClose();
-    }
+    const entry = servers.find(s => s.ip === selectedIP);
+    if (!entry) return;
+
+    // Use baseURL override for supabase, otherwise build from IP
+    const url = entry.baseURL ?? `http://${entry.ip}:${port}`;
+    onSelect(url);
+    onClose();
   };
 
   const handleManualAdd = () => {
@@ -403,7 +244,10 @@ export default function ServerDiscoveryModal({
               <ServerRow
                 entry={item}
                 selected={selectedIP === item.ip}
-                onPress={() => setSelectedIP(item.ip)}
+                onPress={() => {
+                  console.log(item);
+                  setSelectedIP(item.ip);
+                }}
               />
             )}
           />
@@ -439,9 +283,15 @@ export default function ServerDiscoveryModal({
               ]}
               onPress={handleConfirm}
               disabled={!selectedIP}>
-              <Text style={styles.confirmText}>
-                {selectedIP ? `Use ${selectedIP}:${port}` : 'Select a server'}
-              </Text>
+              {!selectedIP ? (
+                <Text style={styles.confirmText}>Select a server</Text>
+              ) : selectedIP.includes('Supabase') ? (
+                <Text style={styles.confirmText}>{` ${selectedIP}`}</Text>
+              ) : (
+                <Text style={styles.confirmText}>
+                  {`Use ${selectedIP}:${port}`}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </Pressable>

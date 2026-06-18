@@ -317,4 +317,28 @@ export default StyleSheet.create({
     borderRadius: 4,
     backgroundColor: COLORS.secondary,
   },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 20,
+    borderWidth: 1,
+    backgroundColor: 'rgba(0,0,0,0.15)',
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  ms: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  label: {
+    fontSize: 11,
+    fontWeight: '400',
+    opacity: 0.85,
+  },
 });

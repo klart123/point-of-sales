@@ -6,6 +6,7 @@ interface ApiState {
   socketURL: string;
   loading: boolean;
   error: string | null;
+  backendMode: string;
 }
 
 const initialState: ApiState = {
@@ -13,6 +14,7 @@ const initialState: ApiState = {
   socketURL: '',
   loading: false,
   error: null,
+  backendMode: '',
 };
 
 const apiSlice = createSlice({
@@ -30,6 +32,9 @@ const apiSlice = createSlice({
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload; // Update error state
+    },
+    setBackendMode: (state, action: PayloadAction<string>) => {
+      state.backendMode = action.payload;
     },
   },
 });

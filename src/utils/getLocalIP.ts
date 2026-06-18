@@ -1,10 +1,10 @@
 import {Platform} from 'react-native';
+import {NetworkInfo} from 'react-native-network-info';
 
-export async function getLocalIPAddress(): Promise<string | null> {
+export async function getLocalIP(): Promise<string | null> {
   try {
-    // Works on both Android and iOS — connects UDP, reads local address
-    const {NetworkInfo} = await import('react-native-network-info');
-    return await NetworkInfo.getIPV4Address();
+    const ip = await NetworkInfo.getIPV4Address();
+    return ip ?? null;
   } catch {
     return null;
   }
