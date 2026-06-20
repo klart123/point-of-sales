@@ -23,4 +23,5 @@ export const COLORS = {
   textError: '#ea4848',
   errorBg: '#ffebee',
   active: '#00b0f5',
+  overlay: 'rgba(0,0,0,0.4)',
 };

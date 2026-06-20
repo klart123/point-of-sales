@@ -202,7 +202,7 @@ const OrderDrawer = ({
       return;
     }
 
-    if (isGcash) {
+    if (isGcash || cashTendered) {
       onSubmit({...params, is_paid: 1});
       return;
     }

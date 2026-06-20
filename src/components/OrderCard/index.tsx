@@ -14,6 +14,7 @@ interface Props {
   onCompleteOrder: (order: Order) => void;
   hideCompleteButton: boolean;
   onEditOrder: (orderItem: any) => void;
+  onPayOrder: (orderItem: any) => void;
   orderStatuses?: object;
 }
 
@@ -24,6 +25,7 @@ const OrderCard: React.FC<Props> = ({
   hideCompleteButton,
   onEditOrder,
   //   orderStatuses,
+  onPayOrder,
 }) => {
   const {orderStatuses} = useSelector((state: RootState) => state.orders);
   const allDone = order.items.every(i => i.status === 'done');
@@ -124,11 +126,21 @@ const OrderCard: React.FC<Props> = ({
           }}>
           <Text style={styles.totalPrice}>Edit</Text>
         </TouchableOpacity>
+
         <View style={styles.totalPriceContainer}>
           <Text style={styles.totalPrice}>Total: ₱{order.total_price}</Text>
         </View>
       </View>
       {/* COMPLETE BUTTON */}
+      {order.is_paid === 0 && (
+        <TouchableOpacity
+          style={[styles.payOrder]}
+          onPress={() => {
+            onPayOrder(order);
+          }}>
+          <Text style={styles.payButton}>Pay Order</Text>
+        </TouchableOpacity>
+      )}
       {order.status !== 'completed' && allDone && (
         <View>
           <View style={styles.readyBanner}>

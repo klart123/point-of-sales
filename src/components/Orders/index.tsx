@@ -17,6 +17,7 @@ interface OrderListProps {
   onRefresh?: () => void;
   orderStatuses?: object;
   onEditOrder: (orderItem: any) => void;
+  onPayOrder: (orderItem: any) => void;
 }
 
 const OrderList: React.FC<OrderListProps> = ({
@@ -30,6 +31,7 @@ const OrderList: React.FC<OrderListProps> = ({
   onRefresh,
   orderStatuses,
   onEditOrder,
+  onPayOrder,
 }) => {
   return (
     <FlatList
@@ -51,6 +53,7 @@ const OrderList: React.FC<OrderListProps> = ({
           hideCompleteButton={hideCompleteButton}
           onEditOrder={onEditOrder}
           orderStatuses={orderStatuses}
+          onPayOrder={onPayOrder}
         />
       )}
       refreshControl={

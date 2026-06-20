@@ -6,7 +6,7 @@ import {HeaderComponent} from '../../components';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import styles from './styles';
 import {Order, OrderItem} from '../../types';
-import {Orders, ContainerView} from '../../components';
+import {Orders, ContainerView, PayModal} from '../../components';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from '../../services';
 import {RootState} from '../../redux/store';
@@ -19,6 +19,8 @@ const OrderList = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [updatedAt, setUpdatedAt] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [payModal, setPayModal] = useState<boolean>(false);
 
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -300,6 +302,28 @@ const OrderList = () => {
     }
     navigation.navigate('Store');
   };
+
+  const handlePayOrder = (orderItem: any) => {
+    if (orderItem) {
+      setSelectedOrder(orderItem);
+      setPayModal(true);
+    }
+  };
+
+  const handleSubmitPayment = data => {
+    axiosInstance
+      .patch(`/orders/${data.orderId}/payment`, {
+        ...data,
+      })
+      .then(response => {
+        if (response.status === 200 || response.status === 201) {
+          setPayModal(false);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
   // ── Render ─────────────────────────────────────────────────────────────
   return (
     <ContainerView style={styles.container}>
@@ -317,6 +341,16 @@ const OrderList = () => {
         onRefresh={onRefresh}
         orderStatuses={orderStatuses}
         onEditOrder={handleEditOrder}
+        onPayOrder={handlePayOrder}
+      />
+
+      <PayModal
+        visible={payModal}
+        orderItem={selectedOrder}
+        onClose={() => {
+          setPayModal(false);
+        }}
+        onSubmit={handleSubmitPayment}
       />
     </ContainerView>
   );

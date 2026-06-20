@@ -165,6 +165,14 @@ export default StyleSheet.create({
     borderRadius: 6,
     backgroundColor: COLORS.primary,
   },
+  payOrder: {
+    padding: 10,
+    marginTop: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+    backgroundColor: COLORS.primary,
+  },
   totalPriceContainer: {
     flex: 1,
     marginTop: 4,
@@ -180,6 +188,12 @@ export default StyleSheet.create({
     fontWeight: '700',
     color: '#1D1D1B',
     textAlign: 'right',
+  },
+  payButton: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1D1D1B',
+    textAlign: 'center',
   },
   progress: {
     fontSize: 12,

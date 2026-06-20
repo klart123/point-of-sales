@@ -9,6 +9,7 @@ import ProductItem from './ProductItem';
 import AddProductCategoryModal from './AddProductCategoryModal';
 import DrawerNavigator from './DrawerNavigator';
 import ServerDiscoveryModal from './Servers';
+import PayModal from './PayModal';
 
 export {
   HeaderComponent,
@@ -22,4 +23,5 @@ export {
   AddProductCategoryModal,
   DrawerNavigator,
   ServerDiscoveryModal,
+  PayModal,
 };
