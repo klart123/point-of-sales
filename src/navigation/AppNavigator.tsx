@@ -47,6 +47,10 @@ const AppNavigator = () => {
           component={screens.EditProductScreen}
         />
         <Stack.Screen name="Sync" component={screens.SyncScreen} />
+        <Stack.Screen
+          name="PrinterSettings"
+          component={screens.PrinterSettings}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

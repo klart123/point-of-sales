@@ -12,6 +12,7 @@ import KitchenScreen from './screens/Kitchen';
 import AddProductScreen from './screens/AddProduct';
 import EditProductScreen from './screens/EditProduct';
 import SyncScreen from './screens/Sync';
+import PrinterSettings from './screens/PrinterSettings';
 
 export {
   HomeScreen,
@@ -28,4 +29,5 @@ export {
   AddProductScreen,
   EditProductScreen,
   SyncScreen,
+  PrinterSettings,
 };

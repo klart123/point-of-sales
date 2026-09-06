@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  TextInput,
 } from 'react-native';
 
 import {Device, State} from 'react-native-ble-plx';
@@ -17,27 +18,38 @@ import {scanForNiimbotPrinters} from '../../printer/NiimbotScanner';
 import {NiimbotB1} from '../../printer/NiimbotB1';
 import {bluetoothManager} from '../../printer/BleManager';
 
+import {useNavigation} from '@react-navigation/native';
+
+import {launchImageLibrary} from 'react-native-image-picker';
+import {
+  composeLabelBitmap,
+  labelSizeToPixels,
+} from '../../printer/LabelComposer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const SETTINGS_KEY = '@niimbot_b1_settings';
+
 export default function PrinterSettingsScreen() {
+  const navigation = useNavigation();
   const [devices, setDevices] = useState<Device[]>([]);
-
   const [scanning, setScanning] = useState(false);
-
   const [checking, setChecking] = useState(true);
-
   const [connecting, setConnecting] = useState(false);
-
   const [connectedDevice, setConnectedDevice] = useState<Device | null>(null);
-
   const printerRef = useRef<NiimbotB1 | null>(null);
-
   const scanStopRef = useRef<(() => void) | null>(null);
+
+  const [logoUri, setLogoUri] = useState<string | null>(null);
+  const [itemName, setItemName] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [cupSize, setCupSize] = useState('12oz');
+  const [printingLabel, setPrintingLabel] = useState(false);
 
   if (!printerRef.current) {
     printerRef.current = new NiimbotB1();
   }
 
   const printer = printerRef.current;
-
   /**
    * Check if a NIIMBOT is already connected.
    */
@@ -101,6 +113,20 @@ export default function PrinterSettingsScreen() {
     }
   }, [printer]);
 
+  useEffect(() => {
+    (async () => {
+      const saved = await AsyncStorage.getItem(SETTINGS_KEY);
+
+      if (saved) {
+        const parsed = JSON.parse(saved);
+
+        setCustomerName(parsed.lastCustomerName ?? '');
+        setItemName(parsed.lastItemName ?? '');
+        setCupSize(parsed.lastCupSize ?? '12oz');
+      }
+    })();
+  }, []);
+
   /**
    * Run automatically when screen opens.
    */
@@ -112,6 +138,94 @@ export default function PrinterSettingsScreen() {
       scanStopRef.current = null;
     };
   }, [checkConnectedPrinter]);
+
+  const pickLogo = async () => {
+    const result = await launchImageLibrary({mediaType: 'photo'});
+    console.log('result', result);
+    if (result.assets && result.assets[0]?.uri) {
+      setLogoUri(result.assets[0].uri);
+    }
+  };
+
+  const printOrderLabel = async () => {
+    if (!printer.connectedDevice) {
+      Alert.alert(
+        'Printer Not Connected',
+        'Please connect your NIIMBOT B1 first.',
+      );
+      return;
+    }
+
+    if (!itemName.trim() || !customerName.trim()) {
+      Alert.alert('Missing Info', 'Enter an item name and customer name.');
+      return;
+    }
+
+    try {
+      setPrintingLabel(true);
+
+      const saved = await AsyncStorage.getItem(SETTINGS_KEY);
+      const settings = saved ? JSON.parse(saved) : {};
+
+      const labelWidthMm = settings.labelWidth ?? 50;
+      const labelHeightMm = settings.labelHeight ?? 30;
+      const density = settings.density ?? 3;
+      const copies = settings.copies ?? 1;
+      const logoUriSettings: string | null = settings.logoUri ?? logoUri;
+      // const logoUri = require('../../assets/curbside-grinds.png');
+      if (!logoUriSettings) {
+        Alert.alert('Missing Logo', 'Please select a logo to print.');
+        return;
+      }
+      const {widthPx, heightPx} = labelSizeToPixels(
+        labelWidthMm,
+        labelHeightMm,
+      );
+
+      console.log(
+        'logoUri',
+        logoUriSettings,
+        'itemName',
+        itemName,
+        'customerName',
+        customerName,
+        'cupSize',
+        cupSize,
+        'widthPx',
+        widthPx,
+        'heightPx',
+        heightPx,
+      );
+
+      const bitmap = await composeLabelBitmap(
+        {logoUri: logoUriSettings, itemName, customerName, cupSize},
+        {widthPx, heightPx},
+      );
+      console.log('widthPx', widthPx, 'heightPx', heightPx, 'bitmap', bitmap);
+      // await printer.printBitmap(bitmap, widthPx, heightPx, copies, density, 1);
+
+      // Remember these for next time
+      await AsyncStorage.setItem(
+        SETTINGS_KEY,
+        JSON.stringify({
+          ...settings,
+          lastItemName: itemName,
+          lastCustomerName: customerName,
+          lastCupSize: cupSize,
+        }),
+      );
+
+      Alert.alert('Printed', 'Label sent to the NIIMBOT B1.');
+    } catch (error) {
+      console.error('Label print failed:', error);
+      Alert.alert(
+        'Print Failed',
+        error instanceof Error ? error.message : String(error),
+      );
+    } finally {
+      setPrintingLabel(false);
+    }
+  };
 
   /**
    * Scan for NIIMBOT B1.
@@ -261,7 +375,7 @@ export default function PrinterSettingsScreen() {
 
       console.log('Starting NIIMBOT native test page...');
 
-      await printer.printTestPage(25, 15);
+      await printer.printTestPage();
 
       Alert.alert(
         'Test Page Sent',
@@ -277,6 +391,10 @@ export default function PrinterSettingsScreen() {
     } finally {
       setConnecting(false);
     }
+  };
+
+  const openSettings = () => {
+    navigation.navigate('PrinterSettings');
   };
 
   /**
@@ -330,27 +448,72 @@ export default function PrinterSettingsScreen() {
                 <Text style={styles.deviceIdValue}>{connectedDevice.id}</Text>
 
                 <View style={styles.buttonRow}>
-                  <TouchableOpacity
-                    style={styles.testButton}
-                    onPress={testConnection}>
-                    <Text style={styles.testButtonText}>Test Connection</Text>
-                  </TouchableOpacity>
+                  <View style={{gap: 10}}>
+                    <TouchableOpacity
+                      style={styles.testButton}
+                      onPress={testConnection}>
+                      <Text style={styles.testButtonText}>Test Connection</Text>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={styles.disconnectButton}
-                    onPress={disconnect}
-                    disabled={connecting}>
-                    <Text style={styles.disconnectText}>Disconnect</Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.disconnectButton}
+                      onPress={disconnect}
+                      disabled={connecting}>
+                      <Text style={styles.disconnectText}>Disconnect</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{gap: 10}}>
+                    <TouchableOpacity
+                      style={styles.testPrintButton}
+                      onPress={printTest}
+                      disabled={connecting}>
+                      <Text style={styles.testPrintButtonText}>
+                        {connecting ? 'Printing...' : 'Print Test Page'}
+                      </Text>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={styles.testPrintButton}
-                    onPress={printTest}
-                    disabled={connecting}>
-                    <Text style={styles.testPrintButtonText}>
-                      {connecting ? 'Printing...' : 'Print Test Page'}
-                    </Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.testPrintButton}
+                      onPress={openSettings}
+                      disabled={connecting}>
+                      <Text style={styles.testButtonText}>Settings</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View>
+                    <TextInput
+                      placeholder="Item name"
+                      placeholderTextColor="#888"
+                      value={itemName}
+                      onChangeText={setItemName}
+                      style={styles.input}
+                    />
+                    <TextInput
+                      placeholder="Customer name"
+                      placeholderTextColor="#888"
+                      value={customerName}
+                      onChangeText={setCustomerName}
+                      style={styles.input}
+                    />
+                    <TextInput
+                      placeholder="Cup size (e.g. 12oz)"
+                      placeholderTextColor="#888"
+                      value={cupSize}
+                      onChangeText={setCupSize}
+                      style={styles.input}
+                    />
+
+                    <TouchableOpacity onPress={pickLogo}>
+                      <Text>{logoUri ? logoUri : 'Choose Logo (.png)'}</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={printOrderLabel}
+                      disabled={printingLabel}>
+                      <Text>
+                        {printingLabel ? 'Printing...' : 'Print Order Label'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             )}
@@ -508,9 +671,18 @@ const styles = StyleSheet.create({
   },
 
   buttonRow: {
-    flexDirection: 'row',
+    flexDirection: 'column',
+    justifyContent: 'center',
     gap: 10,
     marginTop: 20,
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
   },
 
   testButton: {
