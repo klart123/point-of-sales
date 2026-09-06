@@ -12,6 +12,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Product from '../../components/Product';
 import {HeaderComponent, ContainerView} from '../../components';
 import axiosInstance from '../../Api/axiosInstance';
+import {printOrderLabel} from '../../printer/PrintService';
 
 const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -102,13 +103,38 @@ const MenuScreen = () => {
     }
   };
 
-  const handleSubmitOrder = data => {
-    if (isEdit) {
-      dispatch(services.updateOrder(orderId, data));
-
-      return;
+  const handleSubmitOrder = async data => {
+    try {
+      // 1. Submit the order as normal (unchanged)
+      if (isEdit) {
+        await dispatch(services.updateOrder(orderId, data));
+      } else {
+        await dispatch(services.submitOrder(data));
+      }
+      console.log('data', data);
+      // 2. Print a label for each item in the order.
+      // NOTE: adjust `data.items`, `item.name`, `item.size`, and
+      // `data.customerName` below to match your actual order shape —
+      // this is just the integration point, not the exact field names.
+      // for (const item of data.items ?? []) {
+      //   try {
+      //     await printOrderLabel({
+      //       itemName: item.name,
+      //       customerName: data.customerName ?? 'Guest',
+      //       cupSize: item.size ?? '12oz',
+      //     });
+      //   } catch (printError) {
+      //     // Don't let a print failure undo the order — just warn.
+      //     console.warn(
+      //       '[MenuScreen] Failed to print label for item:',
+      //       item,
+      //       printError,
+      //     );
+      //   }
+      // }
+    } catch (error) {
+      console.error('[MenuScreen] Order submission failed:', error);
     }
-    return dispatch(services.submitOrder(data));
   };
 
   const handleOpenModal = (item: any) => {
