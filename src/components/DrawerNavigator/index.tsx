@@ -4,7 +4,8 @@ import {TouchableOpacity} from 'react-native';
 import {DrawerParamList} from '../../types/navigation';
 import * as screens from '../../index';
 import {COLORS} from '../../theme';
-import Ionicons from 'react-native-vector-icons/Ionicons'; // or your icon lib
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import PrinterSettingsScreen from '../../screens/PrinterSettingsScreen';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
@@ -39,6 +40,10 @@ const DrawerNavigator = () => {
         options={{title: 'Summary'}}
       />
       <Drawer.Screen name="Profile" component={screens.ProfileScreen} />
+      <Drawer.Screen
+        name="Printer Settings"
+        component={PrinterSettingsScreen}
+      />
     </Drawer.Navigator>
   );
 };

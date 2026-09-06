@@ -22,6 +22,7 @@ export type DrawerParamList = {
   Profile: undefined;
   OrderSummary: undefined;
   Kitchen: undefined;
+  'Printer Settings': undefined;
 };
 
 export type RootStackParamList = {

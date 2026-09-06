@@ -23,6 +23,7 @@
     "dotenv": "^17.4.2",
     "react": "19.0.0",
     "react-native": "0.78.0",
+    "react-native-ble-plx": "^3.5.1",
     "react-native-config": "^1.6.1",
     "react-native-dotenv": "^3.4.11",
     "react-native-element-dropdown": "^2.12.4",
