@@ -19,10 +19,27 @@ import {
   labelSizeToPixels,
 } from './LabelComposer';
 
+let printQueue: Promise<void> = Promise.resolve();
+
+function enqueuePrintJob<T>(job: () => Promise<T>): Promise<T> {
+  const result = printQueue.then(job, job);
+
+  // Swallow errors here so one failed job doesn't permanently jam
+  // the queue for jobs that come after it — the actual error still
+  // propagates to whoever called this print job via `result`.
+  printQueue = result.then(
+    () => undefined,
+    () => undefined,
+  );
+
+  return result;
+}
+
 export interface OrderLabelData {
   itemName: string;
   customerName: string;
   cupSize: string;
+  orderNumber: string;
 }
 
 export interface PreparedLabel {
@@ -80,6 +97,7 @@ export async function prepareOrderLabel(
       itemName: order.itemName,
       customerName: order.customerName,
       cupSize: order.cupSize,
+      orderNumber: order.orderNumber,
       logoScale: settings.scale,
       logoOffsetX: settings.positionX,
       logoOffsetY: settings.positionY,
@@ -124,16 +142,21 @@ export async function sendLabelToPrinter(label: PreparedLabel): Promise<void> {
 /**
  * Convenience one-shot: prepare + print + remember the values,
  * with no preview step. Use this for the common "just print it" case.
+ *
+ * Safe to call multiple times back-to-back (e.g. once per cup in an
+ * order) — jobs are queued and run one at a time against the printer.
  */
 export async function printOrderLabel(order: OrderLabelData): Promise<void> {
-  const label = await prepareOrderLabel(order);
+  return enqueuePrintJob(async () => {
+    const label = await prepareOrderLabel(order);
 
-  await sendLabelToPrinter(label);
+    await sendLabelToPrinter(label);
 
-  // Remember these values so the next label pre-fills with them.
-  await updateSettings({
-    lastItemName: order.itemName,
-    lastCustomerName: order.customerName,
-    lastCupSize: order.cupSize,
+    // Remember these values so the next label pre-fills with them.
+    await updateSettings({
+      lastItemName: order.itemName,
+      lastCustomerName: order.customerName,
+      lastCupSize: order.cupSize,
+    });
   });
 }

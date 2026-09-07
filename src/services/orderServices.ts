@@ -2,6 +2,7 @@ import axiosInstance from '../Api/axiosInstance';
 import {AppDispatch} from '../redux/store';
 import {orderSummaryAction} from '../redux/slices/orderSummarySlice';
 import {orderActions} from '../redux/slices/orderSlice';
+import {printOrderLabel} from '../printer/PrintService';
 
 export const getOrderSummary = () => {
   return (dispatch: AppDispatch) => {
@@ -160,8 +161,33 @@ export const submitOrder = (data: any) => async (dispatch: AppDispatch) => {
 
   axiosInstance
     .post('/orders', data)
-    .then(response => {
+    .then(async response => {
       if (response?.status === 200 || response?.status === 201) {
+        console.log('Order submitted successfully:', response.data);
+
+        const order = response.data;
+
+        // for (const item of order.items ?? []) {
+        //   try {
+        //     await printOrderLabel({
+        //       itemName: `${item.name} (${item.type})`,
+        //       customerName: order.customer_name ?? 'Guest',
+        //       cupSize: item.size ?? 'Regular',
+        //       orderNumber: order.order_number,
+        //     });
+        //   } catch (printError) {
+        //     // Don't let ONE failed label stop the rest of the order's
+        //     // labels from printing, and don't let a print failure
+        //     // undo the order submission itself — just log and continue.
+        //     console.warn(
+        //       '[MenuScreen] Failed to print label for item:',
+        //       item.name,
+        //       item,
+        //       printError,
+        //     );
+        //   }
+        // }
+
         dispatch(orderActions.orderSuccess(response.data));
       }
     })

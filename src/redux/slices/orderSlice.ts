@@ -29,6 +29,7 @@ interface OrderState {
   cashTendered: number | null;
   isEditUpdated: boolean;
   message: string;
+  isSubmittedData: object;
   isStatusesPending: boolean;
   orderStatusesError: string;
   orderStatuses: object;
@@ -48,6 +49,7 @@ const initialState: OrderState = {
   orderCustomerName: '',
   isEditUpdated: false,
   message: 'string',
+  isSubmittedData: {},
   isStatusesPending: false,
   orderStatusesError: '',
   orderStatuses: [],
@@ -99,6 +101,7 @@ const orderSlice = createSlice({
       state.loading = false;
       state.isSubmitted = true;
       state.message = `Order ID: ${order_number}`;
+      state.isSubmittedData = action.payload;
     },
     orderFailed: (state, action: PayloadAction<string>) => {
       state.loading = false;

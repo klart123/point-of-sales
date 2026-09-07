@@ -46,6 +46,7 @@ export type NiimbotB1Settings = {
   lastItemName: string;
   lastCustomerName: string;
   lastCupSize: string;
+  lastOrderNumber: string;
 
   // Selectable cup sizes shown in the ordering UI
   cupSizeOptions: string[];
@@ -74,6 +75,7 @@ export const DEFAULT_SETTINGS: NiimbotB1Settings = {
   lastItemName: '',
   lastCustomerName: '',
   lastCupSize: '12oz',
+  lastOrderNumber: '',
 
   cupSizeOptions: ['8oz', '12oz', '16oz', '20oz'],
 };

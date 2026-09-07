@@ -13,6 +13,7 @@ import Product from '../../components/Product';
 import {HeaderComponent, ContainerView} from '../../components';
 import axiosInstance from '../../Api/axiosInstance';
 import {printOrderLabel} from '../../printer/PrintService';
+import {enqueueOrderForPrinting} from '../../printer/PrintQueue';
 
 const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,6 +27,7 @@ const MenuScreen = () => {
     orderId,
     isEditUpdated,
     isSubmitted,
+    isSubmittedData,
     message,
     orderItem,
     loading: loadingOrder,
@@ -68,11 +70,38 @@ const MenuScreen = () => {
     if (isSubmitted) {
       Alert.alert(message);
 
+      printOrder(isSubmittedData);
       navigation.goBack();
 
       resetMenu();
     }
   }, [isSubmitted]);
+
+  const printOrder = async (data: any) => {
+    // Build one entry PER PHYSICAL CUP to print. This new order shape is
+    // FLAT (data.items is already the line-item array — no nested
+    // order.items anymore), and it introduces a `quantity` field instead
+    // of representing quantity as repeated array entries like the old
+    // shape did. So a line item with quantity: 3 needs to expand into
+    // 3 separate printed labels, not 1.
+    const cups = (data.items ?? []).flatMap((item: any) => {
+      const quantity = item.quantity ?? 1;
+
+      const cup = {
+        itemName: item.name,
+        cupSize: `${item.size} (${item.type?.toUpperCase() ?? ''})`,
+      };
+
+      // Repeat this cup `quantity` times — one printed label per physical cup.
+      return Array.from({length: quantity}, () => cup);
+    });
+
+    enqueueOrderForPrinting({
+      orderNumber: data?.order_number ?? undefined,
+      customerName: data.customer_name?.trim() || 'Guest',
+      cups,
+    });
+  };
 
   const resetMenu = () => {
     dispatch(services.resetMenu());
@@ -103,37 +132,11 @@ const MenuScreen = () => {
     }
   };
 
-  const handleSubmitOrder = async data => {
-    try {
-      // 1. Submit the order as normal (unchanged)
-      if (isEdit) {
-        await dispatch(services.updateOrder(orderId, data));
-      } else {
-        await dispatch(services.submitOrder(data));
-      }
-      console.log('data', data);
-      // 2. Print a label for each item in the order.
-      // NOTE: adjust `data.items`, `item.name`, `item.size`, and
-      // `data.customerName` below to match your actual order shape —
-      // this is just the integration point, not the exact field names.
-      // for (const item of data.items ?? []) {
-      //   try {
-      //     await printOrderLabel({
-      //       itemName: item.name,
-      //       customerName: data.customerName ?? 'Guest',
-      //       cupSize: item.size ?? '12oz',
-      //     });
-      //   } catch (printError) {
-      //     // Don't let a print failure undo the order — just warn.
-      //     console.warn(
-      //       '[MenuScreen] Failed to print label for item:',
-      //       item,
-      //       printError,
-      //     );
-      //   }
-      // }
-    } catch (error) {
-      console.error('[MenuScreen] Order submission failed:', error);
+  const handleSubmitOrder = async (data: any) => {
+    if (isEdit) {
+      await dispatch(services.updateOrder(orderId, data));
+    } else {
+      await dispatch(services.submitOrder(data));
     }
   };
 

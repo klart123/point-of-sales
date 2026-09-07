@@ -35,6 +35,7 @@ export interface LabelData {
   itemName: string;
   customerName: string;
   cupSize: string;
+  orderNumber: string;
 
   // NEW: manual logo fit controls (all optional, default = auto-fit centered)
   logoScale?: number; // percent, 100 = auto-fit size
@@ -212,8 +213,12 @@ export async function composeLabelBitmap(
 
   cursorY = drawCenteredLine(data.itemName.toUpperCase(), 26, cursorY + 20);
   cursorY = drawCenteredLine(`Size: ${data.cupSize}`, 20, cursorY);
-  cursorY = drawCenteredLine(`For: ${data.customerName}`, 20, cursorY);
-
+  cursorY = drawCenteredLine(
+    `For: ${data.customerName ?? data.orderNumber}`,
+    20,
+    cursorY,
+  );
+  cursorY = drawCenteredLine(`${data.orderNumber}`, 10, cursorY);
   surface.flush();
 
   const image = surface.makeImageSnapshot();
