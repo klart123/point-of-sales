@@ -4,7 +4,10 @@ import axiosInstance from '../Api/axiosInstance';
 import {
   getProductsFromDatabase,
   getProductsGroupedFromDatabase,
+  getProductById,
+  updateProduct,
 } from '../database/productRepository';
+import {getCategoriesFromDatabase} from '../database/categoryRepository';
 
 // Types
 type Variant = {
@@ -88,6 +91,29 @@ export const getProduct: any = (productId: number) => {
   };
 };
 
+export const getProductByIdLocal = (productId: number) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      dispatch(productActions.getProductStart());
+
+      const product = await getProductById(productId);
+
+      if (!product) {
+        throw new Error(`Product with ID ${productId} not found`);
+      }
+
+      dispatch(productActions.getProductSuccess(product));
+    } catch (error) {
+      console.error('Error fetching product by ID:', error);
+      dispatch(
+        productActions.getProductFailed(
+          error instanceof Error ? error.message : 'Failed to fetch product',
+        ),
+      );
+    }
+  };
+};
+
 export const editProducts: any = (productId: number, payload: any) => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.updateProductStart());
@@ -108,12 +134,51 @@ export const editProducts: any = (productId: number, payload: any) => {
   };
 };
 
+export const editProductsLocal: any = (productId: number, payload: any) => {
+  return (dispatch: AppDispatch) => {
+    dispatch(productActions.updateProductStart());
+
+    // axiosInstance
+    //   .put(`/products/${productId}`, payload)
+    //   .then(response => {
+    //     if (response.status === 200 || response.status === 201) {
+    //       dispatch(productActions.updateProductSuccess(response.data));
+    //       return;
+    //     }
+
+    //     return dispatch(productActions.updateProductFailed(response.data));
+    //   })
+    //   .catch(error => {
+    //     return dispatch(productActions.updateProductFailed(error));
+    //   });
+
+    updateProduct(productId, payload)
+      .then(response => {
+        console.log('updateProduct response', response);
+        // if (response.status === 200 || response.status === 201) {
+        // dispatch(productActions.updateProductSuccess(response.data));
+        // return;
+        // }
+        if (response) {
+          dispatch(productActions.updateProductSuccess(response));
+          return;
+        }
+
+        return dispatch(productActions.updateProductFailed(response));
+      })
+      .catch(error => {
+        return dispatch(productActions.updateProductFailed(error));
+      });
+  };
+};
+
 export const getCategories = () => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.getCategoriesStart());
-    axiosInstance
-      .get('/categories')
+
+    getCategoriesFromDatabase()
       .then(response => {
+        console.log('response', response);
         if (response?.status === 200 || response?.status === 201) {
           return dispatch(productActions.getCategoriesSuccess(response?.data));
         }

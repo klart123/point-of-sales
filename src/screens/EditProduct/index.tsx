@@ -25,8 +25,11 @@ import {
   editProducts,
   getProduct,
   resetUpdateProduct,
+  getProductByIdLocal,
+  editProductsLocal,
 } from '../../services';
 import {ContainerView} from '../../components';
+import {getCategoriesFromDatabase} from '../../database/categoryRepository';
 
 type Temperature = {
   value: 'hot' | 'cold' | 'blended';
@@ -73,7 +76,7 @@ const EditProductScreen = () => {
   const {
     error,
     loading,
-    categories,
+    // categories,
     isAddingLoading,
     isAddingSuccess,
     prodCatLoading,
@@ -89,6 +92,7 @@ const EditProductScreen = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [subCategory, setSubCategory] = useState(null);
   const [prodCatModal, setProdCatModal] = useState(false);
   const [productCategories, setProductCategories] = useState([]);
@@ -96,14 +100,15 @@ const EditProductScreen = () => {
     {id: '', temperature: '', size: '', price: ''},
   ]);
 
-  const loadData = () => {
-    dispatch(getCategories());
+  const loadData = async () => {
+    const categories = await getCategoriesFromDatabase();
+    console.log('categories', categories);
+    setCategories(categories || null);
   };
 
   useFocusEffect(
     useCallback(() => {
       loadData();
-
       return () => {
         dispatch(resetError());
       };
@@ -112,7 +117,8 @@ const EditProductScreen = () => {
 
   useEffect(() => {
     if (productId) {
-      dispatch(getProduct(productId));
+      // dispatch(getProduct(productId));
+      dispatch(getProductByIdLocal(productId));
     }
   }, [productId]);
 
@@ -190,7 +196,8 @@ const EditProductScreen = () => {
       product_category_id: subCategory,
       items: variants,
     };
-    dispatch(editProducts(productItem?.id, params));
+    // dispatch(editProducts(productItem?.id, params));
+    dispatch(editProductsLocal(productItem?.id, params));
   };
 
   const handleCancel = () => {

@@ -1,11 +1,11 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from '../../services';
 import {AppDispatch, RootState} from '../../redux/store';
 import styles from './styles';
 import {Product, ContainerView} from '../../components/';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 
 const ProductScreen = () => {
   const navigation = useNavigation();
@@ -24,6 +24,12 @@ const ProductScreen = () => {
     // dispatch(services.getProductCategories());
     dispatch(services.getProductsGroupedLocal());
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProducts();
+    }, []),
+  );
 
   useEffect(() => {
     loadProducts();
@@ -72,6 +78,7 @@ const ProductScreen = () => {
         refreshing={refreshing}
         onRefresh={onRefresh}
         onPress={item => {
+          console.log('Product pressed:', item);
           navigation.navigate('EditProduct', {productId: item.id});
         }}
       />

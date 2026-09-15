@@ -368,3 +368,222 @@ export const getProductItemsFromDatabase = async (
 ): Promise<ProductItem[]> => {
   return getProductItems(productVariantId);
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Update product
+// Equivalent to:
+// PUT /api/products/:id
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const updateProduct = async (
+  productId: number,
+  data: {
+    name?: string;
+    description?: string | null;
+    cost?: number | null;
+    category_id?: number;
+    product_category_id?: number | null;
+    is_active?: boolean;
+    items?: ProductItem[];
+  },
+): Promise<Product> => {
+  const db = getDB();
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Get existing product
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const productResult = await db.execute(
+    `
+    SELECT *
+    FROM products
+    WHERE id = ?
+    LIMIT 1;
+    `,
+    [productId],
+  );
+
+  const product = productResult.rows?.[0];
+
+  if (!product) {
+    throw new Error('Product not found.');
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Validate category
+  // ─────────────────────────────────────────────────────────────────────────
+
+  if (data.category_id !== undefined) {
+    const categoryResult = await db.execute(
+      `
+      SELECT id
+      FROM categories
+      WHERE id = ?
+      LIMIT 1;
+      `,
+      [data.category_id],
+    );
+
+    if (!categoryResult.rows?.length) {
+      throw new Error('Invalid category_id.');
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Validate product category
+  // ─────────────────────────────────────────────────────────────────────────
+
+  if (
+    data.product_category_id !== undefined &&
+    data.product_category_id !== null
+  ) {
+    const resolvedCategoryId =
+      data.category_id !== undefined ? data.category_id : product.category_id;
+
+    const productCategoryResult = await db.execute(
+      `
+      SELECT id
+      FROM product_categories
+      WHERE id = ?
+        AND category_id = ?
+      LIMIT 1;
+      `,
+      [data.product_category_id, resolvedCategoryId],
+    );
+
+    if (!productCategoryResult.rows?.length) {
+      throw new Error('Invalid product_category_id for this category.');
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Start transaction
+  // ─────────────────────────────────────────────────────────────────────────
+
+  await db.execute('BEGIN TRANSACTION');
+
+  try {
+    // ───────────────────────────────────────────────────────────────────────
+    // Update product
+    // ───────────────────────────────────────────────────────────────────────
+
+    await db.execute(
+      `
+      UPDATE products
+      SET
+        name = COALESCE(?, name),
+        description = COALESCE(?, description),
+        product_category_id = COALESCE(?, product_category_id),
+        cost = COALESCE(?, cost),
+        category_id = COALESCE(?, category_id),
+        is_active = COALESCE(?, is_active),
+        updated_at = datetime('now')
+      WHERE id = ?;
+      `,
+      [
+        data.name !== undefined ? data.name : null,
+        data.description !== undefined ? data.description : null,
+        data.product_category_id !== undefined
+          ? data.product_category_id
+          : null,
+        data.cost !== undefined ? data.cost : null,
+        data.category_id !== undefined ? data.category_id : null,
+        data.is_active !== undefined ? (data.is_active ? 1 : 0) : null,
+        productId,
+      ],
+    );
+
+    // ───────────────────────────────────────────────────────────────────────
+    // Replace variant items if items were provided
+    // ───────────────────────────────────────────────────────────────────────
+
+    if (Array.isArray(data.items)) {
+      let productVariantId = product.product_variant_id;
+
+      // Create a variant if the product doesn't have one yet
+      if (!productVariantId) {
+        const variantResult = await db.execute(
+          `
+          INSERT INTO product_variants (
+            name
+          )
+          VALUES (?);
+          `,
+          [`${product.name} Variants`],
+        );
+
+        productVariantId = variantResult.insertId;
+
+        await db.execute(
+          `
+          UPDATE products
+          SET product_variant_id = ?
+          WHERE id = ?;
+          `,
+          [productVariantId, productId],
+        );
+      }
+
+      // Delete existing variant items
+      await db.execute(
+        `
+        DELETE FROM product_variant_items
+        WHERE product_variant_id = ?;
+        `,
+        [productVariantId],
+      );
+
+      // Insert new variant items
+      for (const item of data.items) {
+        if (item.price === undefined || item.price === null) {
+          throw new Error('Each product item must have a price.');
+        }
+
+        const price = Number(item.price);
+
+        if (Number.isNaN(price)) {
+          throw new Error('Product item price must be a valid number.');
+        }
+
+        await db.execute(
+          `
+          INSERT INTO product_variant_items (
+            product_variant_id,
+            temperature,
+            size,
+            price
+          )
+          VALUES (?, ?, ?, ?);
+          `,
+          [
+            productVariantId,
+            item.temperature ?? null,
+            item.size ?? null,
+            price,
+          ],
+        );
+      }
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
+    // Commit
+    // ───────────────────────────────────────────────────────────────────────
+
+    await db.execute('COMMIT');
+
+    // ───────────────────────────────────────────────────────────────────────
+    // Return updated product
+    // ───────────────────────────────────────────────────────────────────────
+
+    const updatedProduct = await getProductById(productId);
+
+    if (!updatedProduct) {
+      throw new Error('Failed to retrieve updated product.');
+    }
+
+    return updatedProduct;
+  } catch (error) {
+    await db.execute('ROLLBACK');
+    throw error;
+  }
+};
