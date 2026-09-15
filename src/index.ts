@@ -13,6 +13,7 @@ import AddProductScreen from './screens/AddProduct';
 import EditProductScreen from './screens/EditProduct';
 import SyncScreen from './screens/Sync';
 import PrinterSettings from './screens/PrinterSettings';
+import DatabaseDebugScreen from './screens/DatabaseDebugScreen';
 
 export {
   HomeScreen,
@@ -30,4 +31,5 @@ export {
   EditProductScreen,
   SyncScreen,
   PrinterSettings,
+  DatabaseDebugScreen,
 };

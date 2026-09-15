@@ -1,10 +1,9 @@
-// src/database/migrations.js
 const migrations = [
   {
     version: 1,
     name: 'add_default_categories',
-    up: async db => {
-      await db.execute(`
+    run: db => {
+      db.execute(`
         INSERT OR IGNORE INTO categories (name, type, is_active) VALUES
         ('Beverage', 'beverage', 1),
         ('Food', 'food', 1),
@@ -15,8 +14,8 @@ const migrations = [
   {
     version: 2,
     name: 'add_status_priority_default_values',
-    up: async db => {
-      await db.execute(`
+    run: db => {
+      db.execute(`
         INSERT OR IGNORE INTO order_statuses (status, priority, color, label) VALUES
         ('pending',   1, '#F5A623', 'Pending'),
         ('preparing', 2, '#F5A623', 'Preparing'),
@@ -27,82 +26,36 @@ const migrations = [
       `);
     },
   },
-  {
-    version: 3,
-    name: 'widen_order_items_status_constraint',
-    up: async db => {
-      await db.execute(`
-        CREATE TABLE IF NOT EXISTS order_items_new (
-          id          INTEGER PRIMARY KEY AUTOINCREMENT,
-          order_id    INTEGER NOT NULL,
-          sku         TEXT NOT NULL,
-          name        TEXT NOT NULL,
-          type        TEXT,
-          size        TEXT NOT NULL,
-          price       REAL NOT NULL,
-          quantity    INTEGER DEFAULT 1,
-          status      TEXT DEFAULT 'pending'
-                        CHECK(status IN ('pending', 'done', 'cancelled', 'completed')),
-          add_ons     TEXT,
-          created_at  TEXT DEFAULT (datetime('now')),
-          updated_at  TEXT DEFAULT (datetime('now')),
-          FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
-        )
-      `);
-
-      await db.execute(`
-        INSERT INTO order_items_new
-          (id, order_id, sku, name, type, size, price, quantity, status, add_ons, created_at, updated_at)
-        SELECT
-          id, order_id, sku, name, type, size, price, quantity, status, add_ons, created_at, updated_at
-        FROM order_items
-      `);
-
-      await db.execute(`DROP TABLE order_items`);
-      await db.execute(`ALTER TABLE order_items_new RENAME TO order_items`);
-    },
-  },
 ];
 
-export async function runMigrations(db) {
-  await db.execute(`
-    CREATE TABLE IF NOT EXISTS migrations (
-      id      INTEGER PRIMARY KEY AUTOINCREMENT,
-      version INTEGER NOT NULL UNIQUE,
-      name    TEXT NOT NULL,
-      run_at  TEXT DEFAULT (datetime('now'))
-    )
-  `);
+export function runMigrations(db) {
+  // Fetch current user database layout version
+  const result = db.execute(
+    'SELECT MAX(version) as current_version FROM schema_versions;',
+  );
+  const currentVersion = result.rows?._array[0]?.current_version || 0;
 
-  const {rows} = await db.execute('SELECT version FROM migrations');
-  const ran = rows.map(r => r.version);
+  // Filter out updates the user already applied in past launches
+  const pendingMigrations = migrations.filter(m => m.version > currentVersion);
 
-  for (const migration of migrations) {
-    if (ran.includes(migration.version)) {
+  if (pendingMigrations.length === 0) return;
+
+  // Wrap inside a fast atomized transaction block
+  db.transaction(tx => {
+    for (const migration of pendingMigrations) {
       console.log(
-        `[Migration] v${migration.version} ${migration.name} — skipped`,
+        `[DB Migration] Applying version ${migration.version}: ${migration.name}`,
       );
-      continue;
-    }
 
-    try {
-      await db.transaction(async tx => {
-        await migration.up(tx);
-        await tx.execute(
-          'INSERT INTO migrations (version, name) VALUES (?, ?)',
-          [migration.version, migration.name],
-        );
-      });
+      // Execute instructions
+      migration.run(db);
 
-      console.log(
-        `[Migration] v${migration.version} ${migration.name} — ✓ done`,
-      );
-    } catch (err) {
-      console.error(
-        `[Migration] v${migration.version} ${migration.name} — ✗ failed:`,
-        err.message,
-      );
-      throw err;
+      // Save migration version history stamp
+      db.execute('INSERT INTO schema_versions (version) VALUES (?);', [
+        migration.version,
+      ]);
     }
-  }
+  });
+
+  console.log('[DB Migration] All schema structures synced up successfully.');
 }

@@ -34,4 +34,5 @@ export type RootStackParamList = {
   EditProduct: undefined;
   Sync: undefined;
   PrinterSettings: undefined;
+  DatabaseDebug: undefined;
 };

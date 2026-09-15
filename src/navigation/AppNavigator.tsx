@@ -51,6 +51,10 @@ const AppNavigator = () => {
           name="PrinterSettings"
           component={screens.PrinterSettings}
         />
+        <Stack.Screen
+          name="DatabaseDebug"
+          component={screens.DatabaseDebugScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

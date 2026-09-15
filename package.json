@@ -70,5 +70,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "op-sqlite": {
+    "performanceMode": true
   }
 }

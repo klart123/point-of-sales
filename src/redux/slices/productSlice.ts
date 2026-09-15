@@ -96,7 +96,7 @@ const productSlice = createSlice({
     },
     getProductsGroupedSuccess: (
       state,
-      action: PayloadAction<products.ProductCategory[]>,
+      action: PayloadAction<products.GroupedCategory[]>,
     ) => {
       state.loading = false;
       state.productsGrouped = action.payload;

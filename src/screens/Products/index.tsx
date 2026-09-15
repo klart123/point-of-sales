@@ -12,16 +12,17 @@ const ProductScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const {loading, productsGrouped, hasMore, isAddingLoading, isAddingSuccess} =
     useSelector((state: RootState) => state.products);
-  const [list, setList] = useState([]);
+  const [list, setList] = useState(productsGrouped);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
   const [addModal, setAddModal] = useState(false);
 
   // Function to load products
   const loadProducts = () => {
-    dispatch(services.getProductsGrouped()); // Pass page number for pagination
-    dispatch(services.getCategories());
-    dispatch(services.getProductCategories());
+    // dispatch(services.getProductsGrouped()); // Pass page number for pagination
+    // dispatch(services.getCategories());
+    // dispatch(services.getProductCategories());
+    dispatch(services.getProductsGroupedLocal());
   };
 
   useEffect(() => {

@@ -1,6 +1,10 @@
 import {AppDispatch} from '../redux/store'; // adjust path if needed
 import {productActions} from '../redux/slices/productSlice';
 import axiosInstance from '../Api/axiosInstance';
+import {
+  getProductsFromDatabase,
+  getProductsGroupedFromDatabase,
+} from '../database/productRepository';
 
 // Types
 type Variant = {
@@ -169,6 +173,30 @@ export const getProductsGrouped = () => {
           productActions.getProductsGroupedFailed(error.data.error),
         );
       });
+  };
+};
+
+export const getProductsGroupedLocal = () => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      dispatch(productActions.getProductsGroupedStart());
+
+      const products = await getProductsGroupedFromDatabase();
+
+      console.log('[Products] Loaded local products:', products);
+
+      dispatch(productActions.getProductsGroupedSuccess(products));
+    } catch (error) {
+      console.error('[Products] Failed to load local products:', error);
+
+      dispatch(
+        productActions.getProductsGroupedFailed(
+          error instanceof Error
+            ? error.message
+            : 'Failed to load local products',
+        ),
+      );
+    }
   };
 };
 

@@ -1,14 +1,13 @@
+import {
+  Product,
+  ProductCategory,
+  GroupedCategory,
+} from '../database/productRepository';
+
 export type Category = {
   id: number;
   name: string;
   type: string;
-};
-
-export type ProductCategory = {
-  id: number;
-  name: string;
-  category_id: number;
-  products: object[];
 };
 
 export type ProductState = {
@@ -19,7 +18,7 @@ export type ProductState = {
   isSuccess: boolean;
   categories: Category[];
   productCategories: ProductCategory[];
-  productsGrouped: object[];
+  productsGrouped: GroupedCategory[];
   isAddingLoading: boolean;
   isAddingSuccess: boolean;
   prodCatLoading: boolean;

@@ -306,4 +306,35 @@ export default StyleSheet.create({
     fontWeight: '700',
     fontSize: 14,
   },
+  // Seeder section
+  sectionContainer: {
+    padding: 16,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    marginVertical: 10,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#334155',
+    marginBottom: 12,
+  },
+  seedButton: {
+    backgroundColor: '#10b981', // Emerald green indicating growth/seed
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: '#a7f3d0',
+  },
+  seedButtonText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '600',
+  },
 });
