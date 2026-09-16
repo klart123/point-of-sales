@@ -196,7 +196,8 @@ const orderSlice = createSlice({
     },
     getStatusesSuccess: (
       state,
-      action: PayloadAction<UpdateItemStatusPayload>,
+      // action: PayloadAction<UpdateItemStatusPayload>,
+      action: PayloadAction<any>,
     ) => {
       state.isStatusesPending = false;
       state.orderStatuses = action.payload;

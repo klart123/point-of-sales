@@ -1,263 +1,307 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {View, Text, FlatList, Alert} from 'react-native';
-import {io, Socket} from 'socket.io-client';
-import axiosInstance from '../../Api/axiosInstance';
-import {HeaderComponent} from '../../components';
+import {View, Text, Alert} from 'react-native';
+import {
+  HeaderComponent,
+  Orders,
+  ContainerView,
+  PayModal,
+} from '../../components';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import styles from './styles';
-import {Order, OrderItem} from '../../types';
-import {Orders, ContainerView, PayModal} from '../../components';
 import {useDispatch, useSelector} from 'react-redux';
 import * as services from '../../services';
 import {RootState} from '../../redux/store';
 import {orderActions} from '../../redux/slices/orderSlice';
+import {Order, OrderItem} from '../../types';
+import styles from './styles';
+
+// Local SQLite repository.
+import {
+  getOrdersFromDatabase,
+  getOrderStatusesFromDatabase,
+  toggleOrderItemStatus,
+  updateOrderStatus,
+  updateOrderPayment,
+} from '../../database/orderRepository';
 
 const OrderList = () => {
-  const {socketURL} = useSelector((state: RootState) => state.api);
   const {orderStatuses} = useSelector((state: RootState) => state.orders);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [socket, setSocket] = useState<Socket | null>(null);
   const [updatedAt, setUpdatedAt] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [payModal, setPayModal] = useState<boolean>(false);
-
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [payModal, setPayModal] = useState(false);
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Active orders
+  // ─────────────────────────────────────────────────────────────────────────
+
   const activeOrders = orders.filter(
-    o => !['served', 'cancelled', 'completed'].includes(o.status),
+    order => !['served', 'cancelled', 'completed'].includes(order.status),
   );
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Sort order items
+  // ─────────────────────────────────────────────────────────────────────────
 
   const sortItems = (items: OrderItem[]): OrderItem[] => {
     return [...items].sort((a, b) => {
-      if (a.status === b.status) return 0;
-      return a.status === 'pending' ? -1 : 1; // pending first, done last
+      if (a.status === b.status) {
+        return 0;
+      }
+
+      // Pending items should appear before done items.
+      return a.status === 'pending' ? -1 : 1;
     });
   };
 
-  const sortOrders = (orders: Order[]): Order[] => {
-    return [...orders].sort((a, b) => {
+  // ─────────────────────────────────────────────────────────────────────────
+  // Sort orders
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const sortOrders = (orderList: Order[]): Order[] => {
+    return [...orderList].sort((a, b) => {
       const priorityA = orderStatuses[a.status]?.priority ?? 999;
+
       const priorityB = orderStatuses[b.status]?.priority ?? 999;
 
-      // Sort by status priority first
+      // First sort by kitchen status priority.
       if (priorityA !== priorityB) {
         return priorityA - priorityB;
       }
 
-      // Within the same status, oldest first
+      // Same status:
+      // oldest order appears first.
       return (
         new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     });
   };
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Load active orders from SQLite
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const loadActiveOrders = useCallback(async () => {
+    try {
+      setRefreshing(true);
+      const today = new Date();
+
+      // Load today's orders plus the previous two days.
+      const threeDaysAgo = new Date(today);
+
+      threeDaysAgo.setDate(today.getDate() - 2);
+
+      const from = threeDaysAgo.toISOString().slice(0, 10);
+      const to = today.toISOString().slice(0, 10);
+      console.log(`[OrderList] Loading orders from ${from} to ${to}...`);
+
+      const localOrders = await getOrdersFromDatabase({
+        status: ['preparing', 'pending', 'ready'],
+        from,
+        to,
+      });
+
+      // Sort items first.
+      const formattedOrders = localOrders.map(order => ({
+        ...order,
+        items: sortItems(order.items),
+      }));
+
+      // Then sort orders.
+      const sortedOrders = sortOrders(formattedOrders);
+
+      setOrders(sortedOrders);
+
+      // Keep Redux synchronized for the rest of the application.
+      dispatch(orderActions.getOrderSuccess(sortedOrders));
+
+      setUpdatedAt(Date.now());
+    } catch (error) {
+      console.error('[OrderList] Failed to load orders:', error);
+
+      Alert.alert('Error', 'Failed to load orders from local database.');
+    } finally {
+      setRefreshing(false);
+    }
+  }, [orderStatuses, dispatch]);
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Reload whenever this screen gets focus
+  // ─────────────────────────────────────────────────────────────────────────
+
   useFocusEffect(
     useCallback(() => {
       loadActiveOrders();
-    }, []),
+    }, [loadActiveOrders]),
   );
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Load order statuses
+  // ─────────────────────────────────────────────────────────────────────────
+
   useEffect(() => {
-    const s = io(socketURL);
+    const loadStatuses = async () => {
+      try {
+        const statuses = await getOrderStatusesFromDatabase();
 
-    dispatch(services.getOrderStatuses());
+        /*
+         * Your existing UI expects:
+         *
+         * orderStatuses['pending']
+         *
+         * rather than:
+         *
+         * orderStatuses[0]
+         *
+         * Convert the database array into that structure.
+         */
+        const statusMap = statuses.reduce(
+          (result: Record<string, any>, status) => {
+            result[status.status] = status;
+            return result;
+          },
+          {},
+        );
 
-    s.on('connect', () => {
-      s.emit('join_room', 'kitchen');
-      console.log('[Kitchen] Connected to socket');
-    });
-
-    s.on('new_order', (order: Order) => {
-      setOrders(prev =>
-        // Add the new order then re-sort everything
-        sortOrders([...prev, {...order, items: sortItems(order.items)}]),
-      );
-      setUpdatedAt(Date.now());
-    });
-
-    s.on('order_updated', (updated: Order) => {
-      setOrders(prev => {
-        // Remove if no longer active
-        if (['served', 'cancelled', 'completed'].includes(updated.status)) {
-          return prev.filter(o => o.id !== updated.id);
-        }
-
-        const sortedUpdated = {...updated, items: sortItems(updated.items)};
-        const exists = prev.find(o => o.id === updated.id);
-
-        let newList;
-        if (exists) {
-          // Replace the updated order in the list
-          newList = prev.map(o => (o.id === updated.id ? sortedUpdated : o));
-        } else {
-          newList = prev;
-        }
-
-        return sortOrders(newList);
-      });
-      setUpdatedAt(Date.now());
-    });
-
-    setSocket(s);
-
-    return () => {
-      s.disconnect();
+        dispatch(orderActions.getStatusesSuccess(statusMap));
+      } catch (error) {
+        console.error('[OrderList] Failed to load statuses:', error);
+      }
     };
-  }, []);
 
-  const loadActiveOrders = async () => {
-    // Get today's date
-    const today = new Date();
+    loadStatuses();
+  }, [dispatch]);
 
-    // Go back 3 days (including today)
-    const threeDaysAgo = new Date(today);
-    threeDaysAgo.setDate(today.getDate() - 2);
-
-    // Format as YYYY-MM-DD
-    const from = threeDaysAgo.toISOString().slice(0, 10);
-    const to = today.toISOString().slice(0, 10);
-
-    const params = {
-      status: 'preparing,pending,ready',
-      from: from,
-      to: to,
-    };
-    // dispatch(services.getOrders(params));
-    axiosInstance
-      .get('/orders', {
-        params: {
-          status: 'preparing,pending,ready',
-          from: from,
-          to: to,
-        },
-      })
-      .then(response => {
-        if (response.status === 200 || response.status === 201) {
-          const sortedOrders = sortOrders(response.data);
-          const sorted = sortedOrders.map((o: Order) => ({
-            ...o,
-            items: sortItems(o.items),
-          }));
-          setOrders(sorted);
-        }
-        dispatch(orderActions.getOrderSuccess(response.data));
-        setUpdatedAt(Date.now());
-      })
-      .catch(error => {
-        console.error('Failed to load orders', error);
-      })
-      .finally(() => {
-        setRefreshing(false);
-      });
-  };
+  // ─────────────────────────────────────────────────────────────────────────
+  // Item pressed
+  // ─────────────────────────────────────────────────────────────────────────
 
   const handleItemPress = async (order: Order, item: OrderItem) => {
-    setOrders(prev =>
-      prev.map(o => {
-        if (o.id !== order.id) return o;
-        const updatedItems = o.items.map(i =>
-          i.id === item.id
-            ? {...i, status: i.status === 'done' ? 'pending' : 'done'}
-            : i,
-        );
-        return {
-          ...o,
-          items: sortItems(updatedItems), // ← sort after toggle
-        };
-      }),
-    );
-    setUpdatedAt(Date.now());
+    try {
+      /*
+       * SQLite is the source of truth.
+       *
+       * We update the database first, then update the UI
+       * using the returned order.
+       */
+      const updatedOrder = await toggleOrderItemStatus(order.id, item.id);
 
-    axiosInstance
-      .patch(`/orders/${order.id}/items/${item.id}/done`)
-      .catch(error => {
-        console.error('Failed to update item status', error);
-        Alert.alert('Error', 'Failed to update item status.');
-        loadActiveOrders();
+      setOrders(prev => {
+        const updatedList = prev.map(currentOrder =>
+          currentOrder.id === updatedOrder.id
+            ? {
+                ...updatedOrder,
+                items: sortItems(updatedOrder.items),
+              }
+            : currentOrder,
+        );
+
+        return sortOrders(updatedList);
       });
+
+      setUpdatedAt(Date.now());
+    } catch (error) {
+      console.error('[OrderList] Failed to update item:', error);
+
+      Alert.alert('Error', 'Failed to update item status.');
+
+      // Reload from SQLite to make sure UI matches database.
+      loadActiveOrders();
+    }
   };
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Header
+  // ─────────────────────────────────────────────────────────────────────────
 
   const handleHeaderPress = () => {
     navigation.navigate('Store' as never);
   };
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Complete order
+  // ─────────────────────────────────────────────────────────────────────────
+
   const handleCompleteOrder = (order: Order) => {
-    if (order?.is_paid === 0) {
+    const completeOrder = async () => {
+      try {
+        const updatedOrder = await updateOrderStatus(order.id, 'completed');
+
+        /*
+         * Completed orders are not part of activeOrders,
+         * so remove it from this screen.
+         */
+        setOrders(prev =>
+          prev.filter(currentOrder => currentOrder.id !== updatedOrder.id),
+        );
+
+        setUpdatedAt(Date.now());
+      } catch (error) {
+        console.error('[OrderList] Failed to complete order:', error);
+
+        Alert.alert('Error', 'Failed to complete order.');
+      }
+    };
+
+    if (order.is_paid === 0) {
       Alert.alert(
         'Order is NOT PAID',
         'Are you sure you want to mark this order as complete?',
         [
-          {text: 'Cancel', style: 'cancel'},
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
           {
             text: 'Yes',
-            onPress: () => {
-              axiosInstance
-                .patch(`/orders/${order.id}/status`, {
-                  status: 'completed',
-                })
-                .then(() => {
-                  loadActiveOrders();
-                  setOrders((prev: any[]) =>
-                    prev.filter(o => o.id !== order.id),
-                  );
-                })
-                .catch(error => {
-                  console.error('Failed to complete order', error);
-                  Alert.alert('Error', 'Failed to complete order.');
-                });
-            },
+            onPress: completeOrder,
           },
         ],
       );
-    } else {
-      Alert.alert(
-        'Complete Order',
-        'Are you sure you want to mark this order as complete?',
-        [
-          {text: 'Cancel', style: 'cancel'},
-          {
-            text: 'Yes',
-            onPress: () => {
-              axiosInstance
-                .patch(`/orders/${order.id}/status`, {
-                  status: 'completed',
-                })
-                .then(() => {
-                  loadActiveOrders();
-                  setOrders((prev: any[]) =>
-                    prev.filter(o => o.id !== order.id),
-                  );
-                })
-                .catch(error => {
-                  console.error('Failed to complete order', error);
-                  Alert.alert('Error', 'Failed to complete order.');
-                });
-            },
-          },
-        ],
-      );
+
+      return;
     }
+
+    Alert.alert(
+      'Complete Order',
+      'Are you sure you want to mark this order as complete?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: completeOrder,
+        },
+      ],
+    );
   };
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Pull to refresh
+  // ─────────────────────────────────────────────────────────────────────────
+
   const onRefresh = () => {
-    dispatch(services.getOrderStatuses());
-    setRefreshing(true);
     loadActiveOrders();
   };
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Convert order into Store edit format
+  // ─────────────────────────────────────────────────────────────────────────
+
   const convertBackendOrder = (orderItem: any) => {
-    // Group flat items array by sku
     const grouped = new Map<string, any>();
 
     orderItem.items.forEach((item: any) => {
       if (!grouped.has(item.sku)) {
         grouped.set(item.sku, {
-          id: item.order_id, // use first item's id as the order entry id
+          id: item.product_id,
           sku: item.sku,
           name: item.name,
-          isUpdate: true, // flag so your slice knows this is an edit
+          isUpdate: true,
           totalPrice: 0,
           items: [],
           addOns: [],
@@ -266,68 +310,100 @@ const OrderList = () => {
 
       const entry = grouped.get(item.sku);
 
-      // Add to items array (temp/size/price per row)
       entry.items.push({
+        id: item.product_item_id,
         temp: item.type ?? '',
         size: item.size ?? '',
         price: item.price ?? 0,
+        quantity: item.quantity ?? 1,
         status: item.status ?? 'pending',
       });
 
-      // Accumulate total price
-      entry.totalPrice += item.price ?? 0;
+      entry.totalPrice += (item.price ?? 0) * (item.quantity ?? 1);
 
-      // Map add_ons if they exist
-      if (item.add_ons && item.add_ons.length > 0) {
-        item.add_ons.forEach((addOn: any) => {
-          entry.addOns.push({
-            name: addOn.name,
-            price: addOn.price,
-          });
+      const addOns = item.add_ons_detail ?? item.add_ons ?? [];
+
+      addOns.forEach((addOn: any) => {
+        entry.addOns.push({
+          name: addOn.name,
+          price: addOn.price,
         });
-      }
+      });
     });
 
     return Array.from(grouped.values());
   };
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Edit order
+  // ─────────────────────────────────────────────────────────────────────────
+
   const handleEditOrder = (orderItem: any) => {
     if (orderItem) {
       const converted = convertBackendOrder(orderItem);
+
       dispatch(orderActions.addOrderItem(orderItem));
+
       dispatch(orderActions.addCustomerName(orderItem.customer_name));
+
       dispatch(
-        orderActions.editOrder({items: converted, orderId: orderItem?.id}),
+        orderActions.editOrder({
+          items: converted,
+          orderId: orderItem.id,
+        }),
       );
     }
-    navigation.navigate('Store');
+
+    navigation.navigate('Store' as never);
   };
 
-  const handlePayOrder = (orderItem: any) => {
-    if (orderItem) {
-      setSelectedOrder(orderItem);
-      setPayModal(true);
+  // ─────────────────────────────────────────────────────────────────────────
+  // Open payment modal
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const handlePayOrder = (orderItem: Order) => {
+    setSelectedOrder(orderItem);
+    setPayModal(true);
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Submit payment
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const handleSubmitPayment = async (data: {
+    orderId: number;
+    cash_tendered?: number | null;
+    isGcash?: boolean;
+  }) => {
+    try {
+      const updatedOrder = await updateOrderPayment(data.orderId, data);
+
+      setOrders(prev =>
+        prev.map(order =>
+          order.id === updatedOrder.id ? updatedOrder : order,
+        ),
+      );
+
+      setSelectedOrder(updatedOrder);
+
+      setPayModal(false);
+
+      setUpdatedAt(Date.now());
+    } catch (error) {
+      console.error('[OrderList] Failed to update payment:', error);
+
+      Alert.alert('Payment Error', 'Failed to update payment.');
     }
   };
 
-  const handleSubmitPayment = data => {
-    axiosInstance
-      .patch(`/orders/${data.orderId}/payment`, {
-        ...data,
-      })
-      .then(response => {
-        if (response.status === 200 || response.status === 201) {
-          setPayModal(false);
-        }
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
-  // ── Render ─────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────
+  // Render
+  // ─────────────────────────────────────────────────────────────────────────
+
   return (
     <ContainerView style={styles.container}>
       <HeaderComponent label="Add Order" onPress={handleHeaderPress} />
+
       <View style={styles.header}>
         <Text style={styles.subtitle}>{activeOrders.length} active orders</Text>
       </View>
@@ -349,6 +425,7 @@ const OrderList = () => {
         orderItem={selectedOrder}
         onClose={() => {
           setPayModal(false);
+          setSelectedOrder(null);
         }}
         onSubmit={handleSubmitPayment}
       />

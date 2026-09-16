@@ -3,6 +3,7 @@ import {AppDispatch} from '../redux/store';
 import {orderSummaryAction} from '../redux/slices/orderSummarySlice';
 import {orderActions} from '../redux/slices/orderSlice';
 import {printOrderLabel} from '../printer/PrintService';
+import {getOrderStatuses as getOrderStatusesLocal} from '../database/orderRepository';
 
 export const getOrderSummary = () => {
   return (dispatch: AppDispatch) => {
@@ -128,11 +129,11 @@ export const getOrderStatuses: any = () => {
   return (dispatch: AppDispatch) => {
     dispatch(orderActions.getStatusesStart());
 
-    axiosInstance
-      .get(`/orders/statuses`)
+    getOrderStatusesLocal()
       .then(response => {
-        if (response.status === 200 || response.status === 201) {
-          const statuses = response.data;
+        if (response) {
+          console.log('Fetched order statuses:', response);
+          const statuses = response;
 
           // ✅ convert to map ONCE here
           const statusMap = Object.fromEntries(
@@ -148,10 +149,10 @@ export const getOrderStatuses: any = () => {
           return dispatch(orderActions.getStatusesSuccess(statusMap));
         }
 
-        return dispatch(orderActions.getStatusesFailed(response.data));
+        return dispatch(orderActions.getStatusesFailed(response));
       })
       .catch(error => {
-        return dispatch(orderActions.getStatusesFailed(error.data));
+        return dispatch(orderActions.getStatusesFailed(error));
       });
   };
 };
