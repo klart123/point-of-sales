@@ -336,6 +336,54 @@ const PRODUCTS = [
       },
     ],
   },
+  {
+    name: 'Biscoff Latte',
+    sku: 'BEV-COFFEE-011',
+    category_id: 1,
+    product_category_name: 'Coffee',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 109,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 109,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 119,
+      },
+    ],
+  },
+  {
+    name: 'Oreo Latte',
+    sku: 'BEV-COFFEE-012',
+    category_id: 1,
+    product_category_name: 'Coffee',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 119,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 119,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 149,
+      },
+    ],
+  },
 
   // ───────────────────────────────────────────────────────────────────────
   // Matcha
@@ -515,7 +563,54 @@ const PRODUCTS = [
       },
     ],
   },
-
+  {
+    name: 'Biscoff Matcha',
+    sku: 'BEV-MATCHA-008',
+    category_id: 1,
+    product_category_name: 'Matcha',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 119,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 119,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 149,
+      },
+    ],
+  },
+  {
+    name: 'Oreo Matcha',
+    sku: 'BEV-MATCHA-009',
+    category_id: 1,
+    product_category_name: 'Matcha',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 99,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 99,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 119,
+      },
+    ],
+  },
   // ───────────────────────────────────────────────────────────────────────
   // Fruit Soda
   // ───────────────────────────────────────────────────────────────────────

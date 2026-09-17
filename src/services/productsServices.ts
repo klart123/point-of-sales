@@ -6,6 +6,7 @@ import {
   getProductsGroupedFromDatabase,
   getProductById,
   updateProduct,
+  createProduct,
 } from '../database/productRepository';
 import {getCategoriesFromDatabase} from '../database/categoryRepository';
 
@@ -56,14 +57,13 @@ export const resetProducts = () => {
 export const addProducts: any = (payload: any) => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.addProductStart());
-    axiosInstance
-      .post('/products', payload)
+    createProduct(payload)
       .then(response => {
-        if (response?.status) {
-          return dispatch(productActions.addProductSuccess(response?.data));
+        if (response) {
+          return dispatch(productActions.addProductSuccess(response));
         }
 
-        return dispatch(productActions.addProductFailed(response?.data));
+        return dispatch(productActions.addProductFailed(response));
       })
       .catch(error => {
         dispatch(productActions.addProductFailed(error));
@@ -179,16 +179,14 @@ export const getCategories = () => {
     getCategoriesFromDatabase()
       .then(response => {
         console.log('response', response);
-        if (response?.status === 200 || response?.status === 201) {
-          return dispatch(productActions.getCategoriesSuccess(response?.data));
+        if (response) {
+          return dispatch(productActions.getCategoriesSuccess(response));
         }
 
-        return dispatch(
-          productActions.getCategoriesFailed(response.data.error),
-        );
+        return dispatch(productActions.getCategoriesFailed(response));
       })
       .catch(error => {
-        return dispatch(productActions.getCategoriesFailed(error.data.error));
+        return dispatch(productActions.getCategoriesFailed(error));
       });
   };
 };
