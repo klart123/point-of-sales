@@ -111,8 +111,6 @@ const PayModal: React.FC<Props> = ({visible, orderItem, onSubmit, onClose}) => {
                   ]}
                   disabled={cashTendered === 0}
                   onPress={() => {
-                    console.log('orderItem', orderItem);
-                    console.log('orderId', orderItem);
                     onSubmit({
                       orderId: orderItem?.id,
                       cash_tendered: cashTendered,

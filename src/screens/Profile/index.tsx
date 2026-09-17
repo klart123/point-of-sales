@@ -15,7 +15,11 @@ import {
   removeApiBaseUrl,
   saveApiBaseUrl,
 } from '../../../env';
-import {seedDatabase, clearSeededDatabase} from '../../database/seeder';
+import {
+  seedDatabase,
+  clearSeededDatabase,
+  resetAllDatabase,
+} from '../../database/seeder';
 
 type Props = NativeStackScreenProps<navigation.RootStackParamList, 'Profile'>;
 
@@ -154,6 +158,43 @@ const ProfileScreen: React.FC<Props> = ({navigation}) => {
     );
   }, []);
 
+  const resetDatabase = useCallback(async () => {
+    Alert.alert(
+      'Reset Database',
+      'This will delete all local data and reset the database. Continue?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setSeeding(true);
+
+              console.log('[Profile] Clearing local database...');
+
+              await resetAllDatabase();
+
+              Alert.alert('Database Reset', 'Local data has been reset.');
+            } catch (error) {
+              const message =
+                error instanceof Error ? error.message : String(error);
+
+              console.error('[Profile] Clear database failed:', message);
+
+              Alert.alert('Clear Failed', message);
+            } finally {
+              setSeeding(false);
+            }
+          },
+        },
+      ],
+    );
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Profile</Text>
@@ -188,6 +229,7 @@ const ProfileScreen: React.FC<Props> = ({navigation}) => {
         color="#d9534f"
         onPress={() => navigation.navigate('DatabaseDebug')}
       />
+      <Button title="Reset Database" color="#d9534f" onPress={resetDatabase} />
       <Button title="Logout" color="#d9534f" onPress={handleLogout} />
       <ServerDiscoveryModal
         visible={serversModal}

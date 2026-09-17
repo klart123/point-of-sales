@@ -14,14 +14,17 @@ const MAIN_CATEGORIES = [
   {
     id: 1,
     name: 'Beverage',
+    type: 'beverage',
   },
   {
     id: 2,
     name: 'Food',
+    type: 'food',
   },
   {
     id: 3,
     name: 'Other',
+    type: 'other',
   },
 ];
 
@@ -109,7 +112,7 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Regular',
-        price: 60,
+        price: 70,
       },
     ],
   },
@@ -124,17 +127,17 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Small',
-        price: 69,
+        price: 79,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 69,
+        price: 79,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 89,
+        price: 99,
       },
     ],
   },
@@ -149,17 +152,17 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Medium',
-        price: 79,
+        price: 89,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 79,
+        price: 89,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 99,
+        price: 109,
       },
     ],
   },
@@ -174,17 +177,17 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Medium',
-        price: 79,
+        price: 89,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 79,
+        price: 89,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 99,
+        price: 109,
       },
     ],
   },
@@ -199,17 +202,17 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Medium',
-        price: 79,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 79,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 99,
+        price: 129,
       },
     ],
   },
@@ -224,17 +227,17 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Medium',
-        price: 99,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 99,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 119,
+        price: 129,
       },
     ],
   },
@@ -249,17 +252,17 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Medium',
-        price: 99,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 99,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 119,
+        price: 129,
       },
     ],
   },
@@ -274,17 +277,17 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Medium',
-        price: 99,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 99,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 119,
+        price: 129,
       },
     ],
   },
@@ -299,17 +302,17 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Medium',
-        price: 99,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 99,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 119,
+        price: 129,
       },
     ],
   },
@@ -322,19 +325,14 @@ const PRODUCTS = [
     description: '',
     items: [
       {
-        temperature: 'hot',
-        size: 'Medium',
-        price: 79,
-      },
-      {
         temperature: 'cold',
         size: 'Medium',
-        price: 79,
+        price: 99,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 99,
+        price: 109,
       },
     ],
   },
@@ -712,12 +710,13 @@ export async function seedDatabase(): Promise<boolean> {
             INSERT INTO categories (
               id,
               name,
+              type,
               created_at,
               updated_at
             )
-            VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+            VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
             `,
-            [category.id, category.name],
+            [category.id, category.name, category.type],
           );
         }
 
@@ -1124,7 +1123,6 @@ export async function seedDatabase(): Promise<boolean> {
 // ─────────────────────────────────────────────────────────────────────────────
 // Clear Seeded Database
 // ─────────────────────────────────────────────────────────────────────────────
-
 export async function clearSeededDatabase(): Promise<void> {
   const db = getDB();
 
@@ -1147,12 +1145,106 @@ export async function clearSeededDatabase(): Promise<void> {
       await tx.execute(`
         DELETE FROM product_categories;
       `);
+
+      // Reset AUTOINCREMENT for seeded tables
+      await tx.execute(`
+        DELETE FROM sqlite_sequence
+        WHERE name IN (
+          'product_variant_items',
+          'products',
+          'product_variants',
+          'product_categories'
+        );
+      `);
     });
 
     console.log('[Seeder] Local database cleared successfully.');
   } catch (error) {
     console.error('[Seeder] Failed to clear database:', error);
+    throw error;
+  }
+}
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Reset Seeded Database
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function resetAllDatabase(): Promise<void> {
+  const db = getDB();
+
+  try {
+    console.log('[DB] Clearing all local database data...');
+
+    await db.transaction(async tx => {
+      // Order-related data
+      await tx.execute(`
+        DELETE FROM order_item_add_ons;
+      `);
+
+      await tx.execute(`
+        DELETE FROM order_items;
+      `);
+
+      await tx.execute(`
+        DELETE FROM orders;
+      `);
+
+      // Add-ons
+      await tx.execute(`
+        DELETE FROM add_ons;
+      `);
+
+      await tx.execute(`
+        DELETE FROM add_on_categories;
+      `);
+
+      // Products
+      await tx.execute(`
+        DELETE FROM product_variant_items;
+      `);
+
+      await tx.execute(`
+        DELETE FROM products;
+      `);
+
+      await tx.execute(`
+        DELETE FROM product_variants;
+      `);
+
+      await tx.execute(`
+        DELETE FROM product_categories;
+      `);
+
+      // Users
+      await tx.execute(`
+        DELETE FROM users;
+      `);
+
+      // Main categories
+      await tx.execute(`
+        DELETE FROM categories;
+      `);
+
+      // Order statuses
+      await tx.execute(`
+        DELETE FROM order_statuses;
+      `);
+
+      // Reset AUTOINCREMENT for seeded tables
+      await tx.execute(`
+        DELETE FROM sqlite_sequence
+        WHERE name IN (
+          'product_variant_items',
+          'products',
+          'product_variants',
+          'product_categories'
+        );
+      `);
+    });
+
+    console.log('[DB] All local database data cleared successfully.');
+  } catch (error) {
+    console.error('[DB] Failed to clear database:', error);
     throw error;
   }
 }

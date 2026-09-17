@@ -62,20 +62,19 @@ const OrderList = () => {
 
   const sortOrders = (orderList: Order[]): Order[] => {
     return [...orderList].sort((a, b) => {
-      const priorityA = orderStatuses[a.status]?.priority ?? 999;
+      // Primary: oldest order first.
+      const dateDiff =
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
 
-      const priorityB = orderStatuses[b.status]?.priority ?? 999;
-
-      // First sort by kitchen status priority.
-      if (priorityA !== priorityB) {
-        return priorityA - priorityB;
+      if (dateDiff !== 0) {
+        return dateDiff;
       }
 
-      // Same status:
-      // oldest order appears first.
-      return (
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      );
+      // Tie-break: same timestamp — fall back to status priority.
+      const priorityA = orderStatuses[a.status]?.priority ?? 999;
+      const priorityB = orderStatuses[b.status]?.priority ?? 999;
+
+      return priorityA - priorityB;
     });
   };
 
@@ -174,40 +173,25 @@ const OrderList = () => {
     loadStatuses();
   }, [dispatch]);
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // Item pressed
-  // ─────────────────────────────────────────────────────────────────────────
-
   const handleItemPress = async (order: Order, item: OrderItem) => {
     try {
-      /*
-       * SQLite is the source of truth.
-       *
-       * We update the database first, then update the UI
-       * using the returned order.
-       */
       const updatedOrder = await toggleOrderItemStatus(order.id, item.id);
 
-      setOrders(prev => {
-        const updatedList = prev.map(currentOrder =>
+      setOrders(prev =>
+        prev.map(currentOrder =>
           currentOrder.id === updatedOrder.id
             ? {
                 ...updatedOrder,
                 items: sortItems(updatedOrder.items),
               }
             : currentOrder,
-        );
-
-        return sortOrders(updatedList);
-      });
+        ),
+      );
 
       setUpdatedAt(Date.now());
     } catch (error) {
       console.error('[OrderList] Failed to update item:', error);
-
       Alert.alert('Error', 'Failed to update item status.');
-
-      // Reload from SQLite to make sure UI matches database.
       loadActiveOrders();
     }
   };

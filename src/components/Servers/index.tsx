@@ -245,7 +245,6 @@ export default function ServerDiscoveryModal({
                 entry={item}
                 selected={selectedIP === item.ip}
                 onPress={() => {
-                  console.log(item);
                   setSelectedIP(item.ip);
                 }}
               />

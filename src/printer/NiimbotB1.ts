@@ -11,7 +11,7 @@ import {
 
 const SAVED_PRINTER_KEY = '@curbside_grinds/niimbot_b1_id';
 
-const WRITE_DELAY_MS = 12;
+const WRITE_DELAY_MS = 9;
 const RESPONSE_TIMEOUT_MS = 3000;
 
 const TEST_DPI = 203;
@@ -184,12 +184,8 @@ export class NiimbotB1 {
     console.log('Connecting to NIIMBOT:', deviceId);
     console.log('================================');
 
-    /**
-     * Clean up previous connection.
-     */
     this.monitorSubscription?.remove();
     this.monitorSubscription = null;
-
     this.responseBuffer = [];
 
     this.device = await manager.connectToDevice(deviceId, {
@@ -197,8 +193,19 @@ export class NiimbotB1 {
     });
 
     /**
-     * Discover GATT services.
+     * Request a larger MTU before discovering services.
+     * Default MTU (23) leaves only 20 usable bytes per packet —
+     * our row packets (header + bitmap bytes) often exceed that.
+     * Android honors this; iOS negotiates automatically but this
+     * still lets us read back what was actually granted.
      */
+    try {
+      this.device = await this.device.requestMTU(185);
+      console.log('NIIMBOT negotiated MTU:', this.device.mtu);
+    } catch (error) {
+      console.warn('MTU negotiation failed, using default:', error);
+    }
+
     await this.device.discoverAllServicesAndCharacteristics();
 
     const services = await this.device.services();

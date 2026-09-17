@@ -716,7 +716,6 @@ export const getOrdersFromDatabase = async (
     FROM orders
     WHERE 1 = 1
   `;
-  console.log('query', query);
   const params: (number | string)[] = [];
 
   if (options?.from) {
@@ -763,7 +762,7 @@ export const getOrdersFromDatabase = async (
     ORDER BY datetime(created_at) ASC;
   `;
   const result = await db.execute(query, params);
-  console.log('result', result);
+
   const orders = result.rows ?? [];
 
   const resultOrders: Order[] = [];
