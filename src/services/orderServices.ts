@@ -3,7 +3,10 @@ import {AppDispatch} from '../redux/store';
 import {orderSummaryAction} from '../redux/slices/orderSummarySlice';
 import {orderActions} from '../redux/slices/orderSlice';
 import {printOrderLabel} from '../printer/PrintService';
-import {getOrderStatuses as getOrderStatusesLocal} from '../database/orderRepository';
+import {
+  getOrderStatuses as getOrderStatusesLocal,
+  createOrder,
+} from '../database/orderRepository';
 
 export const getOrderSummary = () => {
   return (dispatch: AppDispatch) => {
@@ -159,14 +162,15 @@ export const getOrderStatuses: any = () => {
 
 export const submitOrder = (data: any) => async (dispatch: AppDispatch) => {
   dispatch(orderActions.orderStart());
-
-  axiosInstance
-    .post('/orders', data)
+  console.log('submitOrder called with data:', data);
+  // axiosInstance
+  //   .post('/orders', data)
+  createOrder(data)
     .then(async response => {
-      if (response?.status === 200 || response?.status === 201) {
-        console.log('Order submitted successfully:', response.data);
+      if (response) {
+        console.log('Order submitted successfully:', response);
 
-        const order = response.data;
+        const order = response;
 
         // for (const item of order.items ?? []) {
         //   try {
@@ -189,11 +193,12 @@ export const submitOrder = (data: any) => async (dispatch: AppDispatch) => {
         //   }
         // }
 
-        dispatch(orderActions.orderSuccess(response.data));
+        dispatch(orderActions.orderSuccess(response));
       }
     })
     .catch(error => {
-      dispatch(orderActions.orderFailed(error?.data?.error));
+      console.log('error submission', error);
+      dispatch(orderActions.orderFailed(error));
     });
 };
 

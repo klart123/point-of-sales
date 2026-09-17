@@ -551,8 +551,6 @@ const getOrderItems = async (
     SELECT
       id,
       order_id,
-      product_id,
-      product_item_id,
       sku,
       name,
       type,
@@ -608,7 +606,7 @@ const getOrderWithItems = async (
       order_number,
       customer_name,
       notes,
-      total,
+      total_price,
       status,
       payment_method,
       cash_tendered,
@@ -632,7 +630,7 @@ const getOrderWithItems = async (
 
   return {
     ...order,
-    total: toNumber(order.total),
+    total_price: toNumber(order.total_price),
     cash_tendered: toNumber(order.cash_tendered),
     is_paid: toNumber(order.is_paid),
     items,
@@ -702,7 +700,6 @@ export const getOrdersFromDatabase = async (
   options?: GetOrdersOptions,
 ): Promise<Order[]> => {
   const db = getDB();
-
   let query = `
     SELECT
       id,
@@ -719,7 +716,7 @@ export const getOrdersFromDatabase = async (
     FROM orders
     WHERE 1 = 1
   `;
-
+  console.log('query', query);
   const params: (number | string)[] = [];
 
   if (options?.from) {
@@ -765,9 +762,8 @@ export const getOrdersFromDatabase = async (
   query += `
     ORDER BY datetime(created_at) ASC;
   `;
-
   const result = await db.execute(query, params);
-
+  console.log('result', result);
   const orders = result.rows ?? [];
 
   const resultOrders: Order[] = [];
@@ -873,7 +869,7 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
 
     const now = new Date().toISOString();
 
-    let total = 0;
+    let totalPrice = 0;
 
     /**
      * Calculate the order total before inserting the header.
@@ -912,12 +908,12 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
         const price = toNumber(item.price);
         const quantity = Math.max(1, toNumber(item.quantity, 1));
 
-        total += price * quantity;
+        totalPrice += price * quantity;
 
         const addOns = getCreateItemAddOns(product, item);
 
         for (const addOn of addOns) {
-          total += toNumber(addOn.price);
+          totalPrice += toNumber(addOn.price);
         }
       }
     }
@@ -930,8 +926,8 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
       INSERT INTO orders (
         order_number,
         customer_name,
+        total_price,
         notes,
-        total,
         status,
         payment_method,
         cash_tendered,
@@ -944,8 +940,8 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
       [
         orderNumber,
         input.customer_name ?? null,
+        totalPrice,
         input.notes ?? null,
-        total,
         'pending',
         input.payment_method ?? null,
         toNumber(input.cash_tendered),
@@ -968,8 +964,6 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
           `
           INSERT INTO order_items (
             order_id,
-            product_id,
-            product_item_id,
             sku,
             name,
             type,
@@ -980,12 +974,10 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
             created_at,
             updated_at
           )
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
           `,
           [
             createdOrderId,
-            product.id ?? item.id ?? null,
-            item.id ?? null,
             product.sku,
             item.name ?? product.name ?? '',
             item.temp ?? item.type ?? null,
