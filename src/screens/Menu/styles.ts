@@ -144,7 +144,7 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
   selectedItems: {
-    marginBottom: 2,
+    // marginBottom: 2,
   },
   removeVariantBtn: {
     fontSize: 20,
@@ -218,15 +218,22 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: 8,
-    marginBottom: 5,
   },
 
   itemContainer: {
     flex: 1,
-    backgroundColor: COLORS.containerBackground,
+    backgroundColor: COLORS.cardSoft,
     marginBottom: 5,
     borderRadius: 8,
-    padding: 10,
+    padding: 5,
+  },
+  orderTextContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    width: '40%',
+    justifyContent: 'space-between',
   },
   itemTextContainer: {
     flex: 1,
@@ -333,9 +340,9 @@ export default StyleSheet.create({
     zIndex: 999,
   },
   addOnsContainer: {
-    backgroundColor: COLORS.cardSoft,
-    padding: 10,
+    backgroundColor: COLORS.white,
+    padding: 5,
     borderRadius: 8,
-    marginBottom: 10,
+    marginVertical: 10,
   },
 });

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  Alert,
 } from 'react-native';
 import styles from '../styles';
 import {useSelector} from 'react-redux';
@@ -120,13 +121,37 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
   };
 
   const handleDeleteItem = (temp: string, size: string) => {
-    setSelectedItems(prev => {
-      const index = prev.findIndex(i => i.temp === temp && i.size === size);
-      if (index === -1) return prev;
-      const updated = [...prev];
-      updated.splice(index, 1);
-      return updated;
-    });
+    Alert.alert(
+      'Remove Item',
+      `Are you sure you want to remove ${temp} - ${size}?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            setSelectedItems(prev => {
+              const index = prev.findIndex(
+                i => i.temp === temp && i.size === size,
+              );
+
+              if (index === -1) {
+                return prev;
+              }
+
+              const updated = [...prev];
+
+              updated.splice(index, 1);
+
+              return updated;
+            });
+          },
+        },
+      ],
+    );
   };
 
   const handleAddOns = (index: number) => {
@@ -193,100 +218,76 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
             <Text style={styles.updateBadge}>Editing existing order</Text>
           )}
 
+          {/* Variant item buttons */}
+          {category?.type !== 'pastry' && items && (
+            <View style={styles.optionGroup}>
+              <Text style={styles.optionLabel}>Select Items:</Text>
+              <View style={styles.buttonGroup}>
+                <FlatList
+                  data={items}
+                  keyExtractor={(_, index) => index.toString()}
+                  numColumns={2}
+                  scrollEnabled={false}
+                  style={{flex: 1, width: '100%'}}
+                  renderItem={({item: variantItem, index}) => {
+                    const {temperature, size, price} = variantItem;
+                    return (
+                      <TouchableOpacity
+                        key={`temp_${temperature}_${index}`}
+                        style={styles.optionButton}
+                        onPress={() =>
+                          handleAddItem(
+                            variantItem.id,
+                            temperature,
+                            size,
+                            price,
+                          )
+                        }>
+                        <Text style={styles.optionButtonText}>
+                          {temperature?.charAt(0)?.toUpperCase() +
+                            temperature?.slice(1)}{' '}
+                          {size} ₱{price}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  }}
+                />
+              </View>
+            </View>
+          )}
+
+          {/* Add-Ons */}
+          {item?.addOns && item.addOns.length > 0 && (
+            <View style={styles.optionGroup}>
+              <Text style={styles.optionLabel}>Select Add-Ons:</Text>
+              <View style={styles.buttonGroup}>
+                {item.addOns.map((addOn: any, index: number) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.optionButton,
+                      selectedAddOns.some(a => a.name === addOn.name) &&
+                        styles.optionButtonSelected,
+                    ]}
+                    onPress={() => toggleAddOn(addOn)}>
+                    <Text
+                      style={[
+                        styles.optionButtonText,
+                        selectedAddOns.some(a => a.name === addOn.name) &&
+                          styles.optionButtonTextSelected,
+                      ]}>
+                      {addOn.name} (+₱{addOn.price})
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
           <ScrollView
+            style={{flex: 1}}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{paddingBottom: 8}}
             keyboardShouldPersistTaps="handled">
-            {/* Variant item buttons */}
-            {category?.type !== 'pastry' && items && (
-              <View style={styles.optionGroup}>
-                <Text style={styles.optionLabel}>Select Items:</Text>
-                <View style={styles.buttonGroup}>
-                  <FlatList
-                    data={items}
-                    keyExtractor={(_, index) => index.toString()}
-                    numColumns={2}
-                    scrollEnabled={false}
-                    style={{flex: 1, width: '100%'}}
-                    renderItem={({item: variantItem, index}) => {
-                      const {temperature, size, price} = variantItem;
-                      return (
-                        <TouchableOpacity
-                          key={`temp_${temperature}_${index}`}
-                          style={styles.optionButton}
-                          onPress={() =>
-                            handleAddItem(
-                              variantItem.id,
-                              temperature,
-                              size,
-                              price,
-                            )
-                          }>
-                          <Text style={styles.optionButtonText}>
-                            {temperature?.charAt(0)?.toUpperCase() +
-                              temperature?.slice(1)}{' '}
-                            {size} ₱{price}
-                          </Text>
-                        </TouchableOpacity>
-                      );
-                    }}
-                  />
-                </View>
-              </View>
-            )}
-
-            {/* Add-Ons */}
-            {item?.addOns && item.addOns.length > 0 && (
-              <View style={styles.optionGroup}>
-                <Text style={styles.optionLabel}>Select Add-Ons:</Text>
-                <View style={styles.buttonGroup}>
-                  {item.addOns.map((addOn: any, index: number) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={[
-                        styles.optionButton,
-                        selectedAddOns.some(a => a.name === addOn.name) &&
-                          styles.optionButtonSelected,
-                      ]}
-                      onPress={() => toggleAddOn(addOn)}>
-                      <Text
-                        style={[
-                          styles.optionButtonText,
-                          selectedAddOns.some(a => a.name === addOn.name) &&
-                            styles.optionButtonTextSelected,
-                        ]}>
-                        {addOn.name} (+₱{addOn.price})
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-            )}
-
-            {/* Selected items list */}
-            {/* {groupedItems.length > 0 && (
-              <View style={styles.optionGroup}>
-                <Text style={styles.optionLabel}>Order Summary:</Text>
-                {groupedItems.map((groupedItem, index) => (
-                  <View style={styles.displayItem} key={`selected_${index}`}>
-                    <Text style={styles.selectedItems}>
-                      {groupedItem.temp} - {groupedItem.size}
-                    </Text>
-                    <Text style={styles.selectedItems}>
-                      {groupedItem.quantity} x ₱
-                      {(groupedItem.price / groupedItem.quantity).toFixed(0)}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() =>
-                        handleDeleteItem(groupedItem.temp, groupedItem.size)
-                      }
-                      style={{paddingHorizontal: 10}}>
-                      <Text style={styles.removeVariantBtn}>×</Text>
-                    </TouchableOpacity>
-                  </View>
-                ))}
-              </View>
-            )} */}
             {selectedItems.length > 0 && (
               <View style={styles.optionGroup}>
                 <Text style={styles.optionLabel}>Order Summary:</Text>
@@ -298,38 +299,48 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
                     <View
                       style={styles.itemContainer}
                       key={`selected_${index}`}>
-                      {/* Selected Item */}
                       <View style={styles.displayItem}>
-                        <Text style={styles.selectedItems}>
-                          {item?.temp.toUpperCase()} - {item.size}
-                        </Text>
-
-                        <Text
-                          style={[
-                            styles.selectedItems,
-                            {
-                              flex: 1,
-                              textAlign: 'center',
-                            },
-                          ]}>
-                          ₱ {item.price.toFixed(2)}
-                        </Text>
-
-                        {/* Add Ons Button */}
-                        <TouchableOpacity onPress={() => handleAddOns(index)}>
+                        <View style={styles.orderTextContainer}>
                           <Text style={styles.selectedItems}>
-                            {item.showAddOns ? 'Close' : 'Add Ons'}
+                            {item?.temp.toUpperCase()} - {item.size}
                           </Text>
-                        </TouchableOpacity>
 
-                        {/* Delete */}
-                        <TouchableOpacity
-                          onPress={() => handleDeleteItem(item.temp, item.size)}
+                          <Text
+                            style={[
+                              styles.selectedItems,
+                              {justifyContent: 'flex-end'},
+                            ]}>
+                            ₱ {item.price.toFixed(2)}
+                          </Text>
+                        </View>
+                        <View
                           style={{
-                            paddingHorizontal: 10,
+                            flexDirection: 'row',
+                            gap: 10,
+                            alignItems: 'center',
+                            width: '40%',
+                            justifyContent: 'flex-end',
                           }}>
-                          <Text style={styles.removeVariantBtn}>×</Text>
-                        </TouchableOpacity>
+                          {/* Add Ons Button */}
+                          <TouchableOpacity
+                            onPress={() => handleAddOns(index)}
+                            style={{padding: 10}}>
+                            <Text style={styles.selectedItems}>
+                              {item.showAddOns ? 'Close' : 'Add Ons'}
+                            </Text>
+                          </TouchableOpacity>
+
+                          {/* Delete */}
+                          <TouchableOpacity
+                            onPress={() =>
+                              handleDeleteItem(item.temp, item.size)
+                            }
+                            style={{
+                              paddingHorizontal: 10,
+                            }}>
+                            <Text style={styles.removeVariantBtn}>×</Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
 
                       {/* Add-on Options */}
