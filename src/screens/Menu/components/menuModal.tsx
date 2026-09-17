@@ -14,7 +14,9 @@ import {RootState} from '../../../redux/store';
 type SelectedItem = {
   temp: string;
   size: string;
-  price: string;
+  price: string | number;
+  addOns: {name: string; price: string}[];
+  showAddOns?: boolean;
 };
 
 type Props = {
@@ -93,14 +95,28 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
     price: string,
   ) => {
     setSelectedItems(prev =>
-      [...prev, {id, temp, size, price}].sort((a, b) => {
+      [
+        ...prev,
+        {
+          id,
+          temp,
+          size,
+          price: Number(price),
+          addOns: [],
+          showAddOns: false,
+        },
+      ].sort((a, b) => {
         if (a.temp < b.temp) return -1;
         if (a.temp > b.temp) return 1;
+
         if (a.size < b.size) return -1;
         if (a.size > b.size) return 1;
+
         return 0;
       }),
     );
+
+    console.log('selected Items', selectedItems);
   };
 
   const handleDeleteItem = (temp: string, size: string) => {
@@ -111,6 +127,21 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
       updated.splice(index, 1);
       return updated;
     });
+  };
+
+  const handleAddOns = (index: number) => {
+    setSelectedItems(currentItems =>
+      currentItems.map((item, itemIndex) => {
+        if (itemIndex !== index) {
+          return item;
+        }
+
+        return {
+          ...item,
+          showAddOns: !item.showAddOns,
+        };
+      }),
+    );
   };
 
   const toggleAddOn = (addOn: {name: string; price: string}) => {
@@ -233,7 +264,7 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
             )}
 
             {/* Selected items list */}
-            {groupedItems.length > 0 && (
+            {/* {groupedItems.length > 0 && (
               <View style={styles.optionGroup}>
                 <Text style={styles.optionLabel}>Order Summary:</Text>
                 {groupedItems.map((groupedItem, index) => (
@@ -255,12 +286,73 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
                   </View>
                 ))}
               </View>
+            )} */}
+            {selectedItems.length > 0 && (
+              <View style={styles.optionGroup}>
+                <Text style={styles.optionLabel}>Order Summary:</Text>
+
+                {selectedItems.map((item, index) => {
+                  console.log('item', item);
+
+                  return (
+                    <View
+                      style={styles.itemContainer}
+                      key={`selected_${index}`}>
+                      {/* Selected Item */}
+                      <View style={styles.displayItem}>
+                        <Text style={styles.selectedItems}>
+                          {item?.temp.toUpperCase()} - {item.size}
+                        </Text>
+
+                        <Text
+                          style={[
+                            styles.selectedItems,
+                            {
+                              flex: 1,
+                              textAlign: 'center',
+                            },
+                          ]}>
+                          ₱ {item.price.toFixed(2)}
+                        </Text>
+
+                        {/* Add Ons Button */}
+                        <TouchableOpacity onPress={() => handleAddOns(index)}>
+                          <Text style={styles.selectedItems}>
+                            {item.showAddOns ? 'Close' : 'Add Ons'}
+                          </Text>
+                        </TouchableOpacity>
+
+                        {/* Delete */}
+                        <TouchableOpacity
+                          onPress={() => handleDeleteItem(item.temp, item.size)}
+                          style={{
+                            paddingHorizontal: 10,
+                          }}>
+                          <Text style={styles.removeVariantBtn}>×</Text>
+                        </TouchableOpacity>
+                      </View>
+
+                      {/* Add-on Options */}
+                      {item.showAddOns && (
+                        <View style={styles.addOnsContainer}>
+                          <Text>Add-on options for {item.temp}</Text>
+
+                          {/* Your add-on buttons go here */}
+                        </View>
+                      )}
+                    </View>
+                  );
+                })}
+              </View>
             )}
           </ScrollView>
 
           {/* Footer — fixed */}
-          <View style={styles.buttons}>
+          <View style={styles.bottomSummary}>
             <Text style={styles.selectedPrice}>Total: ₱{totalPrice}</Text>
+            <Text style={styles.selectedPrice}>
+              Items: {selectedItems.length}
+            </Text>
           </View>
           <View style={styles.buttons}>
             <TouchableOpacity onPress={handleClose} style={styles.buttonCancel}>

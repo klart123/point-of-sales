@@ -114,6 +114,12 @@ export default StyleSheet.create({
     justifyContent: 'flex-end',
     marginTop: 10,
   },
+  bottomSummary: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 10,
+    gap: 10,
+  },
   buttonCancel: {
     padding: 10,
     marginRight: 8,
@@ -138,12 +144,6 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
   selectedItems: {
-    flex: 1,
-    fontSize: 16,
-    borderRadius: 8,
-    textAlign: 'center',
-    backgroundColor: '#eee',
-    paddingVertical: 5,
     marginBottom: 2,
   },
   removeVariantBtn: {
@@ -213,11 +213,21 @@ export default StyleSheet.create({
     padding: 10,
   },
   displayItem: {
+    flex: 1,
     flexDirection: 'row',
-    gap: 4,
+    justifyContent: 'space-between',
     alignItems: 'center',
+    borderRadius: 8,
+    marginBottom: 5,
   },
 
+  itemContainer: {
+    flex: 1,
+    backgroundColor: COLORS.containerBackground,
+    marginBottom: 5,
+    borderRadius: 8,
+    padding: 10,
+  },
   itemTextContainer: {
     flex: 1,
   },
@@ -246,6 +256,7 @@ export default StyleSheet.create({
   optionGroup: {
     marginBottom: 12,
     width: '100%',
+    // gap: 5,
   },
 
   optionLabel: {
@@ -320,5 +331,11 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,
+  },
+  addOnsContainer: {
+    backgroundColor: COLORS.cardSoft,
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
   },
 });
