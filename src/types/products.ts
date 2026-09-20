@@ -8,6 +8,7 @@ export type Category = {
   id: number;
   name: string;
   type: string;
+  product_categories: [];
 };
 
 export type ProductItemType = {
@@ -19,10 +20,14 @@ export type ProductItemType = {
   product_category_id: number | null;
 };
 
+export type ErrorResponse = {
+  error: string;
+};
+
 export type ProductState = {
   products: null | object;
   loading: boolean;
-  error: string | null | Record<string, any>;
+  error: ErrorResponse;
   hasMore: boolean;
   isSuccess: boolean;
   categories: Category[];

@@ -1329,6 +1329,7 @@ export async function resetAllDatabase(): Promise<void> {
       await tx.execute(`
         DELETE FROM sqlite_sequence
         WHERE name IN (
+          'categories',
           'product_variant_items',
           'products',
           'product_variants',

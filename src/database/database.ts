@@ -16,6 +16,14 @@ export function getDB() {
 export async function initDB() {
   const db = getDB();
 
+  // ─── Schema Versions ────────────────────────────────────────────────────────
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS schema_versions (
+      version INTEGER PRIMARY KEY,
+      applied_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
   // ─── users ────────────────────────────────────────────────────────────────
   await db.execute(`
     CREATE TABLE IF NOT EXISTS users (
