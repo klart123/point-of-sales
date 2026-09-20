@@ -14,6 +14,7 @@ import {HeaderComponent, ContainerView} from '../../components';
 import axiosInstance from '../../Api/axiosInstance';
 import {printOrderLabel} from '../../printer/PrintService';
 import {enqueueOrderForPrinting} from '../../printer/PrintQueue';
+import {updateOrderStatus} from '../../database/orderRepository';
 
 const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -161,17 +162,17 @@ const MenuScreen = () => {
       {
         text: 'Yes',
         onPress: () => {
-          axiosInstance
-            .patch(`/orders/${orderId}/status`, {
-              status: 'cancelled',
-            })
-            .then(response => {
-              if (response.status === 200 || response.status === 201) {
-                if (navigation.canGoBack()) {
-                  navigation.goBack();
-                }
+          // axiosInstance
+          //   .patch(`/orders/${orderId}/status`, {
+          //     status: 'cancelled',
+          //   })
+          updateOrderStatus(orderId, 'cancelled').then(response => {
+            if (response) {
+              if (navigation.canGoBack()) {
+                navigation.goBack();
               }
-            });
+            }
+          });
         },
       },
     ]);
