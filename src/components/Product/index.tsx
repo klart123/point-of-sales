@@ -26,13 +26,15 @@ const Product: React.FC<ProductProps> = ({
       }}
       data={list}
       keyExtractor={item => item?.id.toString()}
-      renderItem={({item}) => (
-        <ProductItem
-          key={`product_${item?.id}`}
-          item={item}
-          onPress={onPress}
-        />
-      )}
+      renderItem={({item}) => {
+        return (
+          <ProductItem
+            key={`product_${item?.id}`}
+            item={item}
+            onPress={onPress}
+          />
+        );
+      }}
       contentContainerStyle={styles.list}
       showsVerticalScrollIndicator={false}
       refreshControl={

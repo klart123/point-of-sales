@@ -10,6 +10,15 @@ export type Category = {
   type: string;
 };
 
+export type ProductItemType = {
+  id: number;
+  category_id: number | null;
+  product_categories: [];
+  name: string;
+  description: string;
+  product_category_id: number | null;
+};
+
 export type ProductState = {
   products: null | object;
   loading: boolean;
@@ -27,7 +36,7 @@ export type ProductState = {
   isEditLoading: boolean;
   isEditSuccess: boolean;
   editError: string | null | Record<string, any>;
-  productItem: {};
+  productItem: ProductItemType;
 };
 
 export type ProductItemProps = {

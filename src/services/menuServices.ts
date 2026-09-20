@@ -16,10 +16,10 @@ export const getMenu = () => {
           return dispatch(menuSlice.menuSuccess(response));
         }
 
-        return dispatch(menuSlice.menuFailed(response.data.error));
+        return dispatch(menuSlice.menuFailed(response));
       })
       .catch(error => {
-        return dispatch(menuSlice.menuFailed(error.data.error));
+        return dispatch(menuSlice.menuFailed(error));
       });
   };
 };

@@ -20,31 +20,33 @@ const ProductItem: React.FC<products.ProductItemProps> = ({
           flex: 1,
           width: '100%',
         }}
-        renderItem={({item, index}) => (
-          <View style={styles.categoryBadge} key={`product_${index}`}>
-            <View style={styles.categoryBadgeTextContainer}>
-              <Text style={styles.itemName}>{item.name}</Text>
+        renderItem={({item, index}) => {
+          return (
+            <View style={styles.categoryBadge} key={`product_${index}`}>
+              <View style={styles.categoryBadgeTextContainer}>
+                <Text style={styles.itemName}>{item.name}</Text>
+              </View>
+              <FlatList
+                style={styles.productCategoriesList}
+                data={item?.products}
+                keyExtractor={item => item?.id.toString()}
+                renderItem={productItem => {
+                  return (
+                    <TouchableOpacity
+                      key={`product_item_${productItem?.index}`}
+                      style={styles.productItem}
+                      onPress={() => onPress(productItem?.item)}>
+                      <Text style={styles.productItemText}>
+                        {productItem?.item?.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+                numColumns={2}
+              />
             </View>
-            <FlatList
-              style={styles.productCategoriesList}
-              data={item?.products}
-              keyExtractor={item => item?.id.toString()}
-              renderItem={productItem => {
-                return (
-                  <TouchableOpacity
-                    key={`product_item_${productItem?.index}`}
-                    style={styles.productItem}
-                    onPress={() => onPress(productItem?.item)}>
-                    <Text style={styles.productItemText}>
-                      {productItem?.item?.name}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              }}
-              numColumns={2}
-            />
-          </View>
-        )}
+          );
+        }}
         showsHorizontalScrollIndicator={false}
       />
     </View>

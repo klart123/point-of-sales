@@ -93,7 +93,9 @@ const EditProductScreen = () => {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [subCategory, setSubCategory] = useState(null);
+  const [subCategory, setSubCategory] = useState<number | null | undefined>(
+    null,
+  );
   const [prodCatModal, setProdCatModal] = useState(false);
   const [productCategories, setProductCategories] = useState([]);
   const [variants, setVariants] = useState<VariantRow[]>([

@@ -33,7 +33,7 @@ const MenuScreen = () => {
     orderItem,
     loading: loadingOrder,
   } = useSelector((state: RootState) => state.orders);
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<any>([]);
   const [viewModal, setViewModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [orderModal, setOrderModal] = useState(false);
@@ -53,7 +53,18 @@ const MenuScreen = () => {
 
   useEffect(() => {
     if (Array.isArray(menu)) {
-      setList(menu);
+      const filteredData = menu.map(mainCategory => {
+        return {
+          ...mainCategory,
+          // Filter the product_categories array to keep only those with items in 'products'
+          product_categories:
+            mainCategory.product_categories?.filter(
+              category => category.products && category.products.length > 0,
+            ) || [],
+        };
+      });
+
+      setList(filteredData);
     }
   }, [menu]);
 
