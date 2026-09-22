@@ -1632,7 +1632,7 @@ export const getOrderDates = async (): Promise<OrderDateSummary[]> => {
         SUM(
           CASE
             WHEN status IN ('served', 'completed')
-            THEN total
+            THEN total_price
             ELSE 0
           END
         ),
@@ -1740,7 +1740,7 @@ export const getOrderSummary = async (
         SUM(
           CASE
             WHEN status IN ('served', 'completed')
-            THEN total
+            THEN total_price
             ELSE 0
           END
         ),
@@ -1761,7 +1761,7 @@ export const getOrderSummary = async (
             WHEN status IN ('served', 'completed')
               AND is_paid = 1
               AND payment_method = 'gcash'
-            THEN total
+            THEN total_price
             ELSE 0
           END
         ),
@@ -1774,7 +1774,7 @@ export const getOrderSummary = async (
             WHEN status IN ('served', 'completed')
               AND is_paid = 1
               AND payment_method = 'cash'
-            THEN total
+            THEN total_price
             ELSE 0
           END
         ),
@@ -1825,6 +1825,36 @@ export const getOrderSummary = async (
   );
 
   const totalItems = toNumber(itemCountResult.rows?.[0]?.total_items);
+
+  /**
+   *  TOTAL GCASH
+   */
+  // -- 3. Total Gcash paid  ──────────────────────────────────────────────
+  const totalGcash = await db.execute(
+    `SELECT
+    COALESCE(SUM(total_price), 0) as total,
+    COUNT(*)                      as count
+  FROM orders
+  WHERE payment_method = 'gcash'
+  AND date(created_at) BETWEEN date(?) AND date(?)
+  `,
+    [from, to],
+  );
+
+  /**
+   *  TOTAL GCASH
+   */
+  // -- 3. Total Gcash paid  ──────────────────────────────────────────────
+  const totalCash = await db.execute(
+    `SELECT
+    COALESCE(SUM(total_price), 0) as total,
+    COUNT(*)                      as count
+  FROM orders
+  WHERE payment_method = 'cash'
+  AND date(created_at) BETWEEN date(?) AND date(?)
+  `,
+    [from, to],
+  );
 
   /**
    * --------------------------------------------------------------------------
@@ -1910,7 +1940,7 @@ export const getOrderSummary = async (
       order_number,
       customer_name,
       notes,
-      total,
+      total_price,
       status,
       payment_method,
       cash_tendered,
@@ -1955,18 +1985,19 @@ export const getOrderSummary = async (
   }
 
   return {
-    total_orders: toNumber(summaryRow.total_orders),
-    revenue: toNumber(summaryRow.revenue),
-
-    paid_orders: toNumber(summaryRow.paid_orders),
-
-    total_gcash: toNumber(summaryRow.total_gcash),
-    total_cash: toNumber(summaryRow.total_cash),
-
-    total_items: totalItems,
-
+    date_range: {
+      from: from,
+      to: to,
+    },
+    summary: {
+      total_orders: toNumber(summaryRow.total_orders),
+      total_revenue: toNumber(summaryRow.revenue),
+      total_paid_orders: toNumber(summaryRow.paid_orders),
+      total_gcash_paid: totalGcash.rows[0] ?? {},
+      total_cash_paid: totalCash.rows[0] ?? {},
+      total_items_sold: totalItems,
+    },
     top_products: topProducts,
-
     orders: summaryOrders,
   };
 };

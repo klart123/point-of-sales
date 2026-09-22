@@ -14,6 +14,7 @@ import EditProductScreen from './screens/EditProduct';
 import SyncScreen from './screens/Sync';
 import PrinterSettings from './screens/PrinterSettings';
 import DatabaseDebugScreen from './screens/DatabaseDebugScreen';
+import OrderSummaryDetails from './screens/OrderSummaryDetails';
 
 export {
   HomeScreen,
@@ -32,4 +33,5 @@ export {
   SyncScreen,
   PrinterSettings,
   DatabaseDebugScreen,
+  OrderSummaryDetails,
 };

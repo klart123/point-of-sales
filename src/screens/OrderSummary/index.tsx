@@ -8,9 +8,11 @@ import {
 } from 'react-native';
 import axiosInstance from '../../Api/axiosInstance';
 import styles from './styles';
-import DateRow, {renderDateRow} from './components/OrderDateCard';
+import DateRow from './components/OrderDateCard';
 import {ContainerView} from '../../components';
 import {useFocusEffect} from '@react-navigation/native';
+import {getOrderDates, getOrderSummary} from '../../database/orderRepository';
+import {useNavigation} from '@react-navigation/native';
 
 type DateSummary = {
   date: string;
@@ -50,15 +52,6 @@ type DaySummary = {
     total_revenue: number;
   }[];
 };
-
-const STATUS_COLORS: Record<string, string> = {
-  pending: '#fafafa',
-  preparing: '#1565C0',
-  ready: '#6A1B9A',
-  served: '#1D9E75',
-  cancelled: '#f44',
-};
-
 const OrderSummary = () => {
   const [dates, setDates] = useState<DateSummary[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -66,6 +59,8 @@ const OrderSummary = () => {
   const [loadingDates, setLoadingDates] = useState(false);
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  const navigation = useNavigation();
 
   useFocusEffect(
     useCallback(() => {
@@ -82,14 +77,16 @@ const OrderSummary = () => {
       setLoadingDates(true);
     }
 
-    axiosInstance
-      .get('/orders/dates')
+    // axiosInstance
+    //   .get('/orders/dates')
+    getOrderDates()
       .then(res => {
-        setDates(res.data);
+        console.log('res', res);
+        setDates(res);
         // Auto-select today if available
-        if (res.data.length > 0 && !selectedDate) {
-          handleSelectDate(res.data[0].date);
-        }
+        // if (res.length > 0 && !selectedDate) {
+        //   handleSelectDate(res);
+        // }
       })
       .catch(err => console.error('Failed to load dates', err))
       .finally(() => {
@@ -99,129 +96,25 @@ const OrderSummary = () => {
   };
 
   const handleSelectDate = (date: string) => {
-    setSelectedDate(date);
-    setLoadingSummary(true);
+    // setSelectedDate(date);
+    // setLoadingSummary(true);
 
-    axiosInstance
-      .get(`/orders/summary?from=${date}&to=${date}`)
-      .then(res => setSummary(res.data))
-      .catch(err => console.error('Failed to load summary', err))
-      .finally(() => setLoadingSummary(false));
+    // // axiosInstance
+    // //   .get(`/orders/summary?from=${date}&to=${date}`)
+    // getOrderSummary({from: date, to: date})
+    //   .then(res => {
+    //     console.log(res);
+    //     setSummary(res);
+    //   })
+    //   .catch(err => console.error('Failed to load summary', err))
+    //   .finally(() => setLoadingSummary(false));
+
+    navigation.navigate('OrderSummaryDetails', {from: date, to: date});
   };
 
   // ── Render date row ────────────────────────────────────────────────────
 
   // ── Render summary panel ───────────────────────────────────────────────
-
-  const renderSummary = () => {
-    if (loadingSummary) {
-      return (
-        <View style={styles.summaryLoader}>
-          <ActivityIndicator color="#1D9E75" />
-        </View>
-      );
-    }
-
-    if (!summary) return null;
-
-    const {summary: s, by_status, top_products} = summary;
-
-    return (
-      <View style={styles.summaryPanel}>
-        {/* Stats row */}
-        <View style={styles.statBox}>
-          <Text style={styles.statValue}>
-            ₱{s.total_revenue.toLocaleString()}
-          </Text>
-          <Text style={styles.statLabel}>Revenue</Text>
-        </View>
-        <View style={styles.statsRow}>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>{s.total_orders}</Text>
-            <Text style={styles.statLabel}>Orders</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>{s.total_items_sold}</Text>
-            <Text style={styles.statLabel}>Items Sold</Text>
-          </View>
-        </View>
-        <View style={styles.statsRow}>
-          <View style={styles.cashStatBox}>
-            <View style={styles.inStatBox}>
-              <Text style={styles.statValue}>{s?.total_cash_paid?.total}</Text>
-              <Text style={styles.statLabel}>Cash</Text>
-            </View>
-            <View style={styles.inStatBox}>
-              <Text style={styles.statValue}>{s?.total_cash_paid?.count}</Text>
-              <Text style={styles.statLabel}>Count</Text>
-            </View>
-          </View>
-          <View style={styles.cashStatBox}>
-            <View style={styles.inStatBox}>
-              <Text style={styles.statValue}>{s?.total_gcash_paid?.total}</Text>
-              <Text style={styles.statLabel}>Gcash</Text>
-            </View>
-            <View style={styles.inStatBox}>
-              <Text style={styles.statValue}>{s?.total_gcash_paid?.count}</Text>
-              <Text style={styles.statLabel}>Count</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Orders by status */}
-        {/* <Text style={styles.sectionTitle}>Orders by Status</Text>
-        <View style={styles.statusRow}>
-          {by_status.map(s => (
-            <View key={s.status} style={styles.statusBadgeWrapper}>
-              <View
-                style={[
-                  styles.statusBadge,
-                  {
-                    backgroundColor: STATUS_COLORS[s.status] + '22',
-                    borderColor: STATUS_COLORS[s.status],
-                  },
-                ]}>
-                <Text
-                  style={[
-                    styles.statusCount,
-                    {color: STATUS_COLORS[s.status]},
-                  ]}>
-                  {s.count}
-                </Text>
-                <Text
-                  style={[
-                    styles.statusLabel,
-                    {color: STATUS_COLORS[s.status]},
-                  ]}>
-                  {s.status}
-                </Text>
-              </View>
-            </View>
-          ))}
-        </View> */}
-
-        {/* Top products */}
-        <Text style={styles.sectionTitle}>Top Products</Text>
-        {top_products.map((p, i) => (
-          <View key={`${p.sku}-${p.type}-${p.size}`} style={styles.productRow}>
-            <Text style={styles.productRank}>#{i + 1}</Text>
-            <View style={styles.productInfo}>
-              <Text style={styles.productName}>{p.name}</Text>
-              <Text style={styles.productDetail}>
-                {p.type} · {p.size}
-              </Text>
-            </View>
-            <View style={styles.productStats}>
-              <Text style={styles.productSold}>{p.total_sold} sold</Text>
-              <Text style={styles.productRevenue}>
-                ₱{p.total_revenue.toLocaleString()}
-              </Text>
-            </View>
-          </View>
-        ))}
-      </View>
-    );
-  };
 
   // ── Render ─────────────────────────────────────────────────────────────
 
@@ -260,7 +153,7 @@ const OrderSummary = () => {
             <Text style={styles.emptyText}>No orders yet.</Text>
           </View>
         }
-        ListFooterComponent={selectedDate ? renderSummary() : null}
+        // ListFooterComponent={selectedDate ? renderSummary() : null}
         contentContainerStyle={{paddingBottom: 40}}
       />
     </ContainerView>

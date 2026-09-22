@@ -55,6 +55,10 @@ const AppNavigator = () => {
           name="DatabaseDebug"
           component={screens.DatabaseDebugScreen}
         />
+        <Stack.Screen
+          name="OrderSummaryDetails"
+          component={screens.OrderSummaryDetails}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

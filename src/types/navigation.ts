@@ -35,4 +35,5 @@ export type RootStackParamList = {
   Sync: undefined;
   PrinterSettings: undefined;
   DatabaseDebug: undefined;
+  OrderSummaryDetails: {from: string; to: string};
 };
