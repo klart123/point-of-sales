@@ -80,9 +80,9 @@ const MenuScreen = () => {
 
   useEffect(() => {
     if (isSubmitted) {
+      printOrder(isSubmittedData);
       Alert.alert(message);
 
-      printOrder(isSubmittedData);
       navigation.goBack();
 
       resetMenu();
