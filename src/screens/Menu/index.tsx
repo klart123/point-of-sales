@@ -145,8 +145,6 @@ const MenuScreen = () => {
   };
 
   const handleSubmitOrder = async (data: any) => {
-    console.log('isEdit:', isEdit);
-    console.log('handleSubmitOrder called with data:', data);
     if (isEdit) {
       await dispatch(services.updateOrder(orderId, data));
     } else {

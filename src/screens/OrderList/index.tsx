@@ -22,6 +22,7 @@ import {
   updateOrderStatus,
   updateOrderPayment,
 } from '../../database/orderRepository';
+import {enqueueOrderForPrinting} from '../../printer/PrintQueue';
 
 const OrderList = () => {
   const {orderStatuses} = useSelector((state: RootState) => state.orders);
@@ -94,7 +95,6 @@ const OrderList = () => {
 
       const from = threeDaysAgo.toISOString().slice(0, 10);
       const to = today.toISOString().slice(0, 10);
-      console.log(`[OrderList] Loading orders from ${from} to ${to}...`);
 
       const localOrders = await getOrdersFromDatabase({
         status: ['preparing', 'pending', 'ready'],
@@ -341,6 +341,46 @@ const OrderList = () => {
     navigation.navigate('Store' as never);
   };
 
+  const printOrder = async (data: any) => {
+    // Build one entry PER PHYSICAL CUP to print. This new order shape is
+    // FLAT (data.items is already the line-item array — no nested
+    // order.items anymore), and it introduces a `quantity` field instead
+    // of representing quantity as repeated array entries like the old
+    // shape did. So a line item with quantity: 3 needs to expand into
+    // 3 separate printed labels, not 1.
+    const cups = (data.items ?? []).flatMap((item: any) => {
+      const quantity = item.quantity ?? 1;
+
+      const cup = {
+        itemName: item.name,
+        cupSize: `${item.size} (${item.type?.toUpperCase() ?? ''})`,
+      };
+
+      // Repeat this cup `quantity` times — one printed label per physical cup.
+      return Array.from({length: quantity}, () => cup);
+    });
+
+    enqueueOrderForPrinting({
+      orderNumber: data?.order_number ?? undefined,
+      customerName: data.customer_name?.trim() || 'Guest',
+      cups,
+    });
+  };
+
+  const printOrderLabel = (orderItem: any) => {
+    if (orderItem) {
+      Alert.alert(`Print Label for order ${orderItem?.order_number}?`, '', [
+        {text: 'Close', style: 'default'},
+        {
+          text: 'Yes',
+          onPress: () => {
+            printOrder(orderItem);
+          },
+        },
+      ]);
+    }
+  };
+
   // ─────────────────────────────────────────────────────────────────────────
   // Open payment modal
   // ─────────────────────────────────────────────────────────────────────────
@@ -401,6 +441,7 @@ const OrderList = () => {
         onRefresh={onRefresh}
         orderStatuses={orderStatuses}
         onEditOrder={handleEditOrder}
+        printOrderLabel={printOrderLabel}
         onPayOrder={handlePayOrder}
       />
 

@@ -156,6 +156,7 @@ export default StyleSheet.create({
   actionsContainer: {
     flex: 1,
     flexDirection: 'row',
+    gap: 10,
   },
   editOrder: {
     padding: 10,
@@ -164,6 +165,14 @@ export default StyleSheet.create({
     alignItems: 'flex-start',
     borderRadius: 6,
     backgroundColor: COLORS.primary,
+  },
+  printOrder: {
+    padding: 10,
+    marginTop: 4,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    borderRadius: 6,
+    backgroundColor: COLORS.border,
   },
   payOrder: {
     padding: 10,

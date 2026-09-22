@@ -14,6 +14,7 @@ interface Props {
   onCompleteOrder: (order: Order) => void;
   hideCompleteButton: boolean;
   onEditOrder: (orderItem: any) => void;
+  printOrderLabel: (orderItem: any) => void;
   onPayOrder: (orderItem: any) => void;
   orderStatuses?: object;
 }
@@ -25,6 +26,7 @@ const OrderCard: React.FC<Props> = ({
   hideCompleteButton,
   onEditOrder,
   //   orderStatuses,
+  printOrderLabel,
   onPayOrder,
 }) => {
   const {orderStatuses} = useSelector((state: RootState) => state.orders);
@@ -125,6 +127,14 @@ const OrderCard: React.FC<Props> = ({
             onEditOrder(order);
           }}>
           <Text style={styles.totalPrice}>Edit</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.printOrder]}
+          onPress={() => {
+            printOrderLabel(order);
+          }}>
+          <Text style={styles.totalPrice}>Print Label</Text>
         </TouchableOpacity>
 
         <View style={styles.totalPriceContainer}>
