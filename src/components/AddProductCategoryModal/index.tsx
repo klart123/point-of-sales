@@ -113,9 +113,9 @@ const AddProductCategoryModal: React.FC<Props> = ({
             />
           </View>
 
-          {prodCatError && prodCatError?.error && (
+          {prodCatError && prodCatError?.message && (
             <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{prodCatError?.error}</Text>
+              <Text style={styles.errorText}>{prodCatError?.message}</Text>
             </View>
           )}
 

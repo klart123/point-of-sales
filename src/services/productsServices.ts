@@ -9,6 +9,7 @@ import {
   createProduct,
 } from '../database/productRepository';
 import {getCategoriesFromDatabase} from '../database/categoryRepository';
+import {createProductCategory} from '../database/productCategoryRepository';
 
 // Types
 type Variant = {
@@ -264,13 +265,13 @@ export const getProductsGroupedLocal = () => {
 export const addProductCategory: any = (payload: any) => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.addProductCategoryStart());
-    axiosInstance
-      .post('/product-categories', payload)
+    // axiosInstance
+    //   .post('/product-categories', payload)
+    createProductCategory(payload)
       .then(response => {
-        if (response?.status === 200 || response?.status === 201) {
-          return dispatch(
-            productActions.addProductCategorySuccess(response?.data),
-          );
+        console.log('response', response);
+        if (response) {
+          return dispatch(productActions.addProductCategorySuccess(response));
         }
 
         return dispatch(productActions.addProductCategoryFailed(response));
