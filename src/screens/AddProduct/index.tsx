@@ -23,7 +23,7 @@ import {
   resetAddProductState,
 } from '../../services';
 import {ContainerView} from '../../components';
-import BeverageComponent from './components/BeverageComponent';
+import {BeverageComponent, AddVariantComponent} from './components';
 import {
   VariantRow,
   // ProductFormData
@@ -115,6 +115,7 @@ const AddProductScreen = () => {
       product_category_id: subCategory,
       items: variants,
     };
+
     dispatch(addProducts(params));
   };
 
@@ -160,7 +161,6 @@ const AddProductScreen = () => {
             placeholderStyle={styles.categoryDropdownPlaceholder}
             value={category}
             onChange={value => {
-              console.log('value', value);
               setCategory(value?.id);
               setProductCategories(value?.product_categories || []);
             }}
@@ -231,6 +231,10 @@ const AddProductScreen = () => {
 
         {category && categories[category - 1]?.name === 'Beverage' && (
           <BeverageComponent variants={variants} setVariants={setVariants} />
+        )}
+
+        {category && categories[category - 1]?.name != 'Beverage' && (
+          <AddVariantComponent variants={variants} setVariants={setVariants} />
         )}
 
         {error && error?.error && (

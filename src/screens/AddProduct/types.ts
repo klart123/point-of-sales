@@ -1,6 +1,6 @@
 export type VariantRow = {
-  temperature: string;
-  size: string;
+  temperature?: string;
+  size?: string;
   price: string;
 };
 

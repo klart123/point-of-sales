@@ -154,7 +154,6 @@ export const editProductsLocal: any = (productId: number, payload: any) => {
 
     updateProduct(productId, payload)
       .then(response => {
-        console.log('updateProduct response', response);
         // if (response.status === 200 || response.status === 201) {
         // dispatch(productActions.updateProductSuccess(response.data));
         // return;
@@ -178,7 +177,6 @@ export const getCategories = () => {
 
     getCategoriesFromDatabase()
       .then(response => {
-        console.log('response', response);
         if (response) {
           return dispatch(productActions.getCategoriesSuccess(response));
         }

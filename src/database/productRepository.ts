@@ -528,9 +528,10 @@ export const createProduct = async (
     // size TEXT NOT NULL
     // -------------------------------------------------------------------------
 
-    if (!item.size?.trim()) {
-      throw new Error(`Item ${index + 1} is missing size.`);
-    }
+    // if (!item.size?.trim()) {
+    //   item.size = 'Regular';
+    //   // throw new Error(`Item ${index + 1} is missing size.`);
+    // }
   }
 
   // ===========================================================================
@@ -768,7 +769,12 @@ export const createProduct = async (
         )
         VALUES (?, ?, ?, ?);
         `,
-        [productVariantId, item.temperature ?? null, item.size!.trim(), price],
+        [
+          productVariantId,
+          item.temperature ?? null,
+          item.size!.trim() ?? 'Regular',
+          price,
+        ],
       );
     }
   });

@@ -17,7 +17,7 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName="MainDrawer"
         screenOptions={{
           headerStyle: {backgroundColor: COLORS.primary},
           headerTitleStyle: {color: COLORS.text},

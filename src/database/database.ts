@@ -81,7 +81,7 @@ export async function initDB() {
     CREATE TABLE IF NOT EXISTS product_variant_items (
       id                  INTEGER PRIMARY KEY AUTOINCREMENT,
       product_variant_id  INTEGER NOT NULL,
-      temperature         TEXT CHECK(temperature IN ('hot', 'cold', 'blended')),
+      temperature         TEXT,
       size                TEXT NOT NULL,
       price               REAL NOT NULL CHECK(price >= 0),
       created_at          TEXT DEFAULT (datetime('now')),
