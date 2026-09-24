@@ -1353,7 +1353,7 @@ export const updateOrder = async (
   input: UpdateOrderInput,
 ): Promise<Order> => {
   const db = getDB();
-
+  console.log('input', input);
   const existingOrder = await getOrderById(orderId);
 
   if (!existingOrder) {
@@ -1400,8 +1400,8 @@ export const updateOrder = async (
       }
 
       const total = calculateOrderTotal(input.orders);
-
-      headerFields.push('total = ?');
+      console.log('total', total);
+      headerFields.push('total_price = ?');
       headerParams.push(total);
 
       /**
@@ -1455,8 +1455,6 @@ export const updateOrder = async (
             `
             INSERT INTO order_items (
               order_id,
-              product_id,
-              product_item_id,
               sku,
               name,
               type,
@@ -1467,12 +1465,10 @@ export const updateOrder = async (
               created_at,
               updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
             `,
             [
               orderId,
-              product.id ?? item.id ?? null,
-              item.id ?? null,
               product.sku,
               item.name ?? product.name ?? '',
               item.temp ?? item.type ?? null,

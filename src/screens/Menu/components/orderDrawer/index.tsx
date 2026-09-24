@@ -58,7 +58,7 @@ const OrderDrawer = ({
   const [expanded, setExpanded] = useState(false);
   const [notes, setNotes] = useState('');
   const [orderItemTotal, setOrderItemTotal] = useState(0);
-
+  console.log('orders', orders);
   const totalItems = orders?.reduce(
     (sum, order) => sum + order?.items?.length,
     0,
@@ -278,31 +278,36 @@ const OrderDrawer = ({
               <ScrollView
                 style={{flex: 1, maxHeight: 299}}
                 contentContainerStyle={{paddingBottom: 20}}>
-                {groupedOrders?.map((item, index) => (
-                  <TouchableOpacity
-                    key={item.id?.toString() + index}
-                    style={styles.orderRow}
-                    onPress={() => onEdit(item)}>
-                    <View style={styles.orderRowHead}>
-                      <Text style={styles.orderName}>{item?.name}</Text>
-                      <Text style={styles.orderPrice}>₱{item?.totalPrice}</Text>
-                    </View>
+                {groupedOrders?.map((item, index) => {
+                  console.log('item', item, index);
+                  return (
+                    <TouchableOpacity
+                      key={item.id?.toString() + index}
+                      style={styles.orderRow}
+                      onPress={() => onEdit(item)}>
+                      <View style={styles.orderRowHead}>
+                        <Text style={styles.orderName}>{item?.name}</Text>
+                        <Text style={styles.orderPrice}>
+                          ₱{item?.totalPrice}
+                        </Text>
+                      </View>
 
-                    {item?.groupedItems?.map((g: any, i: number) => (
-                      <Text key={i} style={styles.subText}>
-                        {g?.temp} {g?.size} — {g.quantity} × ₱
-                        {g?.price?.toFixed(2)}
-                      </Text>
-                    ))}
-
-                    {item.addOns?.length > 0 &&
-                      item.addOns.map((a: any, i: number) => (
-                        <Text key={i} style={styles.addOnText}>
-                          + {a.name} (₱{a.price})
+                      {item?.groupedItems?.map((g: any, i: number) => (
+                        <Text key={i} style={styles.subText}>
+                          {g?.temp} {g?.size} — {g.quantity} × ₱
+                          {g?.price?.toFixed(2)}
                         </Text>
                       ))}
-                  </TouchableOpacity>
-                ))}
+
+                      {item.addOns?.length > 0 &&
+                        item.addOns.map((a: any, i: number) => (
+                          <Text key={i} style={styles.addOnText}>
+                            + {a.name} (₱{a.price})
+                          </Text>
+                        ))}
+                    </TouchableOpacity>
+                  );
+                })}
               </ScrollView>
             </View>
 

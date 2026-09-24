@@ -102,6 +102,8 @@ const OrderList = () => {
         to,
       });
 
+      console.log('localOrders', localOrders);
+
       // Sort items first.
       const formattedOrders = localOrders.map(order => ({
         ...order,
@@ -282,7 +284,7 @@ const OrderList = () => {
     orderItem.items.forEach((item: any) => {
       if (!grouped.has(item.sku)) {
         grouped.set(item.sku, {
-          id: item.product_id,
+          id: item.id,
           sku: item.sku,
           name: item.name,
           isUpdate: true,
@@ -325,7 +327,6 @@ const OrderList = () => {
   const handleEditOrder = (orderItem: any) => {
     if (orderItem) {
       const converted = convertBackendOrder(orderItem);
-
       dispatch(orderActions.addOrderItem(orderItem));
 
       dispatch(orderActions.addCustomerName(orderItem.customer_name));

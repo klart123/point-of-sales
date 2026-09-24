@@ -4,8 +4,9 @@ import {orderSummaryAction} from '../redux/slices/orderSummarySlice';
 import {orderActions} from '../redux/slices/orderSlice';
 import {printOrderLabel} from '../printer/PrintService';
 import {
-  getOrderStatuses as getOrderStatusesLocal,
+  getOrderStatusesFromDatabase as getOrderStatusesLocal,
   createOrder,
+  updateOrder as updateOrderItem,
 } from '../database/orderRepository';
 
 export const getOrderSummary = () => {
@@ -204,17 +205,19 @@ export const submitOrder = (data: any) => async (dispatch: AppDispatch) => {
 
 export const updateOrder = (orderId, data: any) => {
   return (dispatch: AppDispatch) => {
+    console.log('orderId', orderId);
     dispatch(orderActions.editOrderStart());
-    axiosInstance
-      .put(`/orders/${orderId}`, data)
+    updateOrderItem(orderId, data)
       .then(response => {
-        if (response.status === 200 || response.status === 201) {
+        console.log('response', response);
+        if (response) {
           return dispatch(orderActions.editOrderSuccess());
         }
-        return dispatch(orderActions.editOrderFailed(response.data));
+        return dispatch(orderActions.editOrderFailed(response));
       })
       .catch(error => {
-        return dispatch(orderActions.editOrderFailed(error.data));
+        console.log('error', error);
+        return dispatch(orderActions.editOrderFailed(error));
       });
   };
 };
