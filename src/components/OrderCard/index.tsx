@@ -1,6 +1,6 @@
 // components/OrderCard/index.tsx
 
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Alert} from 'react-native';
 import styles from './styles';
 import axiosInstance from '../../Api/axiosInstance';
@@ -32,6 +32,7 @@ const OrderCard: React.FC<Props> = ({
   const {orderStatuses} = useSelector((state: RootState) => state.orders);
   const allDone = order.items.every(i => i.status === 'done');
   const doneCount = order.items.filter(i => i.status === 'done').length;
+  const [optionsView, setOptionsView] = useState<boolean>(false);
 
   const borderColor = orderStatuses[order.status]?.color || '#000';
   return (
@@ -120,27 +121,39 @@ const OrderCard: React.FC<Props> = ({
           </TouchableOpacity>
         ))}
       </View>
+
       <View style={styles.actionsContainer}>
         <TouchableOpacity
           style={[styles.editOrder]}
           onPress={() => {
-            onEditOrder(order);
+            setOptionsView(!optionsView);
           }}>
-          <Text style={styles.totalPrice}>Edit</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.printOrder]}
-          onPress={() => {
-            printOrderLabel(order);
-          }}>
-          <Text style={styles.totalPrice}>Print Label</Text>
+          <Text style={styles.totalPrice}>Options</Text>
         </TouchableOpacity>
 
         <View style={styles.totalPriceContainer}>
           <Text style={styles.totalPrice}>Total: ₱{order.total_price}</Text>
         </View>
       </View>
+      {optionsView && (
+        <View style={styles.optionsContainer}>
+          <TouchableOpacity
+            style={[styles.editOrder]}
+            onPress={() => {
+              onEditOrder(order);
+            }}>
+            <Text style={styles.totalPrice}>Edit</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.printOrder]}
+            onPress={() => {
+              printOrderLabel(order);
+            }}>
+            <Text style={styles.totalPrice}>Print Label</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       {/* COMPLETE BUTTON */}
       {order.is_paid === 0 && (
         <TouchableOpacity

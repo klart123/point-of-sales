@@ -158,6 +158,13 @@ export default StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
+  optionsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+  },
   editOrder: {
     padding: 10,
     marginTop: 4,
