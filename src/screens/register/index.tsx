@@ -1,101 +1,119 @@
-import React, {useState} from 'react';
-import {View, Text, TextInput, Button, Alert} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
 import styles from './styles';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState, AppDispatch} from '../../redux/store';
-import {
-  registerStart,
-  registerSuccess,
-  registerFailure,
-} from '../../redux/slices/authSlice';
-import {registerUser} from '../../Api/authService';
-import {ContainerView} from '../../components';
+import {resetRegistration} from '../../services';
+import {ContainerView, Button} from '../../components';
 import {COLORS} from '../../theme';
+import {handleRegister} from './functions';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 
 const RegisterScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const {loading, error} = useSelector((state: RootState) => state.auth);
+  const navigation = useNavigation();
+  const {registerIsLoading, userRegistered, registrationError} = useSelector(
+    (state: RootState) => state.auth,
+  );
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setError] = useState<string | null>(null);
 
-  const handleRegister = async () => {
-    setError(null);
-    if (!name || !email || !password) {
-      Alert.alert('Error', 'Please fill out all fields');
-      return;
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(resetRegistration());
+    }, []),
+  );
+
+  useEffect(() => {
+    if (!registerIsLoading && userRegistered) {
+      Alert.alert(
+        'Success',
+        // 'Registration successful. Check your email if email confirmation is enabled.',
+        'Registratoin successful. Please redirect back to login',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              dispatch(resetRegistration());
+            },
+          },
+        ],
+      );
     }
-
-    dispatch(registerStart());
-
-    try {
-      const userData = await registerUser({
-        name,
-        email,
-        password,
-        password_confirmation: confirmPassword,
-      });
-      dispatch(registerSuccess(userData)); // Assuming backend returns name & email
-      Alert.alert('Success', 'Account created successfully!');
-    } catch (error: any) {
-      dispatch(registerFailure(error));
-      if (error?.password) {
-        setError(error.password[0]); // Access the first error from the array
-      }
-      Alert.alert('Error', 'Something went wrong');
-    }
-  };
+  }, [registerIsLoading, userRegistered]);
 
   return (
-    <ContainerView style={styles.container}>
-      <Text style={styles.title}>Register</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ContainerView style={styles.container}>
+        <Text style={styles.title}>Register</Text>
 
-      <TextInput
-        placeholder="Full Name"
-        style={styles.input}
-        value={name}
-        onChangeText={setName}
-        placeholderTextColor={COLORS.placeholder}
-      />
+        <TextInput
+          placeholder="Full Name"
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholderTextColor={COLORS.placeholder}
+        />
 
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
-        placeholderTextColor={COLORS.placeholder}
-      />
+        <TextInput
+          placeholder="Email"
+          style={styles.input}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={setEmail}
+          placeholderTextColor={COLORS.placeholder}
+        />
 
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        placeholderTextColor={COLORS.placeholder}
-      />
-      <TextInput
-        placeholder="Confirm Password"
-        style={styles.input}
-        secureTextEntry
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        placeholderTextColor={COLORS.placeholder}
-      />
+        <TextInput
+          placeholder="Password"
+          style={styles.input}
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+          placeholderTextColor={COLORS.placeholder}
+        />
+        <TextInput
+          placeholder="Confirm Password"
+          style={styles.input}
+          secureTextEntry
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          placeholderTextColor={COLORS.placeholder}
+        />
 
-      <Button
-        title={loading ? 'Registering...' : 'Register'}
-        onPress={handleRegister}
-        disabled={loading}
-      />
+        {registrationError && registrationError?.message && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{registrationError?.message}</Text>
+          </View>
+        )}
 
-      {errors && <Text style={{color: 'red', marginTop: 10}}>{errors}</Text>}
-    </ContainerView>
+        <Button
+          title={registerIsLoading ? 'Registering...' : 'Register'}
+          onPress={() => {
+            handleRegister({
+              name,
+              email,
+              password,
+              confirmPassword,
+              dispatch,
+            });
+          }}
+          loading={registerIsLoading}
+          disabled={registerIsLoading}
+        />
+      </ContainerView>
+    </TouchableWithoutFeedback>
   );
 };
 

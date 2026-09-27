@@ -18,4 +18,8 @@ export type AuthState = {
   user: {name: string; email: string} | null;
   loading: boolean;
   error: string | null | Record<string, any>;
+  loginIsLoading: boolean;
+  registerIsLoading: boolean;
+  registrationError: string | null | Record<string, any>;
+  userRegistered: boolean;
 };

@@ -1,1 +1,1 @@
-updated the printer and enhanced the ordering system
+login & register functions

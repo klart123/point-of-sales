@@ -21,4 +21,17 @@ export default StyleSheet.create({
     fontSize: 16,
     color: COLORS.text,
   },
+  errorContainer: {
+    width: '100%',
+    paddingVertical: 10,
+    marginBottom: 10,
+  },
+  errorText: {
+    textAlign: 'center',
+    color: COLORS.textError,
+    backgroundColor: COLORS.errorBg,
+    padding: 5,
+    borderRadius: 5,
+    width: '100%',
+  },
 });

@@ -81,3 +81,5 @@ yarn-error.log
 
 # Fastlane
 fastlane/.env.release
+# react-native-config codegen
+ios/tmp.xcconfig

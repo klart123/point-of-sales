@@ -25,4 +25,7 @@ export const COLORS = {
   active: '#00b0f5',
   overlay: 'rgba(0,0,0,0.4)',
   white: '#fff',
+
+  buttonPrimary: '#e08f7f',
+  buttonText: '#0e0d0d',
 };

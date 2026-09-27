@@ -5,8 +5,10 @@ import {
   GestureResponderEvent,
   ViewStyle,
   TextStyle,
+  ActivityIndicator,
 } from 'react-native';
 import styles from './styles';
+import {COLORS} from '../../theme';
 
 interface CustomButtonProps {
   title: string;
@@ -15,21 +17,32 @@ interface CustomButtonProps {
   textColor?: string;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  loading?: boolean;
+  disabled?: boolean;
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
   title,
   onPress,
-  backgroundColor = '#007BFF',
-  textColor = '#fff',
+  backgroundColor = COLORS.buttonPrimary,
+  textColor = COLORS.buttonText,
   style,
   textStyle,
+  loading,
+  disabled,
 }) => {
   return (
     <TouchableOpacity
       style={[styles.button, {backgroundColor}, style]}
-      onPress={onPress}>
-      <Text style={[styles.text, {color: textColor}, textStyle]}>{title}</Text>
+      onPress={onPress}
+      disabled={disabled}>
+      {loading ? (
+        <ActivityIndicator />
+      ) : (
+        <Text style={[styles.text, {color: textColor}, textStyle]}>
+          {title}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 };

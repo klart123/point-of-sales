@@ -3,8 +3,10 @@ import {COLORS} from '../../../theme';
 
 export default StyleSheet.create({
   container: {
-    paddingTop: '10%',
-    padding: 24,
+    flex: 1,
+    justifyContent: 'center',
+    // paddingTop: '10%',
+    paddingHorizontal: 24,
   },
   title: {
     fontSize: 32,
@@ -43,7 +45,7 @@ export default StyleSheet.create({
 
   errorContainer: {
     width: '100%',
-    paddingVertical: 20,
+    paddingVertical: 10,
   },
   errorText: {
     textAlign: 'center',

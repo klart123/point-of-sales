@@ -346,17 +346,17 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Medium',
-        price: 109,
+        price: 129,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 109,
+        price: 129,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 119,
+        price: 149,
       },
     ],
   },
@@ -370,17 +370,17 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Medium',
-        price: 119,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 119,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 149,
+        price: 129,
       },
     ],
   },

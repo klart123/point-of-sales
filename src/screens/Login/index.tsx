@@ -3,24 +3,18 @@ import {
   View,
   Text,
   TextInput,
-  // Button,
   Alert,
-  TouchableOpacity,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import styles from './styles';
 import {navigation} from '../../types';
-import {loginUser} from '../../services';
+import {loginUser, resetLoginData} from '../../services';
 import {RootState} from '../../redux/store';
-import {
-  ApiSettingsModal,
-  HeaderComponent,
-  Button,
-  ContainerView,
-  ServerDiscoveryModal,
-} from '../../components';
+import {Button, ContainerView} from '../../components';
 import {COLORS} from '../../theme';
 import {apiActions} from '../../redux/slices/apiSlice';
 import {
@@ -42,12 +36,12 @@ const LoginScreen = () => {
 
   const dispatch = useDispatch();
   const navigation = useNavigation<LoginScreenNavigationProp>();
-  const {loading, isAuthenticated, error} = useSelector(
+  const {loginIsLoading, loading, isAuthenticated, error} = useSelector(
     (state: RootState) => state.auth,
   );
-  const {baseURL} = useSelector((state: RootState) => state.api);
 
   const handleLogin = async () => {
+    Keyboard.dismiss();
     if (!email || !password) {
       Alert.alert('Error', 'Please fill out all fields');
       return;
@@ -55,13 +49,17 @@ const LoginScreen = () => {
 
     dispatch(loginUser({email, password}));
   };
+  useEffect(() => {
+    resetForm();
+  }, []);
 
   useEffect(() => {
-    if (!loading && isAuthenticated) {
+    if (!loginIsLoading && isAuthenticated) {
       // navigation.replace('Home');
-      navigation.replace('MainDrawer', {screen: 'Orders'});
+      // navigation.replace('MainDrawer', {screen: 'Orders'});
+      navigation.reset({index: 0, routes: [{name: 'MainDrawer'}]});
     }
-  }, [loading, isAuthenticated]);
+  }, [loginIsLoading, isAuthenticated]);
 
   const handleSaveBaseUrl = async (url: string) => {
     if (url.includes('supabase.co')) {
@@ -85,62 +83,60 @@ const LoginScreen = () => {
     }
   };
 
+  const resetForm = () => {
+    dispatch(resetLoginData());
+  };
+
   return (
-    <ContainerView style={styles.container}>
-      <HeaderComponent icon="⚙️" onPress={() => setShowModal(true)} />
-      <View>
-        <Text style={styles.title}>Login</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ContainerView style={styles.container}>
+        {/* <HeaderComponent icon="⚙️" onPress={() => setShowModal(true)} /> */}
+        <View>
+          <Text style={styles.title}>Login</Text>
+          <TextInput
+            placeholder="Email"
+            style={styles.input}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+            placeholderTextColor={COLORS.placeholder}
+          />
 
-        <TextInput
-          placeholder="Email"
-          style={styles.input}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
-          placeholderTextColor={COLORS.placeholder}
-        />
+          <TextInput
+            placeholder="Password"
+            style={styles.input}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            placeholderTextColor={COLORS.placeholder}
+          />
+          {error && error?.message && (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error?.message}</Text>
+            </View>
+          )}
 
-        <TextInput
-          placeholder="Password"
-          style={styles.input}
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          placeholderTextColor={COLORS.placeholder}
-        />
-        {error && error?.error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error?.error}</Text>
+          <View style={styles.buttonContainer}>
+            <Button
+              title="Login"
+              onPress={handleLogin}
+              loading={loginIsLoading}
+              disabled={loginIsLoading}
+            />
           </View>
-        )}
 
-        <View style={styles.buttonContainer}>
-          <Button title="Login" onPress={handleLogin} />
+          <View style={styles.signupContainer}>
+            <Text
+              style={styles.signup}
+              onPress={() => navigation.navigate('Register')}
+              disabled={loginIsLoading}>
+              Don't have an account? Register
+            </Text>
+          </View>
         </View>
-
-        <View style={styles.signupContainer}>
-          <Text
-            style={styles.signup}
-            onPress={() => navigation.navigate('Register')}>
-            Don't have an account? Register
-          </Text>
-        </View>
-      </View>
-
-      {/* <ApiSettingsModal
-        visible={showModal}
-        onClose={() => setShowModal(false)}
-      /> */}
-      <ServerDiscoveryModal
-        visible={showModal}
-        currentBaseURL={baseURL}
-        onSelect={handleSaveBaseUrl}
-        onClose={() => {
-          setShowModal(false);
-        }}
-      />
-    </ContainerView>
+      </ContainerView>
+    </TouchableWithoutFeedback>
   );
 };
 

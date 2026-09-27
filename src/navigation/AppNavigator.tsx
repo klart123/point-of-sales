@@ -17,7 +17,7 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="MainDrawer"
+        initialRouteName="Login"
         screenOptions={{
           headerStyle: {backgroundColor: COLORS.primary},
           headerTitleStyle: {color: COLORS.text},
@@ -25,12 +25,21 @@ const AppNavigator = () => {
           headerBackTitle: ' ',
           headerBackButtonDisplayMode: 'minimal',
         }}>
-        {/* Public screens — no drawer */}
-        <Stack.Screen name="Login" component={screens.LoginScreen} />
-        <Stack.Screen name="Register" component={screens.RegisterScreen} />
+        <Stack.Screen
+          name="Login"
+          component={screens.LoginScreen}
+          options={{headerTitle: '', headerShown: false}}
+        />
+        <Stack.Screen
+          name="Register"
+          component={screens.RegisterScreen}
+          options={{
+            headerTitle: '',
+            //  headerShown: false
+          }}
+        />
         <Stack.Screen name="Details" component={screens.DetailsScreen} />
 
-        {/* All authenticated screens live inside the drawer */}
         <Stack.Screen
           name="MainDrawer"
           component={DrawerNavigator}

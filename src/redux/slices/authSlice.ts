@@ -6,8 +6,12 @@ const initialState: auth.AuthState = {
   isAuthenticated: false,
   token: null,
   user: null,
-  loading: false,
+  loading: true,
   error: null,
+  loginIsLoading: false,
+  registerIsLoading: false,
+  userRegistered: false,
+  registrationError: null,
 };
 
 const authSlice = createSlice({
@@ -15,6 +19,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     loginStart: state => {
+      state.loginIsLoading = true;
       state.loading = true;
       state.error = null;
       state.isAuthenticated = false;
@@ -25,11 +30,13 @@ const authSlice = createSlice({
       state.token = token;
       state.user = user;
       state.loading = false;
+      state.loginIsLoading = false;
     },
-    loginFailed: (state, action: PayloadAction<string>) => {
+    loginFailed: (state, action: PayloadAction<any>) => {
       state.isAuthenticated = false;
       state.error = action.payload;
       state.loading = false;
+      state.loginIsLoading = false;
     },
     logout: state => {
       state.isAuthenticated = false;
@@ -37,8 +44,12 @@ const authSlice = createSlice({
       state.user = null;
     },
     registerStart: state => {
+      state.registerIsLoading = true;
+
+      state.userRegistered = false;
       state.loading = true;
       state.error = null;
+      state.registrationError = null;
     },
     registerSuccess: (
       state,
@@ -46,10 +57,28 @@ const authSlice = createSlice({
     ) => {
       state.user = action.payload;
       state.loading = false;
+      state.userRegistered = true;
+      state.registerIsLoading = false;
     },
     registerFailure: (state, action: PayloadAction<auth.ErrorPayload>) => {
       state.loading = false;
-      state.error = action.payload;
+      state.registrationError = action.payload;
+      state.registerIsLoading = false;
+
+      state.userRegistered = false;
+    },
+    resetLoginData: state => {
+      state.loading = false;
+      state.loginIsLoading = false;
+      state.error = null;
+    },
+    resetRegistration: state => {
+      console.log('resetRegistration');
+      state.loading = false;
+      state.registerIsLoading = false;
+      state.error = null;
+      state.userRegistered = false;
+      state.registrationError = null;
     },
   },
 });
@@ -62,6 +91,8 @@ export const {
   registerSuccess,
   registerFailure,
   logout,
+  resetLoginData,
+  resetRegistration,
 } = authSlice.actions;
 
 export default authSlice.reducer;
