@@ -119,7 +119,7 @@ platform :ios do
 
     build_ios_app(
       scheme: scheme,
-      workspace: "./ios/PointOfSsales.xcworkspace",
+      workspace: "./ios/PaglamPOS.xcworkspace",
       clean: true,
       export_method: "development",
       output_directory: "./ios/build_ipa",
@@ -144,7 +144,7 @@ platform :ios do
   desc "Build iOS"
   lane :build do |options|
 
-    scheme = options[:scheme] || "Release PointOfSsales"
+    scheme = options[:scheme] || "Release PaglamPOS"
 
     sh("rm -rf ios/build_ipa")
     sh("mkdir -p ios/build_ipa")
@@ -157,7 +157,7 @@ platform :ios do
   desc "Upload iOS IPA"
   lane :upload do |options|
 
-    scheme = options[:scheme] || "Release PointOfSsales"
+    scheme = options[:scheme] || "Release PaglamPOS"
 
     upload_app_scheme(
       scheme: scheme
@@ -167,7 +167,7 @@ platform :ios do
   desc "Deploy iOS to Firebase"
   lane :deploy do |options|
 
-    scheme = options[:scheme] || "Release PointOfSsales"
+    scheme = options[:scheme] || "Release PaglamPOS"
 
     build(
       scheme: scheme

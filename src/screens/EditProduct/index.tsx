@@ -20,10 +20,7 @@ import {
 } from '@react-navigation/native';
 import {
   addProductCategory,
-  getCategories,
   resetError,
-  editProducts,
-  getProduct,
   resetUpdateProduct,
   getProductByIdLocal,
   editProductsLocal,
@@ -73,18 +70,8 @@ const EditProductScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const {
-    error,
-    loading,
-    // categories,
-    isAddingLoading,
-    isAddingSuccess,
-    prodCatLoading,
-    prodCatSuccess,
-    isEditLoading,
-    isEditSuccess,
-    productItem,
-  } = useSelector((state: RootState) => state.products);
+  const {error, loading, isEditLoading, isEditSuccess, productItem} =
+    useSelector((state: RootState) => state.products);
 
   /** parameters for edit products */
   const {productId} = route.params;
@@ -119,7 +106,6 @@ const EditProductScreen = () => {
 
   useEffect(() => {
     if (productId) {
-      // dispatch(getProduct(productId));
       dispatch(getProductByIdLocal(productId));
     }
   }, [productId]);
@@ -198,7 +184,6 @@ const EditProductScreen = () => {
       product_category_id: subCategory,
       items: variants,
     };
-    // dispatch(editProducts(productItem?.id, params));
     dispatch(editProductsLocal(productItem?.id, params));
   };
 
@@ -256,10 +241,6 @@ const EditProductScreen = () => {
               </View>
             )}
           />
-
-          {/* <TouchableOpacity style={styles.addCategoryBtn} onPress={() => {}}>
-            <Text style={styles.addCategoryBtnText}>+</Text>
-          </TouchableOpacity> */}
         </View>
         {/* Sub - Category picker */}
 

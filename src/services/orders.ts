@@ -1,4 +1,7 @@
+// NO USE ANYMORE
+
 // src/services/orders.ts — thunks now call op-sqlite instead of axios
+
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import * as OrdersRepo from '../database/orders'; // doc 17
 import type {OrderStatus, CreateOrderInput} from '../types';

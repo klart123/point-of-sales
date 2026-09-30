@@ -2,7 +2,7 @@ const migrations = [
   {
     version: 1,
     name: 'add_default_categories',
-    run: async db => {
+    run: async (db: any) => {
       await db.execute(`
         INSERT OR IGNORE INTO categories
           (name, type, is_active)
@@ -17,7 +17,7 @@ const migrations = [
   {
     version: 2,
     name: 'add_status_priority_default_values',
-    run: async db => {
+    run: async (db: any) => {
       await db.execute(`
         INSERT OR IGNORE INTO order_statuses
           (status, priority, color, label)
@@ -35,7 +35,7 @@ const migrations = [
   {
     version: 3,
     name: 'add_default_product_categories',
-    run: async db => {
+    run: async (db: any) => {
       await db.execute(`
         INSERT OR IGNORE INTO product_categories
           (name, category_id, is_active)
@@ -56,7 +56,7 @@ const migrations = [
   },
 ];
 
-export async function runMigrations(db) {
+export async function runMigrations(db: any) {
   // ─────────────────────────────────────────────────────────────────────────
   // 1. Make sure the migration tracking table exists
   // ─────────────────────────────────────────────────────────────────────────

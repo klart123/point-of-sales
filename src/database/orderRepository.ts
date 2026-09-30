@@ -309,16 +309,18 @@ export type SummaryOrder = Order & {
 };
 
 export type OrderSummary = {
-  total_orders: number;
-  revenue: number;
+  date_range: {from: string; to: string};
+  summary: {
+    total_orders: number;
+    total_revenue: number;
 
-  paid_orders: number;
+    total_paid_orders: number;
 
-  total_gcash: number;
-  total_cash: number;
+    total_gcash_paid: number;
+    total_cash_paid: number;
 
-  total_items: number;
-
+    total_items_sold: number;
+  };
   top_products: TopProduct[];
 
   orders: SummaryOrder[];
@@ -863,7 +865,7 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
 
   let createdOrderId = 0;
 
-  await db.transaction(async tx => {
+  await db.transaction(async (tx: any) => {
     const orderNumber = await generateUniqueOrderNumber(tx);
 
     const now = new Date().toISOString();
@@ -1141,7 +1143,7 @@ export const updateOrderStatus = async (
 
   const now = new Date().toISOString();
 
-  await db.transaction(async tx => {
+  await db.transaction(async (tx: any) => {
     await tx.execute(
       `
       UPDATE orders
@@ -1253,7 +1255,7 @@ export const toggleOrderItemStatus = async (
 
   const now = new Date().toISOString();
 
-  await db.transaction(async tx => {
+  await db.transaction(async (tx: any) => {
     await tx.execute(
       `
       UPDATE order_items
@@ -1360,7 +1362,7 @@ export const updateOrder = async (
     throw new Error('Order not found.');
   }
 
-  await db.transaction(async tx => {
+  await db.transaction(async (tx: any) => {
     const now = new Date().toISOString();
 
     const headerFields: string[] = [];
@@ -1558,7 +1560,7 @@ export const deleteOrder = async (orderId: number): Promise<boolean> => {
     return false;
   }
 
-  await db.transaction(async tx => {
+  await db.transaction(async (tx: any) => {
     /**
      * Delete add-ons first because they reference order_items.
      */

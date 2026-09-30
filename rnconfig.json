@@ -97,9 +97,7 @@
           "packageInstance": "new RNSkiaPackage()",
           "buildTypes": [],
           "libraryName": "rnskia",
-          "componentDescriptors": [
-            "SkiaPictureViewComponentDescriptor"
-          ],
+          "componentDescriptors": ["SkiaPictureViewComponentDescriptor"],
           "cmakeListsPath": "/Users/klartdominicsanchez/Projects/Personal/pos-frontend/repo/point-of-sales/node_modules/@shopify/react-native-skia/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
@@ -867,7 +865,7 @@
     "ios": {
       "sourceDir": "/Users/klartdominicsanchez/Projects/Personal/pos-frontend/repo/point-of-sales/ios",
       "xcodeProject": {
-        "name": "PointOfSsales.xcworkspace",
+        "name": "PaglamPOS.xcworkspace",
         "path": ".",
         "isWorkspace": true
       },
@@ -876,8 +874,8 @@
     "android": {
       "sourceDir": "/Users/klartdominicsanchez/Projects/Personal/pos-frontend/repo/point-of-sales/android",
       "appName": "app",
-      "packageName": "com.pointofssales",
-      "applicationId": "com.pointofssales",
+      "packageName": "com.paglampos",
+      "applicationId": "com.paglampos",
       "mainActivity": ".MainActivity",
       "assets": []
     }

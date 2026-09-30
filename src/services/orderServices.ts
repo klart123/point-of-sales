@@ -9,113 +9,113 @@ import {
   updateOrder as updateOrderItem,
 } from '../database/orderRepository';
 
-export const getOrderSummary = () => {
-  return (dispatch: AppDispatch) => {
-    dispatch(orderSummaryAction.getSummaryStart()); // Fixed typo here
+// export const getOrderSummary = () => {
+//   return (dispatch: AppDispatch) => {
+//     dispatch(orderSummaryAction.getSummaryStart()); // Fixed typo here
 
-    return axiosInstance
-      .get('/orders/summary')
-      .then(response => {
-        if (response.status === 200 || response.status === 201) {
-          // Ensure response.data exists before dispatching
-          return dispatch(orderSummaryAction.getSummarySuccess(response.data));
-        }
+//     return axiosInstance
+//       .get('/orders/summary')
+//       .then(response => {
+//         if (response.status === 200 || response.status === 201) {
+//           // Ensure response.data exists before dispatching
+//           return dispatch(orderSummaryAction.getSummarySuccess(response.data));
+//         }
 
-        // Handle case when response.status is not 200 or 201
-        return dispatch(
-          orderSummaryAction.getSummaryFailed(
-            response.data?.message || 'Unknown error',
-          ),
-        );
-      })
-      .catch(error => {
-        // Safely access error data or provide a fallback message
-        return dispatch(
-          orderSummaryAction.getSummaryFailed(
-            error?.response?.data?.message || 'An error occurred',
-          ),
-        );
-      });
-  };
-};
+//         // Handle case when response.status is not 200 or 201
+//         return dispatch(
+//           orderSummaryAction.getSummaryFailed(
+//             response.data?.message || 'Unknown error',
+//           ),
+//         );
+//       })
+//       .catch(error => {
+//         // Safely access error data or provide a fallback message
+//         return dispatch(
+//           orderSummaryAction.getSummaryFailed(
+//             error?.response?.data?.message || 'An error occurred',
+//           ),
+//         );
+//       });
+//   };
+// };
 
-export const getSummaryDates = () => {
-  return (dispatch: AppDispatch) => {
-    dispatch(orderSummaryAction.getDatesStart());
+// export const getSummaryDates = () => {
+//   return (dispatch: AppDispatch) => {
+//     dispatch(orderSummaryAction.getDatesStart());
 
-    return axiosInstance
-      .get('/orders/dates')
-      .then(response => {
-        if (response.status === 200 || response.status === 202) {
-          return dispatch(orderSummaryAction.getDatesSuccess(response.data));
-        }
+//     return axiosInstance
+//       .get('/orders/dates')
+//       .then(response => {
+//         if (response.status === 200 || response.status === 202) {
+//           return dispatch(orderSummaryAction.getDatesSuccess(response.data));
+//         }
 
-        return dispatch(orderSummaryAction.getDatesFailed(response.statusText));
-      })
-      .catch(error => {
-        return dispatch(
-          orderSummaryAction.getDatesFailed(
-            error?.response?.data?.message || 'An error Occured',
-          ),
-        );
-      });
-  };
-};
+//         return dispatch(orderSummaryAction.getDatesFailed(response.statusText));
+//       })
+//       .catch(error => {
+//         return dispatch(
+//           orderSummaryAction.getDatesFailed(
+//             error?.response?.data?.message || 'An error Occured',
+//           ),
+//         );
+//       });
+//   };
+// };
 
-export const getOrders: any = (params: any) => {
-  return async (dispatch: AppDispatch) => {
-    dispatch(orderActions.getOrderStart());
+// export const getOrders: any = (params: any) => {
+//   return async (dispatch: AppDispatch) => {
+//     dispatch(orderActions.getOrderStart());
 
-    axiosInstance
-      .get('/orders', params)
-      .then(response => {
-        if (response?.status === 200) {
-          return dispatch(orderActions.getOrderSuccess(response?.data));
-        }
+//     axiosInstance
+//       .get('/orders', params)
+//       .then(response => {
+//         if (response?.status === 200) {
+//           return dispatch(orderActions.getOrderSuccess(response?.data));
+//         }
 
-        return dispatch(orderActions.getOrderStart(response.data.error));
-      })
-      .catch(error => {
-        return dispatch(orderActions.getOrderStart(error.data.error));
-      });
-  };
-};
+//         return dispatch(orderActions.getOrderStart(response.data.error));
+//       })
+//       .catch(error => {
+//         return dispatch(orderActions.getOrderStart(error.data.error));
+//       });
+//   };
+// };
 
-export const updateOrderStatus = (data: any) => {
-  return (dispatch: AppDispatch) => {
-    dispatch(orderActions.updateOrderStart());
-    axiosInstance
-      .put(`/orders/${data.id}/status`, {status: data.status})
-      .then(response => {
-        if (response.status === 200 || response.status === 201) {
-          return dispatch(orderActions.updateOrderSuccess(response.data));
-        }
+// export const updateOrderStatus = (data: any) => {
+//   return (dispatch: AppDispatch) => {
+//     dispatch(orderActions.updateOrderStart());
+//     axiosInstance
+//       .put(`/orders/${data.id}/status`, {status: data.status})
+//       .then(response => {
+//         if (response.status === 200 || response.status === 201) {
+//           return dispatch(orderActions.updateOrderSuccess(response.data));
+//         }
 
-        return dispatch(orderActions.updateOrderFailed(response.data.message));
-      })
-      .catch(error => {
-        return dispatch(orderActions.updateOrderFailed(error.data.message));
-      });
-  };
-};
+//         return dispatch(orderActions.updateOrderFailed(response.data.message));
+//       })
+//       .catch(error => {
+//         return dispatch(orderActions.updateOrderFailed(error.data.message));
+//       });
+//   };
+// };
 
-export const completeOrder = (data: any) => {
-  return (dispatch: AppDispatch) => {
-    dispatch(orderActions.updateOrderStart());
-    axiosInstance
-      .put(`/orders/${data.id}/status`, {status: data.status})
-      .then(response => {
-        if (response.status === 200 || response.status === 201) {
-          return dispatch(orderActions.updateOrderSuccess(response.data));
-        }
+// export const completeOrder = (data: any) => {
+//   return (dispatch: AppDispatch) => {
+//     dispatch(orderActions.updateOrderStart());
+//     axiosInstance
+//       .put(`/orders/${data.id}/status`, {status: data.status})
+//       .then(response => {
+//         if (response.status === 200 || response.status === 201) {
+//           return dispatch(orderActions.updateOrderSuccess(response.data));
+//         }
 
-        return dispatch(orderActions.updateOrderFailed(response.data.message));
-      })
-      .catch(error => {
-        return dispatch(orderActions.updateOrderFailed(error.data.message));
-      });
-  };
-};
+//         return dispatch(orderActions.updateOrderFailed(response.data.message));
+//       })
+//       .catch(error => {
+//         return dispatch(orderActions.updateOrderFailed(error.data.message));
+//       });
+//   };
+// };
 
 export const resetOrders = () => {
   return (dispatch: AppDispatch) => {
@@ -169,31 +169,6 @@ export const submitOrder = (data: any) => async (dispatch: AppDispatch) => {
   createOrder(data)
     .then(async response => {
       if (response) {
-        console.log('Order submitted successfully:', response);
-
-        const order = response;
-
-        // for (const item of order.items ?? []) {
-        //   try {
-        //     await printOrderLabel({
-        //       itemName: `${item.name} (${item.type})`,
-        //       customerName: order.customer_name ?? 'Guest',
-        //       cupSize: item.size ?? 'Regular',
-        //       orderNumber: order.order_number,
-        //     });
-        //   } catch (printError) {
-        //     // Don't let ONE failed label stop the rest of the order's
-        //     // labels from printing, and don't let a print failure
-        //     // undo the order submission itself — just log and continue.
-        //     console.warn(
-        //       '[MenuScreen] Failed to print label for item:',
-        //       item.name,
-        //       item,
-        //       printError,
-        //     );
-        //   }
-        // }
-
         dispatch(orderActions.orderSuccess(response));
       }
     })
@@ -203,20 +178,17 @@ export const submitOrder = (data: any) => async (dispatch: AppDispatch) => {
     });
 };
 
-export const updateOrder = (orderId, data: any) => {
+export const updateOrder = (orderId: any, data: any) => {
   return (dispatch: AppDispatch) => {
-    console.log('orderId', orderId);
     dispatch(orderActions.editOrderStart());
     updateOrderItem(orderId, data)
       .then(response => {
-        console.log('response', response);
         if (response) {
           return dispatch(orderActions.editOrderSuccess());
         }
         return dispatch(orderActions.editOrderFailed(response));
       })
       .catch(error => {
-        console.log('error', error);
         return dispatch(orderActions.editOrderFailed(error));
       });
   };

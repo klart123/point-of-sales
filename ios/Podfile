@@ -16,7 +16,7 @@ if linkage != nil
 
 end
 
-target 'PointOfSsales' do
+target 'PaglamPOS' do
   config = use_native_modules!
 
   use_react_native!(

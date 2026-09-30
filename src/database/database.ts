@@ -2,7 +2,7 @@
 import {open} from '@op-engineering/op-sqlite';
 import {runMigrations} from './migrations';
 
-let db;
+let db: any;
 
 export function getDB() {
   if (!db) {

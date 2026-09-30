@@ -10,7 +10,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
     ex.autolinkLibrariesFromCommand()
 }
 
-rootProject.name = 'PointOfSsales'
+rootProject.name = 'PaglamPOS'
 
 include ':app'
 

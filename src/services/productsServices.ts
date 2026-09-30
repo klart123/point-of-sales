@@ -30,24 +30,24 @@ export type ProductFormData = {
   variants: VariantMap;
 };
 
-export const getProducts = () => {
-  return async (dispatch: AppDispatch) => {
-    dispatch(productActions.productStart());
+// export const getProducts = () => {
+//   return async (dispatch: AppDispatch) => {
+//     dispatch(productActions.productStart());
 
-    axiosInstance
-      .get('/products')
-      .then(response => {
-        if (response?.status === 200) {
-          return dispatch(productActions.productSuccess(response?.data));
-        }
+//     axiosInstance
+//       .get('/products')
+//       .then(response => {
+//         if (response?.status === 200) {
+//           return dispatch(productActions.productSuccess(response?.data));
+//         }
 
-        return dispatch(productActions.productFailed(response.data.error));
-      })
-      .catch(error => {
-        return dispatch(productActions.productFailed(error.data.error));
-      });
-  };
-};
+//         return dispatch(productActions.productFailed(response.data.error));
+//       })
+//       .catch(error => {
+//         return dispatch(productActions.productFailed(error.data.error));
+//       });
+//   };
+// };
 
 export const resetProducts = () => {
   return (dispatch: AppDispatch) => {
@@ -72,25 +72,25 @@ export const addProducts: any = (payload: any) => {
   };
 };
 
-export const getProduct: any = (productId: number) => {
-  return (dispatch: AppDispatch) => {
-    dispatch(productActions.getProductStart());
+// export const getProduct: any = (productId: number) => {
+//   return (dispatch: AppDispatch) => {
+//     dispatch(productActions.getProductStart());
 
-    axiosInstance
-      .put(`/products/${productId}`)
-      .then(response => {
-        if (response.status === 200 || response.status === 201) {
-          dispatch(productActions.getProductSuccess(response.data));
-          return;
-        }
+//     axiosInstance
+//       .put(`/products/${productId}`)
+//       .then(response => {
+//         if (response.status === 200 || response.status === 201) {
+//           dispatch(productActions.getProductSuccess(response.data));
+//           return;
+//         }
 
-        return dispatch(productActions.getProductFailed(response.data));
-      })
-      .catch(error => {
-        return dispatch(productActions.getProductFailed(error));
-      });
-  };
-};
+//         return dispatch(productActions.getProductFailed(response.data));
+//       })
+//       .catch(error => {
+//         return dispatch(productActions.getProductFailed(error));
+//       });
+//   };
+// };
 
 export const getProductByIdLocal = (productId: number) => {
   return async (dispatch: AppDispatch) => {
@@ -115,50 +115,32 @@ export const getProductByIdLocal = (productId: number) => {
   };
 };
 
-export const editProducts: any = (productId: number, payload: any) => {
-  return (dispatch: AppDispatch) => {
-    dispatch(productActions.updateProductStart());
+// export const editProducts: any = (productId: number, payload: any) => {
+//   return (dispatch: AppDispatch) => {
+//     dispatch(productActions.updateProductStart());
 
-    axiosInstance
-      .put(`/products/${productId}`, payload)
-      .then(response => {
-        if (response.status === 200 || response.status === 201) {
-          dispatch(productActions.updateProductSuccess(response.data));
-          return;
-        }
+//     axiosInstance
+//       .put(`/products/${productId}`, payload)
+//       .then(response => {
+//         if (response.status === 200 || response.status === 201) {
+//           dispatch(productActions.updateProductSuccess(response.data));
+//           return;
+//         }
 
-        return dispatch(productActions.updateProductFailed(response.data));
-      })
-      .catch(error => {
-        return dispatch(productActions.updateProductFailed(error));
-      });
-  };
-};
+//         return dispatch(productActions.updateProductFailed(response.data));
+//       })
+//       .catch(error => {
+//         return dispatch(productActions.updateProductFailed(error));
+//       });
+//   };
+// };
 
 export const editProductsLocal: any = (productId: number, payload: any) => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.updateProductStart());
 
-    // axiosInstance
-    //   .put(`/products/${productId}`, payload)
-    //   .then(response => {
-    //     if (response.status === 200 || response.status === 201) {
-    //       dispatch(productActions.updateProductSuccess(response.data));
-    //       return;
-    //     }
-
-    //     return dispatch(productActions.updateProductFailed(response.data));
-    //   })
-    //   .catch(error => {
-    //     return dispatch(productActions.updateProductFailed(error));
-    //   });
-
     updateProduct(productId, payload)
       .then(response => {
-        // if (response.status === 200 || response.status === 201) {
-        // dispatch(productActions.updateProductSuccess(response.data));
-        // return;
-        // }
         if (response) {
           dispatch(productActions.updateProductSuccess(response));
           return;
@@ -190,53 +172,53 @@ export const getCategories = () => {
   };
 };
 
-export const getProductCategories = () => {
-  return (dispatch: AppDispatch) => {
-    dispatch(productActions.getSubCategoriesStart());
-    axiosInstance
-      .get('/product-categories')
-      .then(response => {
-        if (response?.status === 200) {
-          return dispatch(
-            productActions.getSubCategoriesSuccess(response?.data),
-          );
-        }
+// export const getProductCategories = () => {
+//   return (dispatch: AppDispatch) => {
+//     dispatch(productActions.getSubCategoriesStart());
+//     axiosInstance
+//       .get('/product-categories')
+//       .then(response => {
+//         if (response?.status === 200) {
+//           return dispatch(
+//             productActions.getSubCategoriesSuccess(response?.data),
+//           );
+//         }
 
-        return dispatch(
-          productActions.getSubCategoriesFailed(response.data.error),
-        );
-      })
-      .catch(error => {
-        return dispatch(
-          productActions.getSubCategoriesFailed(error.data.error),
-        );
-      });
-  };
-};
+//         return dispatch(
+//           productActions.getSubCategoriesFailed(response.data.error),
+//         );
+//       })
+//       .catch(error => {
+//         return dispatch(
+//           productActions.getSubCategoriesFailed(error.data.error),
+//         );
+//       });
+//   };
+// };
 
-export const getProductsGrouped = () => {
-  return (dispatch: AppDispatch) => {
-    dispatch(productActions.getProductsGroupedStart());
-    axiosInstance
-      .get('/products/grouped')
-      .then(response => {
-        if (response?.status === 200) {
-          return dispatch(
-            productActions.getProductsGroupedSuccess(response?.data),
-          );
-        }
+// export const getProductsGrouped = () => {
+//   return (dispatch: AppDispatch) => {
+//     dispatch(productActions.getProductsGroupedStart());
+//     axiosInstance
+//       .get('/products/grouped')
+//       .then(response => {
+//         if (response?.status === 200) {
+//           return dispatch(
+//             productActions.getProductsGroupedSuccess(response?.data),
+//           );
+//         }
 
-        return dispatch(
-          productActions.getProductsGroupedFailed(response.data.error),
-        );
-      })
-      .catch(error => {
-        return dispatch(
-          productActions.getProductsGroupedFailed(error.data.error),
-        );
-      });
-  };
-};
+//         return dispatch(
+//           productActions.getProductsGroupedFailed(response.data.error),
+//         );
+//       })
+//       .catch(error => {
+//         return dispatch(
+//           productActions.getProductsGroupedFailed(error.data.error),
+//         );
+//       });
+//   };
+// };
 
 export const getProductsGroupedLocal = () => {
   return async (dispatch: AppDispatch) => {
@@ -245,12 +227,8 @@ export const getProductsGroupedLocal = () => {
 
       const products = await getProductsGroupedFromDatabase();
 
-      console.log('[Products] Loaded local products:', products);
-
       dispatch(productActions.getProductsGroupedSuccess(products));
     } catch (error) {
-      console.error('[Products] Failed to load local products:', error);
-
       dispatch(
         productActions.getProductsGroupedFailed(
           error instanceof Error
@@ -265,8 +243,7 @@ export const getProductsGroupedLocal = () => {
 export const addProductCategory: any = (payload: any) => {
   return (dispatch: AppDispatch) => {
     dispatch(productActions.addProductCategoryStart());
-    // axiosInstance
-    //   .post('/product-categories', payload)
+
     createProductCategory(payload)
       .then(response => {
         console.log('response', response);
