@@ -15,6 +15,7 @@ import SyncScreen from './screens/Sync';
 import PrinterSettings from './screens/PrinterSettings';
 import DatabaseDebugScreen from './screens/DatabaseDebugScreen';
 import OrderSummaryDetails from './screens/OrderSummaryDetails';
+import GcashSettings from './screens/GcashSettings';
 
 export {
   HomeScreen,
@@ -34,4 +35,5 @@ export {
   PrinterSettings,
   DatabaseDebugScreen,
   OrderSummaryDetails,
+  GcashSettings,
 };

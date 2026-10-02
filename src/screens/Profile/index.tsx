@@ -230,6 +230,11 @@ const ProfileScreen: React.FC<Props> = ({navigation}) => {
         onPress={() => navigation.navigate('DatabaseDebug')}
       />
       <Button title="Reset Database" color="#d9534f" onPress={resetDatabase} />
+      <Button
+        title="Gcash Settings"
+        color="#d9534f"
+        onPress={() => navigation.navigate('GcashSettings')}
+      />
       <Button title="Logout" color="#d9534f" onPress={handleLogout} />
       <ServerDiscoveryModal
         visible={serversModal}

@@ -10,6 +10,7 @@ import apiSlice from './slices/apiSlice';
 import userSlice from './slices/userSlice';
 import orderSummarySlice from './slices/orderSummarySlice';
 import syncSlice from './slices/syncSlice';
+import gcashSlice from './slices/gcashSlice';
 
 const persistConfig = {
   key: 'root',
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   user: userSlice,
   orderSummary: orderSummarySlice,
   sync: syncSlice,
+  gcash: gcashSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

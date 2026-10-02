@@ -68,6 +68,7 @@ const AppNavigator = () => {
           name="OrderSummaryDetails"
           component={screens.OrderSummaryDetails}
         />
+        <Stack.Screen name="GcashSettings" component={screens.GcashSettings} />
       </Stack.Navigator>
     </NavigationContainer>
   );

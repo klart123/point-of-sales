@@ -36,4 +36,5 @@ export type RootStackParamList = {
   PrinterSettings: undefined;
   DatabaseDebug: undefined;
   OrderSummaryDetails: {from: string; to: string};
+  GcashSettings: undefined;
 };
