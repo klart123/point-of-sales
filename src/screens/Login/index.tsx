@@ -23,6 +23,7 @@ import {
   removeApiBaseUrl,
   saveApiBaseUrl,
 } from '../../../env';
+import {supabase} from '../../lib/supabase';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   navigation.RootStackParamList,
@@ -54,6 +55,9 @@ const LoginScreen = () => {
   }, []);
 
   useEffect(() => {
+    supabase.auth.getSession().then(response => {
+      console.log('session response', response);
+    });
     if (!loginIsLoading && isAuthenticated) {
       // navigation.replace('Home');
       // navigation.replace('MainDrawer', {screen: 'Orders'});
