@@ -27,6 +27,8 @@ import {RootState} from '../../../../redux/store';
 import {orderActions} from '../../../../redux/slices/orderSlice';
 import styles from './styles';
 import {COLORS} from '../../../../theme';
+import {GCashQRModal} from '../../../../components';
+import {getGcashProfile} from '../../../../services/gcashProfileServices';
 
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
@@ -47,9 +49,11 @@ const OrderDrawer = ({
   onSubmit: (payload: any) => void;
   onEdit: (item: any) => void;
 }) => {
+  const dispatch = useDispatch();
+
   const {orderCustomerName, orders, ordersList, orderId, orderItem} =
     useSelector((state: RootState) => state.orders);
-  const dispatch = useDispatch();
+  const gcashData = useSelector((state: RootState) => state.gcash);
 
   const [customerName, setCustomerName] = useState(orderCustomerName);
   const [isPaid, setIsPaid] = useState(0);
@@ -58,7 +62,8 @@ const OrderDrawer = ({
   const [expanded, setExpanded] = useState(false);
   const [notes, setNotes] = useState('');
   const [orderItemTotal, setOrderItemTotal] = useState(0);
-  console.log('orders', orders);
+  const [gcashModal, setGcashModal] = useState(false);
+
   const totalItems = orders?.reduce(
     (sum, order) => sum + order?.items?.length,
     0,
@@ -67,6 +72,16 @@ const OrderDrawer = ({
   // REANIMATED STATE
   const height = useSharedValue(COLLAPSED_HEIGHT);
   const startHeight = useSharedValue(COLLAPSED_HEIGHT);
+
+  useEffect(() => {
+    if (
+      !gcashData.profile ||
+      gcashData.profile === undefined ||
+      gcashData.profile === null
+    ) {
+      dispatch(getGcashProfile());
+    }
+  }, [gcashData]);
 
   useEffect(() => {
     if (orderItem && isEdit) {
@@ -210,6 +225,10 @@ const OrderDrawer = ({
     onSubmit({...params, is_paid: 0});
   };
 
+  const handleGcashQR = () => {
+    setGcashModal(!gcashModal);
+  };
+
   if (!visible) return null;
 
   return (
@@ -260,7 +279,6 @@ const OrderDrawer = ({
               )}
             </View>
           </View>
-
           {/* CONTENT — KeyboardAwareScrollView handles everything */}
           <KeyboardAwareScrollView
             style={styles.expandedScroll}
@@ -279,7 +297,6 @@ const OrderDrawer = ({
                 style={{flex: 1, maxHeight: 299}}
                 contentContainerStyle={{paddingBottom: 20}}>
                 {groupedOrders?.map((item, index) => {
-                  console.log('item', item, index);
                   return (
                     <TouchableOpacity
                       key={item.id?.toString() + index}
@@ -374,9 +391,10 @@ const OrderDrawer = ({
                   Change: ₱{change?.toFixed(2)}
                 </Text>
                 <TouchableOpacity
-                  onPress={value => {
-                    setIsGcash(p => !p);
-                    setCashTendered(isGcash ? 0 : total?.toFixed(2));
+                  onPress={() => {
+                    // setIsGcash(p => !p);
+                    // setCashTendered(isGcash ? 0 : total?.toFixed(2));
+                    handleGcashQR(total);
                   }}
                   style={[styles.gcashButton, isGcash && styles.gcashActive]}>
                   <Text
@@ -384,7 +402,7 @@ const OrderDrawer = ({
                       styles.gcashText,
                       isGcash && styles.gcashActiveText,
                     ]}>
-                    {isGcash ? '✓ ' : ''}Paid with GCash
+                    {isGcash ? '✓ ' : ''}Pay with GCash
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -430,6 +448,16 @@ const OrderDrawer = ({
               </View>
             </View>
           </KeyboardAwareScrollView>
+          <GCashQRModal
+            visible={gcashModal}
+            onClose={() => {
+              setIsGcash(p => !p);
+              setCashTendered(isGcash ? 0 : total?.toFixed(2));
+              setGcashModal(false);
+            }}
+            staticPayload={gcashData?.profile?.payload}
+            amount={total}
+          />
         </Animated.View>
       </GestureDetector>
     </>

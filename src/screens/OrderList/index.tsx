@@ -5,6 +5,7 @@ import {
   Orders,
   ContainerView,
   PayModal,
+  GCashQRModal,
 } from '../../components';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
@@ -23,16 +24,22 @@ import {
   updateOrderPayment,
 } from '../../database/orderRepository';
 import {enqueueOrderForPrinting} from '../../printer/PrintQueue';
+import {getGcashProfile} from '../../services/gcashProfileServices';
 
 const OrderList = () => {
   const {orderStatuses} = useSelector((state: RootState) => state.orders);
+  const gcashData = useSelector((state: RootState) => state.gcash);
+
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
   const [orders, setOrders] = useState<Order[]>([]);
   const [updatedAt, setUpdatedAt] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [payModal, setPayModal] = useState(false);
-  const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const [gcashModal, setGcashModal] = useState(false);
+  const [itemTotalValue, setItemTotalValue] = useState(0);
 
   // ─────────────────────────────────────────────────────────────────────────
   // Active orders
@@ -102,8 +109,6 @@ const OrderList = () => {
         to,
       });
 
-      console.log('localOrders', localOrders);
-
       // Sort items first.
       const formattedOrders = localOrders.map(order => ({
         ...order,
@@ -135,7 +140,7 @@ const OrderList = () => {
   useFocusEffect(
     useCallback(() => {
       loadActiveOrders();
-    }, [loadActiveOrders]),
+    }, []),
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -174,6 +179,16 @@ const OrderList = () => {
 
     loadStatuses();
   }, [dispatch]);
+
+  useEffect(() => {
+    if (
+      !gcashData.profile ||
+      gcashData.profile === undefined ||
+      gcashData.profile === null
+    ) {
+      dispatch(getGcashProfile());
+    }
+  }, [gcashData]);
 
   const handleItemPress = async (order: Order, item: OrderItem) => {
     try {
@@ -454,6 +469,7 @@ const OrderList = () => {
           setSelectedOrder(null);
         }}
         onSubmit={handleSubmitPayment}
+        gcashData={gcashData}
       />
     </ContainerView>
   );

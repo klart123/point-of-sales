@@ -60,13 +60,16 @@ export const addProducts: any = (payload: any) => {
     dispatch(productActions.addProductStart());
     createProduct(payload)
       .then(response => {
+        console.log('response', response);
         if (response) {
           return dispatch(productActions.addProductSuccess(response));
         }
 
+        console.log('error?s', response);
         return dispatch(productActions.addProductFailed(response));
       })
       .catch(error => {
+        console.log('error', error);
         dispatch(productActions.addProductFailed(error));
       });
   };
@@ -246,7 +249,6 @@ export const addProductCategory: any = (payload: any) => {
 
     createProductCategory(payload)
       .then(response => {
-        console.log('response', response);
         if (response) {
           return dispatch(productActions.addProductCategorySuccess(response));
         }

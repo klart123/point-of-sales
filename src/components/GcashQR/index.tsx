@@ -12,7 +12,7 @@ type Props = {
 };
 
 const peso = (n: number) =>
-  `₱${n.toLocaleString('en-PH', {minimumFractionDigits: 2})}`;
+  `₱${n?.toLocaleString('en-PH', {minimumFractionDigits: 2})}`;
 
 export default function GCashQR({
   staticPayload,

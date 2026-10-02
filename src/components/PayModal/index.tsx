@@ -11,6 +11,7 @@ import {
 import styles from './styles';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Order, OrderItem} from '../../types';
+import {GCashQRModal} from '../../components';
 
 type OnSubmitProps = {
   orderId: number | string;
@@ -23,11 +24,19 @@ type Props = {
   orderItem: Order;
   onClose: () => void;
   onSubmit: (data: OnSubmitProps) => {};
+  gcashData: object | null;
 };
 
-const PayModal: React.FC<Props> = ({visible, orderItem, onSubmit, onClose}) => {
+const PayModal: React.FC<Props> = ({
+  visible,
+  orderItem,
+  onSubmit,
+  onClose,
+  gcashData,
+}) => {
   const [isGcash, setIsGcash] = useState(false);
   const [cashTendered, setCashTendered] = useState(0);
+  const [gcashModal, setGcashModal] = useState(false);
 
   useEffect(() => {}, [visible]);
 
@@ -88,10 +97,15 @@ const PayModal: React.FC<Props> = ({visible, orderItem, onSubmit, onClose}) => {
                 </Text>
                 <TouchableOpacity
                   onPress={value => {
-                    setIsGcash(p => !p);
-                    setCashTendered(
-                      isGcash ? 0 : orderItem?.total_price?.toFixed(2),
-                    );
+                    // setIsGcash(p => !p);
+                    if (isGcash) {
+                      setIsGcash(p => !p);
+                    } else {
+                      setCashTendered(
+                        isGcash ? 0 : orderItem?.total_price?.toFixed(2),
+                      );
+                      setGcashModal(true);
+                    }
                   }}
                   style={[styles.gcashButton, isGcash && styles.gcashActive]}>
                   <Text
@@ -99,7 +113,7 @@ const PayModal: React.FC<Props> = ({visible, orderItem, onSubmit, onClose}) => {
                       styles.gcashText,
                       isGcash && styles.gcashActiveText,
                     ]}>
-                    {isGcash ? '✓ ' : ''}Paid with GCash
+                    {isGcash ? '✓ ' : ''}Pay with GCash
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -122,6 +136,15 @@ const PayModal: React.FC<Props> = ({visible, orderItem, onSubmit, onClose}) => {
                 </TouchableOpacity>
               </View>
             </View>
+            <GCashQRModal
+              visible={gcashModal}
+              onClose={() => {
+                setIsGcash(true);
+                setGcashModal(false);
+              }}
+              staticPayload={gcashData?.profile?.payload}
+              amount={orderItem?.total_price}
+            />
           </KeyboardAwareScrollView>
           {/* </View> */}
         </TouchableOpacity>

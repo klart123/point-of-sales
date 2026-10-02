@@ -10,6 +10,8 @@ import AddProductCategoryModal from './AddProductCategoryModal';
 import DrawerNavigator from './DrawerNavigator';
 import ServerDiscoveryModal from './Servers';
 import PayModal from './PayModal';
+import GCashQR from './GcashQR';
+import GCashQRModal from './GcashQR/modal';
 
 export {
   HeaderComponent,
@@ -24,4 +26,6 @@ export {
   DrawerNavigator,
   ServerDiscoveryModal,
   PayModal,
+  GCashQR,
+  GCashQRModal,
 };

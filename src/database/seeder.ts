@@ -384,6 +384,30 @@ const PRODUCTS = [
       },
     ],
   },
+  {
+    name: 'Banana Latte',
+    sku: 'BEV-COFFEE-013',
+    category_id: 1,
+    product_category_name: 'Coffee',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 119,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 119,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 139,
+      },
+    ],
+  },
 
   // ───────────────────────────────────────────────────────────────────────
   // Matcha
@@ -564,7 +588,7 @@ const PRODUCTS = [
     ],
   },
   {
-    name: 'Biscoff Matcha',
+    name: 'Matcha Biscoff',
     sku: 'BEV-MATCHA-008',
     category_id: 1,
     product_category_name: 'Matcha',
@@ -588,7 +612,7 @@ const PRODUCTS = [
     ],
   },
   {
-    name: 'Oreo Matcha',
+    name: 'Matcha Oreo',
     sku: 'BEV-MATCHA-009',
     category_id: 1,
     product_category_name: 'Matcha',
@@ -608,6 +632,30 @@ const PRODUCTS = [
         temperature: 'cold',
         size: 'Large',
         price: 119,
+      },
+    ],
+  },
+  {
+    name: 'Matcha Banana',
+    sku: 'BEV-MATCHA-010',
+    category_id: 1,
+    product_category_name: 'Matcha',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 119,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 119,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 139,
       },
     ],
   },
@@ -750,6 +798,82 @@ const PRODUCTS = [
         temperature: 'cold',
         size: 'Large',
         price: 90,
+      },
+    ],
+  },
+  {
+    name: 'Milk Caramel',
+    sku: 'BEV-OTHER-004',
+    category_id: 1,
+    product_category_name: 'Others',
+    description: '',
+    items: [
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 70,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 90,
+      },
+    ],
+  },
+  {
+    name: 'Milk Salted Caramel',
+    sku: 'BEV-OTHER-005',
+    category_id: 1,
+    product_category_name: 'Others',
+    description: '',
+    items: [
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 70,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 90,
+      },
+    ],
+  },
+  {
+    name: 'Milk Vanilla',
+    sku: 'BEV-OTHER-006',
+    category_id: 1,
+    product_category_name: 'Others',
+    description: '',
+    items: [
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 70,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 90,
+      },
+    ],
+  },
+  {
+    name: 'Milk Oreo',
+    sku: 'BEV-OTHER-007',
+    category_id: 1,
+    product_category_name: 'Others',
+    description: '',
+    items: [
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 80,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 100,
       },
     ],
   },

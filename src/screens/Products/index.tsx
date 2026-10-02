@@ -48,7 +48,7 @@ const ProductScreen = () => {
     if (isAddingLoading == false && isAddingSuccess === true) {
       loadProducts();
       setAddModal(false);
-      dispatch(services.resetAddProductState());
+      // dispatch(services.resetAddProductState());
     }
   }, [isAddingLoading, isAddingSuccess]);
 
@@ -78,7 +78,6 @@ const ProductScreen = () => {
         refreshing={refreshing}
         onRefresh={onRefresh}
         onPress={item => {
-          console.log('Product pressed:', item);
           navigation.navigate('EditProduct', {productId: item.id});
         }}
       />

@@ -121,7 +121,6 @@ const productSlice = createSlice({
       state,
       action: PayloadAction<products.ErrorPayload>,
     ) => {
-      console.log('action.payload', action.payload);
       state.prodCatLoading = false;
       state.prodCatSuccess = false;
       state.prodCatError = action.payload;

@@ -68,12 +68,19 @@ const AddProductScreen = () => {
   );
 
   useEffect(() => {
-    if (prodCatLoading === false && prodCatSuccess === true) {
-      dispatch(resetProductCategories());
+    if (!prodCatLoading && prodCatSuccess) {
+      Alert.alert('Success', 'Product category added successfully', [
+        {
+          text: 'OK',
+          onPress: () => {
+            dispatch(resetProductCategories());
 
-      loadData();
+            loadData();
 
-      setProdCatModal(false);
+            setProdCatModal(false);
+          },
+        },
+      ]);
     }
   }, [prodCatLoading, prodCatSuccess]);
 
@@ -85,7 +92,7 @@ const AddProductScreen = () => {
   }, [loading, categories]);
 
   useEffect(() => {
-    if (isAddingLoading === false && isAddingSuccess === true) {
+    if (!isAddingLoading && isAddingSuccess) {
       resetForm();
       dispatch(resetAddProductState());
       Alert.alert('Success', 'Product added successfully', [
@@ -97,7 +104,7 @@ const AddProductScreen = () => {
         },
       ]);
     }
-  }, [isAddingLoading, isAddingSuccess]);
+  }, [isAddingSuccess]);
 
   // ── Variant helpers ──────────────────────────────────────────────────────
 
@@ -115,7 +122,6 @@ const AddProductScreen = () => {
       product_category_id: subCategory,
       items: variants,
     };
-
     dispatch(addProducts(params));
   };
 
