@@ -168,8 +168,23 @@ const PRODUCTS = [
   },
 
   {
-    name: 'Cappuccino',
+    name: 'Flat White',
     sku: 'BEV-COFFEE-004',
+    category_id: 1,
+    product_category_name: 'Coffee',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 89,
+      },
+    ],
+  },
+
+  {
+    name: 'Cappuccino',
+    sku: 'BEV-COFFEE-005',
     category_id: 1,
     product_category_name: 'Coffee',
     description: '',
@@ -194,31 +209,6 @@ const PRODUCTS = [
 
   {
     name: 'Spanish',
-    sku: 'BEV-COFFEE-005',
-    category_id: 1,
-    product_category_name: 'Coffee',
-    description: '',
-    items: [
-      {
-        temperature: 'hot',
-        size: 'Medium',
-        price: 109,
-      },
-      {
-        temperature: 'cold',
-        size: 'Medium',
-        price: 109,
-      },
-      {
-        temperature: 'cold',
-        size: 'Large',
-        price: 129,
-      },
-    ],
-  },
-
-  {
-    name: 'Caramel',
     sku: 'BEV-COFFEE-006',
     category_id: 1,
     product_category_name: 'Coffee',
@@ -243,7 +233,7 @@ const PRODUCTS = [
   },
 
   {
-    name: 'Salted Caramel',
+    name: 'Caramel',
     sku: 'BEV-COFFEE-007',
     category_id: 1,
     product_category_name: 'Coffee',
@@ -268,7 +258,7 @@ const PRODUCTS = [
   },
 
   {
-    name: 'Mocha',
+    name: 'Salted Caramel',
     sku: 'BEV-COFFEE-008',
     category_id: 1,
     product_category_name: 'Coffee',
@@ -293,7 +283,7 @@ const PRODUCTS = [
   },
 
   {
-    name: 'Vanilla',
+    name: 'Mocha',
     sku: 'BEV-COFFEE-009',
     category_id: 1,
     product_category_name: 'Coffee',
@@ -318,27 +308,8 @@ const PRODUCTS = [
   },
 
   {
-    name: 'Lychee Americano',
+    name: 'Vanilla',
     sku: 'BEV-COFFEE-010',
-    category_id: 1,
-    product_category_name: 'Coffee',
-    description: '',
-    items: [
-      {
-        temperature: 'cold',
-        size: 'Medium',
-        price: 99,
-      },
-      {
-        temperature: 'cold',
-        size: 'Large',
-        price: 109,
-      },
-    ],
-  },
-  {
-    name: 'Biscoff Latte',
-    sku: 'BEV-COFFEE-011',
     category_id: 1,
     product_category_name: 'Coffee',
     description: '',
@@ -346,22 +317,42 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Medium',
-        price: 129,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 129,
+        price: 109,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 149,
+        price: 129,
+      },
+    ],
+  },
+
+  {
+    name: 'Lychee Americano',
+    sku: 'BEV-COFFEE-011',
+    category_id: 1,
+    product_category_name: 'Coffee',
+    description: '',
+    items: [
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 109,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 129,
       },
     ],
   },
   {
-    name: 'Oreo Latte',
+    name: 'Biscoff Latte',
     sku: 'BEV-COFFEE-012',
     category_id: 1,
     product_category_name: 'Coffee',
@@ -370,23 +361,71 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Medium',
-        price: 109,
+        price: 119,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 109,
+        price: 119,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 129,
+        price: 139,
+      },
+    ],
+  },
+  {
+    name: 'Oreo Latte',
+    sku: 'BEV-COFFEE-013',
+    category_id: 1,
+    product_category_name: 'Coffee',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 119,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 119,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 139,
       },
     ],
   },
   {
     name: 'Banana Latte',
-    sku: 'BEV-COFFEE-013',
+    sku: 'BEV-COFFEE-014',
+    category_id: 1,
+    product_category_name: 'Coffee',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 119,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 119,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 139,
+      },
+    ],
+  },
+  {
+    name: 'Presto Latte',
+    sku: 'BEV-COFFEE-015',
     category_id: 1,
     product_category_name: 'Coffee',
     description: '',
@@ -423,17 +462,17 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Medium',
-        price: 89,
+        price: 99,
       },
       {
         temperature: 'cold',
         size: 'Medium',
-        price: 89,
+        price: 99,
       },
       {
         temperature: 'cold',
         size: 'Large',
-        price: 109,
+        price: 119,
       },
     ],
   },
@@ -441,131 +480,6 @@ const PRODUCTS = [
   {
     name: 'Matcha Spanish',
     sku: 'BEV-MATCHA-002',
-    category_id: 1,
-    product_category_name: 'Matcha',
-    description: '',
-    items: [
-      {
-        temperature: 'hot',
-        size: 'Medium',
-        price: 89,
-      },
-      {
-        temperature: 'cold',
-        size: 'Medium',
-        price: 89,
-      },
-      {
-        temperature: 'cold',
-        size: 'Large',
-        price: 109,
-      },
-    ],
-  },
-
-  {
-    name: 'Matcha Caramel',
-    sku: 'BEV-MATCHA-003',
-    category_id: 1,
-    product_category_name: 'Matcha',
-    description: '',
-    items: [
-      {
-        temperature: 'hot',
-        size: 'Medium',
-        price: 99,
-      },
-      {
-        temperature: 'cold',
-        size: 'Medium',
-        price: 99,
-      },
-      {
-        temperature: 'cold',
-        size: 'Large',
-        price: 119,
-      },
-    ],
-  },
-
-  {
-    name: 'Matcha Salted Caramel',
-    sku: 'BEV-MATCHA-004',
-    category_id: 1,
-    product_category_name: 'Matcha',
-    description: '',
-    items: [
-      {
-        temperature: 'hot',
-        size: 'Medium',
-        price: 99,
-      },
-      {
-        temperature: 'cold',
-        size: 'Medium',
-        price: 99,
-      },
-      {
-        temperature: 'cold',
-        size: 'Large',
-        price: 119,
-      },
-    ],
-  },
-
-  {
-    name: 'Matcha Chocolate',
-    sku: 'BEV-MATCHA-005',
-    category_id: 1,
-    product_category_name: 'Matcha',
-    description: '',
-    items: [
-      {
-        temperature: 'hot',
-        size: 'Medium',
-        price: 99,
-      },
-      {
-        temperature: 'cold',
-        size: 'Medium',
-        price: 99,
-      },
-      {
-        temperature: 'cold',
-        size: 'Large',
-        price: 119,
-      },
-    ],
-  },
-
-  {
-    name: 'Matcha Strawberry',
-    sku: 'BEV-MATCHA-006',
-    category_id: 1,
-    product_category_name: 'Matcha',
-    description: '',
-    items: [
-      {
-        temperature: 'hot',
-        size: 'Medium',
-        price: 99,
-      },
-      {
-        temperature: 'cold',
-        size: 'Medium',
-        price: 99,
-      },
-      {
-        temperature: 'cold',
-        size: 'Large',
-        price: 119,
-      },
-    ],
-  },
-
-  {
-    name: 'Dirty Matcha',
-    sku: 'BEV-MATCHA-007',
     category_id: 1,
     product_category_name: 'Matcha',
     description: '',
@@ -584,6 +498,131 @@ const PRODUCTS = [
         temperature: 'cold',
         size: 'Large',
         price: 129,
+      },
+    ],
+  },
+
+  {
+    name: 'Matcha Caramel',
+    sku: 'BEV-MATCHA-003',
+    category_id: 1,
+    product_category_name: 'Matcha',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 109,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 109,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 129,
+      },
+    ],
+  },
+
+  {
+    name: 'Matcha Salted Caramel',
+    sku: 'BEV-MATCHA-004',
+    category_id: 1,
+    product_category_name: 'Matcha',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 109,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 109,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 129,
+      },
+    ],
+  },
+
+  {
+    name: 'Matcha Chocolate',
+    sku: 'BEV-MATCHA-005',
+    category_id: 1,
+    product_category_name: 'Matcha',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 109,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 109,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 129,
+      },
+    ],
+  },
+
+  {
+    name: 'Matcha Strawberry',
+    sku: 'BEV-MATCHA-006',
+    category_id: 1,
+    product_category_name: 'Matcha',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 109,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 109,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 129,
+      },
+    ],
+  },
+
+  {
+    name: 'Dirty Matcha',
+    sku: 'BEV-MATCHA-007',
+    category_id: 1,
+    product_category_name: 'Matcha',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 129,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 129,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 149,
       },
     ],
   },
@@ -607,37 +646,13 @@ const PRODUCTS = [
       {
         temperature: 'cold',
         size: 'Large',
-        price: 149,
+        price: 139,
       },
     ],
   },
   {
     name: 'Matcha Oreo',
     sku: 'BEV-MATCHA-009',
-    category_id: 1,
-    product_category_name: 'Matcha',
-    description: '',
-    items: [
-      {
-        temperature: 'hot',
-        size: 'Medium',
-        price: 99,
-      },
-      {
-        temperature: 'cold',
-        size: 'Medium',
-        price: 99,
-      },
-      {
-        temperature: 'cold',
-        size: 'Large',
-        price: 119,
-      },
-    ],
-  },
-  {
-    name: 'Matcha Banana',
-    sku: 'BEV-MATCHA-010',
     category_id: 1,
     product_category_name: 'Matcha',
     description: '',
@@ -656,6 +671,30 @@ const PRODUCTS = [
         temperature: 'cold',
         size: 'Large',
         price: 139,
+      },
+    ],
+  },
+  {
+    name: 'Matcha Banana',
+    sku: 'BEV-MATCHA-010',
+    category_id: 1,
+    product_category_name: 'Matcha',
+    description: '',
+    items: [
+      {
+        temperature: 'hot',
+        size: 'Medium',
+        price: 129,
+      },
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 129,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 149,
       },
     ],
   },
@@ -757,7 +796,7 @@ const PRODUCTS = [
       {
         temperature: 'hot',
         size: 'Regular',
-        price: 79,
+        price: 70,
       },
     ],
   },

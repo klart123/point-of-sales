@@ -55,6 +55,7 @@ const LoginScreen = () => {
   }, []);
 
   useEffect(() => {
+    // this will need to check the jwt expiration.
     supabase.auth.getSession().then(response => {
       console.log('session response', response);
     });
