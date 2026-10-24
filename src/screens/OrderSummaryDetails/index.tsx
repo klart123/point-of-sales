@@ -171,7 +171,7 @@ export default function OrderSummaryDetails({
 
       {/* Top products */}
       <Text style={styles.sectionTitle}>Top Products</Text>
-      {top_products.map((p, i) => (
+      {top_products?.map((p, i) => (
         <View key={`${p?.sku}-${p?.type}-${p?.size}`} style={styles.productRow}>
           <Text style={styles.productRank}>#{i + 1}</Text>
           <View style={styles.productInfo}>

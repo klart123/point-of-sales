@@ -312,24 +312,16 @@ const OrderList = () => {
       const entry = grouped.get(item.sku);
 
       entry.items.push({
-        id: item.product_item_id,
+        id: item.id,
         temp: item.type ?? '',
         size: item.size ?? '',
         price: item.price ?? 0,
         quantity: item.quantity ?? 1,
         status: item.status ?? 'pending',
+        addOns: item.add_ons,
       });
 
       entry.totalPrice += (item.price ?? 0) * (item.quantity ?? 1);
-
-      const addOns = item.add_ons_detail ?? item.add_ons ?? [];
-
-      addOns.forEach((addOn: any) => {
-        entry.addOns.push({
-          name: addOn.name,
-          price: addOn.price,
-        });
-      });
     });
 
     return Array.from(grouped.values());

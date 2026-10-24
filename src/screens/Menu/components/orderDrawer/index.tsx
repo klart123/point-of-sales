@@ -316,7 +316,7 @@ const OrderDrawer = ({
                               {g?.temp} {g?.size} — {g.quantity} × ₱
                               {g?.price?.toFixed(2)}
                             </Text>
-                            {g?.addOns.length > 0 &&
+                            {g?.addOns?.length > 0 &&
                               g.addOns.map((a: any, i: number) => (
                                 <Text
                                   key={`addOns_items_${i}`}
