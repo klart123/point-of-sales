@@ -29,6 +29,7 @@ import {printOrderLabel, OrderLabelData} from './PrintService';
 export interface CupToPrint {
   itemName: string;
   cupSize: string;
+  addOns: {id: number; order_item_id: number; name: string; price: number}[];
 }
 
 export interface OrderForPrinting {
@@ -39,7 +40,6 @@ export interface OrderForPrinting {
 
 interface QueuedJob extends OrderLabelData {
   queueId: string;
-  orderNumber?: string;
 }
 
 export interface PrintQueueStatus {
@@ -119,6 +119,7 @@ export function enqueueOrderForPrinting(order: OrderForPrinting): void {
       customerName: order.customerName,
       cupSize: cup.cupSize,
       orderNumber: order.orderNumber,
+      addOns: cup.addOns,
     });
   }
 

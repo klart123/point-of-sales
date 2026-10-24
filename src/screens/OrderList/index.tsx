@@ -108,7 +108,7 @@ const OrderList = () => {
         from,
         to,
       });
-      console.log('localOrders', localOrders);
+
       // Sort items first.
       const formattedOrders = localOrders.map(order => ({
         ...order,
@@ -370,6 +370,7 @@ const OrderList = () => {
       const cup = {
         itemName: item.name,
         cupSize: `${item.size} (${item.type?.toUpperCase() ?? ''})`,
+        addOns: item?.add_ons,
       };
 
       // Repeat this cup `quantity` times — one printed label per physical cup.

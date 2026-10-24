@@ -211,7 +211,6 @@ const OrderDrawer = ({
       cash_tendered: cashTendered,
       is_paid: cashTendered ? 1 : isPaid,
     };
-    console.log('params', params);
 
     if (isEdit) {
       onSubmit({...params});
@@ -298,7 +297,6 @@ const OrderDrawer = ({
                 style={{flex: 1, maxHeight: 299}}
                 contentContainerStyle={{paddingBottom: 20}}>
                 {orders?.map((item, index) => {
-                  console.log('orders item', item);
                   return (
                     <TouchableOpacity
                       key={item.id?.toString() + index}
@@ -313,21 +311,21 @@ const OrderDrawer = ({
 
                       {item?.items?.map((g: any, i: number) => {
                         return (
-                          <>
-                            <Text key={i} style={[styles.subText]}>
+                          <View key={i}>
+                            <Text style={[styles.subText]}>
                               {g?.temp} {g?.size} — {g.quantity} × ₱
                               {g?.price?.toFixed(2)}
                             </Text>
                             {g?.addOns.length > 0 &&
                               g.addOns.map((a: any, i: number) => (
                                 <Text
-                                  key={i}
+                                  key={`addOns_items_${i}`}
                                   style={styles.addOnText}
                                   key={`menu_add_ons_${i}`}>
                                   + {a.name} (₱{a.price})
                                 </Text>
                               ))}
-                          </>
+                          </View>
                         );
                       })}
                     </TouchableOpacity>

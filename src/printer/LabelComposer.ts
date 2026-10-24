@@ -35,7 +35,8 @@ export interface LabelData {
   itemName: string;
   customerName: string;
   cupSize: string;
-  orderNumber: string;
+  orderNumber: string | undefined;
+  addOns: {id: number; order_item_id: number; name: string; price: number}[];
 
   // NEW: manual logo fit controls (all optional, default = auto-fit centered)
   logoScale?: number; // percent, 100 = auto-fit size
@@ -211,14 +212,27 @@ export async function composeLabelBitmap(
     return y + fontSize + 6;
   };
 
-  cursorY = drawCenteredLine(data.itemName.toUpperCase(), 26, cursorY + 20);
-  cursorY = drawCenteredLine(`Size: ${data.cupSize}`, 20, cursorY);
-  cursorY = drawCenteredLine(
-    `For: ${data.customerName ?? data.orderNumber}`,
-    20,
-    cursorY,
-  );
-  cursorY = drawCenteredLine(`${data.orderNumber}`, 10, cursorY);
+  const addOnNames = data?.addOns?.map(addOn => `(${addOn.name})`).join(' ');
+
+  if (addOnNames) {
+    cursorY = drawCenteredLine(data.itemName.toUpperCase(), 22, cursorY + 20);
+    cursorY = drawCenteredLine(addOnNames, 18, cursorY);
+    cursorY = drawCenteredLine(`Size: ${data.cupSize}`, 18, cursorY);
+    cursorY = drawCenteredLine(
+      `For: ${data.customerName ?? data.orderNumber}`,
+      18,
+      cursorY,
+    );
+  } else {
+    cursorY = drawCenteredLine(data.itemName.toUpperCase(), 24, cursorY + 20);
+    cursorY = drawCenteredLine(`Size: ${data.cupSize}`, 20, cursorY);
+    cursorY = drawCenteredLine(
+      `For: ${data.customerName ?? data.orderNumber}`,
+      20,
+      cursorY,
+    );
+    cursorY = drawCenteredLine(`${data.orderNumber}`, 10, cursorY);
+  }
   surface.flush();
 
   const image = surface.makeImageSnapshot();

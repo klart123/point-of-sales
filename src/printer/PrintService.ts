@@ -39,7 +39,8 @@ export interface OrderLabelData {
   itemName: string;
   customerName: string;
   cupSize: string;
-  orderNumber: string;
+  orderNumber?: string | undefined;
+  addOns: {id: number; order_item_id: number; name: string; price: number}[];
 }
 
 export interface PreparedLabel {
@@ -98,6 +99,7 @@ export async function prepareOrderLabel(
       customerName: order.customerName,
       cupSize: order.cupSize,
       orderNumber: order.orderNumber,
+      addOns: order.addOns,
       logoScale: settings.scale,
       logoOffsetX: settings.positionX,
       logoOffsetY: settings.positionY,

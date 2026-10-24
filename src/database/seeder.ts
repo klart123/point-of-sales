@@ -935,6 +935,35 @@ const PRODUCTS = [
       },
     ],
   },
+
+  {
+    name: 'Extra shot',
+    sku: 'ADD-ONS-001',
+    category_id: 3,
+    product_category_name: 'Add-ons',
+    description: '',
+    items: [
+      {
+        temperature: '',
+        size: '',
+        price: 30,
+      },
+    ],
+  },
+  {
+    name: 'OatMilk',
+    sku: 'ADD-ONS-002',
+    category_id: 3,
+    product_category_name: 'Add-ons',
+    description: '',
+    items: [
+      {
+        temperature: '',
+        size: '',
+        price: 30,
+      },
+    ],
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
