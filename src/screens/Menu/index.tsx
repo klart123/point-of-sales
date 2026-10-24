@@ -96,9 +96,12 @@ const MenuScreen = () => {
     // of representing quantity as repeated array entries like the old
     // shape did. So a line item with quantity: 3 needs to expand into
     // 3 separate printed labels, not 1.
+
+    console.log(data);
     const cups = (data.items ?? []).flatMap((item: any) => {
       const quantity = item.quantity ?? 1;
 
+      console.log('cups', items);
       if (!item.isPrint) {
         return;
       }
@@ -106,6 +109,7 @@ const MenuScreen = () => {
       const cup = {
         itemName: item.name,
         cupSize: `${item.size} (${item.type?.toUpperCase() ?? ''})`,
+        addOns: item.addOns,
       };
 
       // Repeat this cup `quantity` times — one printed label per physical cup.

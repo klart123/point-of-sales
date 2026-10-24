@@ -297,7 +297,8 @@ const OrderDrawer = ({
               <ScrollView
                 style={{flex: 1, maxHeight: 299}}
                 contentContainerStyle={{paddingBottom: 20}}>
-                {groupedOrders?.map((item, index) => {
+                {orders?.map((item, index) => {
+                  console.log('orders item', item);
                   return (
                     <TouchableOpacity
                       key={item.id?.toString() + index}
@@ -313,13 +314,16 @@ const OrderDrawer = ({
                       {item?.items?.map((g: any, i: number) => {
                         return (
                           <>
-                            <Text key={i} style={styles.subText}>
+                            <Text key={i} style={[styles.subText]}>
                               {g?.temp} {g?.size} — {g.quantity} × ₱
                               {g?.price?.toFixed(2)}
                             </Text>
                             {g?.addOns.length > 0 &&
                               g.addOns.map((a: any, i: number) => (
-                                <Text key={i} style={styles.addOnText}>
+                                <Text
+                                  key={i}
+                                  style={styles.addOnText}
+                                  key={`menu_add_ons_${i}`}>
                                   + {a.name} (₱{a.price})
                                 </Text>
                               ))}

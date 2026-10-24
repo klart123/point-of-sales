@@ -38,11 +38,20 @@ const PayModal: React.FC<Props> = ({
   const [cashTendered, setCashTendered] = useState(0);
   const [gcashModal, setGcashModal] = useState(false);
 
-  useEffect(() => {}, [visible]);
+  useEffect(() => {
+    return () => {
+      setIsGcash(false);
+    };
+  }, [visible]);
 
   const change = useMemo(() => {
     return (parseFloat(cashTendered) || 0) - orderItem?.total_price;
   }, [cashTendered]);
+
+  const handleOnClose = () => {
+    setIsGcash(false);
+    onClose();
+  };
 
   return (
     <Modal visible={visible} transparent animationType="slide">

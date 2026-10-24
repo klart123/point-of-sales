@@ -102,11 +102,13 @@ export default StyleSheet.create({
     fontSize: 12,
     color: '#888',
     marginTop: 2,
+    marginLeft: 10,
   },
   addOnText: {
     fontSize: 12,
     color: '#0F6E56',
     marginTop: 1,
+    marginLeft: 20,
   },
   totalRow: {
     flexDirection: 'row',
