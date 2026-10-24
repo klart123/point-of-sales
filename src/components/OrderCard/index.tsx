@@ -113,6 +113,22 @@ const OrderCard: React.FC<Props> = ({
                   {item?.size}
                 </Text>
               </View>
+
+              {/* Add ons */}
+              {item?.add_ons.length > 0 &&
+                item?.add_ons?.map((addOnItem: any, index: number) => {
+                  return (
+                    <View
+                      key={`addOn_${index}`}
+                      style={[
+                        styles.itemDetailsRow,
+                        {justifyContent: 'space-between'},
+                      ]}>
+                      <Text>{addOnItem?.name}</Text>
+                      <Text>₱{addOnItem?.price}</Text>
+                    </View>
+                  );
+                })}
             </View>
 
             <View style={styles.priceBadge}>

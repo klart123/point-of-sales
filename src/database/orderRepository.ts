@@ -495,7 +495,6 @@ const normalizeOrderItem = (
     quantity: toNumber(item.quantity, 1),
     status: item.status ?? 'pending',
     add_ons: addOns,
-    add_ons_detail: addOns,
   };
 };
 
@@ -577,11 +576,11 @@ const getOrderItems = async (
 
   for (const item of items) {
     const relationalAddOns = await getOrderItemAddOns(dbOrTransaction, item.id);
-
+    console.log(items);
     resultItems.push(
       normalizeOrderItem({
         ...item,
-        add_ons_detail: relationalAddOns,
+        add_ons: relationalAddOns,
       }),
     );
   }

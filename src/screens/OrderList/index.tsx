@@ -108,7 +108,7 @@ const OrderList = () => {
         from,
         to,
       });
-
+      console.log('localOrders', localOrders);
       // Sort items first.
       const formattedOrders = localOrders.map(order => ({
         ...order,
