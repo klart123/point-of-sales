@@ -7,8 +7,6 @@ export const getMenu = () => {
   return (dispatch: AppDispatch) => {
     dispatch(menuSlice.menuStart());
 
-    // axiosInstance
-    //   .get('/products/grouped')
     getProductsGroupedFromDatabase()
       .then(response => {
         if (response) {

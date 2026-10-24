@@ -916,6 +916,25 @@ const PRODUCTS = [
       },
     ],
   },
+  {
+    name: 'Pink Banana',
+    sku: 'BEV-OTHER-008',
+    category_id: 1,
+    product_category_name: 'Others',
+    description: '',
+    items: [
+      {
+        temperature: 'cold',
+        size: 'Medium',
+        price: 80,
+      },
+      {
+        temperature: 'cold',
+        size: 'Large',
+        price: 100,
+      },
+    ],
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────

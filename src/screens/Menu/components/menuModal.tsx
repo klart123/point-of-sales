@@ -12,11 +12,17 @@ import styles from '../styles';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store';
 
+type AddOn = {
+  name: string;
+  price: number | string;
+};
+
 type SelectedItem = {
+  id?: number;
   temp: string;
   size: string;
-  price: string | number;
-  addOns: {name: string; price: string}[];
+  price: number;
+  addOns: AddOn[];
   showAddOns?: boolean;
 };
 
@@ -41,13 +47,31 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
   >([]);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [isUpdate, setIsUpdate] = useState(false);
+  const {loading, menu} = useSelector((state: RootState) => state.menu);
 
-  const {name, variant, category, items} = item || {};
+  const menuItem = item;
+  const {name, variant, category, items} = menuItem || {};
 
   // ── Derived state ──────────────────────────────────────────────────────────
 
+  const addOnProducts = useMemo(() => {
+    return (
+      menu
+        ?.find(category => category.name === 'Other')
+        ?.product_categories?.find(category => category.name === 'Add-ons')
+        ?.products?.filter((product: any) => product.is_active === 1) ?? []
+    );
+  }, [menu]);
+
   const totalPrice = useMemo(() => {
-    return selectedItems.reduce((total, i) => total + Number(i.price), 0);
+    return selectedItems.reduce((total, item) => {
+      const addOnsTotal = item.addOns.reduce(
+        (sum, addOn) => sum + Number(addOn.price),
+        0,
+      );
+
+      return total + Number(item.price) + addOnsTotal;
+    }, 0);
   }, [selectedItems]);
 
   const groupedItems = useMemo(() => {
@@ -169,11 +193,29 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
     );
   };
 
-  const toggleAddOn = (addOn: {name: string; price: string}) => {
-    setSelectedAddOns(prev =>
-      prev.some(a => a.name === addOn.name)
-        ? prev.filter(a => a.name !== addOn.name)
-        : [...prev, addOn],
+  const toggleAddOn = (
+    itemIndex: number,
+    addOn: {name: string; price: number},
+  ) => {
+    setSelectedItems(currentItems =>
+      currentItems.map((selectedItem, index) => {
+        if (index !== itemIndex) {
+          return selectedItem;
+        }
+
+        const exists = selectedItem.addOns.some(
+          selected => selected.name === addOn.name,
+        );
+
+        return {
+          ...selectedItem,
+          addOns: exists
+            ? selectedItem.addOns.filter(
+                selected => selected.name !== addOn.name,
+              )
+            : [...selectedItem.addOns, addOn],
+        };
+      }),
     );
   };
 
@@ -217,7 +259,6 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
           {isUpdate && (
             <Text style={styles.updateBadge}>Editing existing order</Text>
           )}
-
           {/* Variant item buttons */}
           {category?.type !== 'pastry' && items && (
             <View style={styles.optionGroup}>
@@ -255,9 +296,8 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
               </View>
             </View>
           )}
-
           {/* Add-Ons */}
-          {item?.addOns && item.addOns.length > 0 && (
+          {/* {item?.addOns && item.addOns.length > 0 && (
             <View style={styles.optionGroup}>
               <Text style={styles.optionLabel}>Select Add-Ons:</Text>
               <View style={styles.buttonGroup}>
@@ -282,7 +322,7 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
                 ))}
               </View>
             </View>
-          )}
+          )} */}
           <ScrollView
             style={{flex: 1}}
             showsVerticalScrollIndicator={false}
@@ -348,7 +388,37 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
                         <View style={styles.addOnsContainer}>
                           <Text>Add-on options for {item.temp}</Text>
 
-                          {/* Your add-on buttons go here */}
+                          {addOnProducts.map((addOn: any) => {
+                            const isSelected = item.addOns.some(
+                              (selected: any) => selected.name === addOn.name,
+                            );
+                            console.log('addOn', addOn);
+
+                            return (
+                              <TouchableOpacity
+                                key={addOn.id}
+                                style={[
+                                  styles.optionButton,
+                                  isSelected && styles.optionButtonSelected,
+                                ]}
+                                onPress={() =>
+                                  toggleAddOn(index, {
+                                    name: addOn.name,
+                                    price: Number(addOn.items[0].price),
+                                  })
+                                }>
+                                <Text
+                                  style={[
+                                    styles.optionButtonText,
+                                    isSelected &&
+                                      styles.optionButtonTextSelected,
+                                  ]}>
+                                  {addOn.name} (+₱
+                                  {Number(addOn.items[0].price).toFixed(2)})
+                                </Text>
+                              </TouchableOpacity>
+                            );
+                          })}
                         </View>
                       )}
                     </View>
@@ -357,7 +427,6 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
               </View>
             )}
           </ScrollView>
-
           {/* Footer — fixed */}
           <View style={styles.bottomSummary}>
             <Text style={styles.selectedPrice}>Total: ₱{totalPrice}</Text>

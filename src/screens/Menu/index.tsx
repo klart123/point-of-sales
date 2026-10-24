@@ -99,6 +99,10 @@ const MenuScreen = () => {
     const cups = (data.items ?? []).flatMap((item: any) => {
       const quantity = item.quantity ?? 1;
 
+      if (!item.isPrint) {
+        return;
+      }
+
       const cup = {
         itemName: item.name,
         cupSize: `${item.size} (${item.type?.toUpperCase() ?? ''})`,

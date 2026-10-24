@@ -20,12 +20,7 @@ import {getDB} from './database';
  * Do not use the database status row itself as the OrderStatus type.
  */
 export type OrderStatus =
-  | 'pending'
-  | 'preparing'
-  | 'ready'
-  | 'served'
-  | 'cancelled'
-  | 'completed';
+  'pending' | 'preparing' | 'ready' | 'served' | 'cancelled' | 'completed';
 
 /**
  * Status of an individual order item.
@@ -902,9 +897,9 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
       }
 
       for (const item of product.items) {
-        if (!item.size) {
-          throw new Error(`Product ${product.sku} requires a size.`);
-        }
+        // if (!item.size) {
+        //   throw new Error(`Product ${product.sku} requires a size.`);
+        // }
 
         const price = toNumber(item.price);
         const quantity = Math.max(1, toNumber(item.quantity, 1));
@@ -912,7 +907,7 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
         totalPrice += price * quantity;
 
         const addOns = getCreateItemAddOns(product, item);
-
+        console.log('addOns', addOns);
         for (const addOn of addOns) {
           totalPrice += toNumber(addOn.price);
         }

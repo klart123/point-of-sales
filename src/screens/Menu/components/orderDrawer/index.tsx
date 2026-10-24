@@ -211,6 +211,7 @@ const OrderDrawer = ({
       cash_tendered: cashTendered,
       is_paid: cashTendered ? 1 : isPaid,
     };
+    console.log('params', params);
 
     if (isEdit) {
       onSubmit({...params});
@@ -309,19 +310,22 @@ const OrderDrawer = ({
                         </Text>
                       </View>
 
-                      {item?.groupedItems?.map((g: any, i: number) => (
-                        <Text key={i} style={styles.subText}>
-                          {g?.temp} {g?.size} — {g.quantity} × ₱
-                          {g?.price?.toFixed(2)}
-                        </Text>
-                      ))}
-
-                      {item.addOns?.length > 0 &&
-                        item.addOns.map((a: any, i: number) => (
-                          <Text key={i} style={styles.addOnText}>
-                            + {a.name} (₱{a.price})
-                          </Text>
-                        ))}
+                      {item?.items?.map((g: any, i: number) => {
+                        return (
+                          <>
+                            <Text key={i} style={styles.subText}>
+                              {g?.temp} {g?.size} — {g.quantity} × ₱
+                              {g?.price?.toFixed(2)}
+                            </Text>
+                            {g?.addOns.length > 0 &&
+                              g.addOns.map((a: any, i: number) => (
+                                <Text key={i} style={styles.addOnText}>
+                                  + {a.name} (₱{a.price})
+                                </Text>
+                              ))}
+                          </>
+                        );
+                      })}
                     </TouchableOpacity>
                   );
                 })}

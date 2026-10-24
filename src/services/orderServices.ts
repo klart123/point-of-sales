@@ -164,8 +164,7 @@ export const getOrderStatuses: any = () => {
 export const submitOrder = (data: any) => async (dispatch: AppDispatch) => {
   dispatch(orderActions.orderStart());
   console.log('submitOrder called with data:', data);
-  // axiosInstance
-  //   .post('/orders', data)
+
   createOrder(data)
     .then(async response => {
       if (response) {
