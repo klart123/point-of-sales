@@ -1897,9 +1897,7 @@ export const getOrderSummary = async (
       oi.type,
       oi.size
 
-    ORDER BY quantity DESC
-
-    LIMIT 10;
+    ORDER BY quantity DESC;
     `,
     [from, to],
   );
