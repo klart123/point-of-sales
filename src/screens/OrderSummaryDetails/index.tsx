@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 
-import {View, Text, ActivityIndicator} from 'react-native';
+import {View, Text, ActivityIndicator, FlatList} from 'react-native';
 import {getOrderSummary} from '../../database/orderRepository';
 import styles from './styles';
 
@@ -137,57 +137,32 @@ export default function OrderSummaryDetails({
         </View>
       </View>
 
-      {/* Orders by status */}
-      {/* <Text style={styles.sectionTitle}>Orders by Status</Text>
-          <View style={styles.statusRow}>
-            {by_status.map(s => (
-              <View key={s.status} style={styles.statusBadgeWrapper}>
-                <View
-                  style={[
-                    styles.statusBadge,
-                    {
-                      backgroundColor: STATUS_COLORS[s.status] + '22',
-                      borderColor: STATUS_COLORS[s.status],
-                    },
-                  ]}>
-                  <Text
-                    style={[
-                      styles.statusCount,
-                      {color: STATUS_COLORS[s.status]},
-                    ]}>
-                    {s.count}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.statusLabel,
-                      {color: STATUS_COLORS[s.status]},
-                    ]}>
-                    {s.status}
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </View> */}
-
       {/* Top products */}
-      <Text style={styles.sectionTitle}>Top Products</Text>
-      {top_products?.map((p, i) => (
-        <View key={`${p?.sku}-${p?.type}-${p?.size}`} style={styles.productRow}>
-          <Text style={styles.productRank}>#{i + 1}</Text>
-          <View style={styles.productInfo}>
-            <Text style={styles.productName}>{p?.name}</Text>
-            <Text style={styles.productDetail}>
-              {p?.type} · {p?.size}
-            </Text>
+      {/* <Text style={styles.sectionTitle}>Top Products</Text> */}
+
+      <FlatList
+        data={top_products ?? []}
+        keyExtractor={item => `${item?.sku}-${item?.type}-${item?.size}`}
+        renderItem={({item: p, index: i}) => (
+          <View style={styles.productRow}>
+            <Text style={styles.productRank}>#{i + 1}</Text>
+
+            <View style={styles.productInfo}>
+              <Text style={styles.productName}>{p?.name}</Text>
+              <Text style={styles.productDetail}>
+                {p?.type} · {p?.size}
+              </Text>
+            </View>
+
+            <View style={styles.productStats}>
+              <Text style={styles.productSold}>{p?.quantity} sold</Text>
+              <Text style={styles.productRevenue}>
+                ₱{p?.revenue?.toLocaleString()}
+              </Text>
+            </View>
           </View>
-          <View style={styles.productStats}>
-            <Text style={styles.productSold}>{p?.quantity} sold</Text>
-            <Text style={styles.productRevenue}>
-              ₱{p?.revenue?.toLocaleString()}
-            </Text>
-          </View>
-        </View>
-      ))}
+        )}
+      />
     </View>
   );
 }
