@@ -12,9 +12,8 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Product from '../../components/Product';
 import {HeaderComponent, ContainerView} from '../../components';
 import axiosInstance from '../../Api/axiosInstance';
-import {printOrderLabel} from '../../printer/PrintService';
-import {enqueueOrderForPrinting} from '../../printer/PrintQueue';
 import {updateOrderStatus} from '../../database/orderRepository';
+import {printOrder} from '../../utils/printOrder';
 
 const MenuScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -80,41 +79,13 @@ const MenuScreen = () => {
 
   useEffect(() => {
     if (isSubmitted) {
-      printOrder(isSubmittedData);
+      // printOrder(isSubmittedData);
+
       Alert.alert(message);
-
       navigation.goBack();
-
       resetMenu();
     }
   }, [isSubmitted]);
-
-  const printOrder = async (data: any) => {
-    // Build one entry PER PHYSICAL CUP to print. This new order shape is
-    // FLAT (data.items is already the line-item array — no nested
-    // order.items anymore), and it introduces a `quantity` field instead
-    // of representing quantity as repeated array entries like the old
-    // shape did. So a line item with quantity: 3 needs to expand into
-    // 3 separate printed labels, not 1.
-
-    const cups = (data.items ?? []).flatMap((item: any) => {
-      const quantity = item.quantity ?? 1;
-      const cup = {
-        itemName: item.name,
-        cupSize: `${item.size} (${item.type?.toUpperCase() ?? ''})`,
-        addOns: item?.add_ons,
-      };
-
-      // Repeat this cup `quantity` times — one printed label per physical cup.
-      return Array.from({length: quantity}, () => cup);
-    });
-
-    enqueueOrderForPrinting({
-      orderNumber: data?.order_number ?? undefined,
-      customerName: data.customer_name?.trim() || 'Guest',
-      cups,
-    });
-  };
 
   const resetMenu = () => {
     dispatch(services.resetMenu());

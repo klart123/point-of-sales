@@ -81,7 +81,6 @@ const OrderSummary = () => {
     //   .get('/orders/dates')
     getOrderDates()
       .then(res => {
-        console.log('res', res);
         setDates(res);
         // Auto-select today if available
         // if (res.length > 0 && !selectedDate) {

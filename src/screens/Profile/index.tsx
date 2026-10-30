@@ -58,7 +58,6 @@ const ProfileScreen: React.FC<Props> = ({navigation}) => {
         Alert.alert('Skipped', 'Database already contains data records.');
       }
     } catch (error: any) {
-      console.log('Error seeding database:', error);
       Alert.alert(
         'Seeding Error',
         error?.message || 'Failed to populate database tables.',

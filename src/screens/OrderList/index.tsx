@@ -25,6 +25,7 @@ import {
 } from '../../database/orderRepository';
 import {enqueueOrderForPrinting} from '../../printer/PrintQueue';
 import {getGcashProfile} from '../../services/gcashProfileServices';
+import PrintLabelModal from '../../components/PrintLabelModal';
 
 const OrderList = () => {
   const {orderStatuses} = useSelector((state: RootState) => state.orders);
@@ -40,6 +41,10 @@ const OrderList = () => {
   const [payModal, setPayModal] = useState(false);
   const [gcashModal, setGcashModal] = useState(false);
   const [itemTotalValue, setItemTotalValue] = useState(0);
+  const [printModalVisible, setPrintModalVisible] = useState(false);
+  const [selectedPrintOrder, setSelectedPrintOrder] = useState<Order | null>(
+    null,
+  );
 
   // ─────────────────────────────────────────────────────────────────────────
   // Active orders
@@ -349,25 +354,27 @@ const OrderList = () => {
     navigation.navigate('Store' as never);
   };
 
-  const printOrder = async (data: any) => {
-    // Build one entry PER PHYSICAL CUP to print. This new order shape is
-    // FLAT (data.items is already the line-item array — no nested
-    // order.items anymore), and it introduces a `quantity` field instead
-    // of representing quantity as repeated array entries like the old
-    // shape did. So a line item with quantity: 3 needs to expand into
-    // 3 separate printed labels, not 1.
+  const printOrder = (data: any) => {
     const cups = (data.items ?? []).flatMap((item: any) => {
-      const quantity = item.quantity ?? 1;
+      const rawQuantity = Number(item.quantity ?? 1);
+      const quantity = Number.isFinite(rawQuantity)
+        ? Math.max(0, Math.floor(rawQuantity))
+        : 1;
 
       const cup = {
         itemName: item.name,
-        cupSize: `${item.size} (${item.type?.toUpperCase() ?? ''})`,
-        addOns: item?.add_ons,
+        cupSize: item.type
+          ? `${item.size} (${item.type.toUpperCase()})`
+          : item.size,
+        addOns: item.add_ons ?? [],
       };
 
-      // Repeat this cup `quantity` times — one printed label per physical cup.
       return Array.from({length: quantity}, () => cup);
     });
+
+    if (cups.length === 0) {
+      return;
+    }
 
     enqueueOrderForPrinting({
       orderNumber: data?.order_number ?? undefined,
@@ -376,18 +383,19 @@ const OrderList = () => {
     });
   };
 
-  const printOrderLabel = (orderItem: any) => {
-    if (orderItem) {
-      Alert.alert(`Print Label for order ${orderItem?.order_number}?`, '', [
-        {text: 'Close', style: 'default'},
-        {
-          text: 'Yes',
-          onPress: () => {
-            printOrder(orderItem);
-          },
-        },
-      ]);
-    }
+  const handlePrintSelectedItems = (
+    order: Order,
+    selectedItems: OrderItem[],
+  ) => {
+    printOrder({
+      ...order,
+      items: selectedItems,
+    });
+  };
+
+  const printOrderLabel = (order: Order) => {
+    setSelectedPrintOrder(order);
+    setPrintModalVisible(true);
   };
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -463,6 +471,16 @@ const OrderList = () => {
         }}
         onSubmit={handleSubmitPayment}
         gcashData={gcashData}
+      />
+
+      <PrintLabelModal
+        visible={printModalVisible}
+        order={selectedPrintOrder}
+        onClose={() => {
+          setPrintModalVisible(false);
+          setSelectedPrintOrder(null);
+        }}
+        onPrint={handlePrintSelectedItems}
       />
     </ContainerView>
   );

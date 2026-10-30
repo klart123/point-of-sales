@@ -576,7 +576,6 @@ const getOrderItems = async (
 
   for (const item of items) {
     const relationalAddOns = await getOrderItemAddOns(dbOrTransaction, item.id);
-    console.log(items);
     resultItems.push(
       normalizeOrderItem({
         ...item,
@@ -906,7 +905,6 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
         totalPrice += price * quantity;
 
         const addOns = getCreateItemAddOns(product, item);
-        console.log('addOns', addOns);
         for (const addOn of addOns) {
           totalPrice += toNumber(addOn.price);
         }
@@ -1349,7 +1347,6 @@ export const updateOrder = async (
   input: UpdateOrderInput,
 ): Promise<Order> => {
   const db = getDB();
-  console.log('input', input);
   const existingOrder = await getOrderById(orderId);
 
   if (!existingOrder) {
@@ -1396,7 +1393,6 @@ export const updateOrder = async (
       }
 
       const total = calculateOrderTotal(input.orders);
-      console.log('total', total);
       headerFields.push('total_price = ?');
       headerParams.push(total);
 

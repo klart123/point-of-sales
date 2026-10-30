@@ -10,7 +10,6 @@ export const getMenu = () => {
     getProductsGroupedFromDatabase()
       .then(response => {
         if (response) {
-          console.log('Fetched menu from local database:', response);
           return dispatch(menuSlice.menuSuccess(response));
         }
 

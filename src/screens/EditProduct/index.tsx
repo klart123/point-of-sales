@@ -91,7 +91,6 @@ const EditProductScreen = () => {
 
   const loadData = async () => {
     const categories = await getCategoriesFromDatabase();
-    console.log('categories', categories);
     setCategories(categories || null);
   };
 

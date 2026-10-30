@@ -76,7 +76,6 @@ export default function OrderSummaryDetails({
 
       getOrderSummary({from, to})
         .then(res => {
-          console.log(res);
           setSummary(res);
         })
         .catch(err => console.error('Failed to load summary', err))

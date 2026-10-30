@@ -333,7 +333,7 @@ export default function SyncScreen({port = 3000}: SyncScreenProps) {
     if (!selectedTarget) return;
     setSyncing(true);
     setSyncResult(null);
-    console.log('supabase?', selectedTarget);
+
     try {
       const body: Record<string, unknown> = {
         targetType: selectedTarget.type,

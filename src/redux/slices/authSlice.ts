@@ -73,7 +73,6 @@ const authSlice = createSlice({
       state.error = null;
     },
     resetRegistration: state => {
-      console.log('resetRegistration');
       state.loading = false;
       state.registerIsLoading = false;
       state.error = null;

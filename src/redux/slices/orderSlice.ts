@@ -10,9 +10,17 @@ interface OrderItem {
   id: number;
   sku: string;
   name: string;
-  price: number;
-  size: string;
+  items: {
+    id?: number;
+    temp: string;
+    size: string;
+    price: number;
+    quantity: number;
+    status?: string;
+    addOns: any[];
+  }[];
   totalPrice: number;
+  isUpdate?: boolean;
 }
 
 interface OrderState {
@@ -72,9 +80,19 @@ const orderSlice = createSlice({
     updateOrder: (state, action: PayloadAction<OrderItem>) => {
       const index = state.orders.findIndex(o => o.sku === action.payload.sku);
 
-      if (index !== -1) {
-        state.orders[index] = action.payload;
+      if (index === -1) {
+        return;
       }
+
+      // If all variants of this product were removed,
+      // remove the entire product from the order.
+      if (!action.payload.items || action.payload.items.length === 0) {
+        state.orders.splice(index, 1);
+        return;
+      }
+
+      // Otherwise, replace the product with its updated data.
+      state.orders[index] = action.payload;
     },
     addOrderItem: (state, action: PayloadAction<any>) => {
       state.orderItem = action.payload;

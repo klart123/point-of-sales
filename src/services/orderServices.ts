@@ -8,6 +8,7 @@ import {
   createOrder,
   updateOrder as updateOrderItem,
 } from '../database/orderRepository';
+import {printOrder} from '../utils/printOrder';
 
 // export const getOrderSummary = () => {
 //   return (dispatch: AppDispatch) => {
@@ -136,7 +137,6 @@ export const getOrderStatuses: any = () => {
     getOrderStatusesLocal()
       .then(response => {
         if (response) {
-          console.log('Fetched order statuses:', response);
           const statuses = response;
 
           // ✅ convert to map ONCE here
@@ -163,16 +163,15 @@ export const getOrderStatuses: any = () => {
 
 export const submitOrder = (data: any) => async (dispatch: AppDispatch) => {
   dispatch(orderActions.orderStart());
-  console.log('submitOrder called with data:', data);
 
   createOrder(data)
     .then(async response => {
       if (response) {
         dispatch(orderActions.orderSuccess(response));
+        printOrder(response);
       }
     })
     .catch(error => {
-      console.log('error submission', error);
       dispatch(orderActions.orderFailed(error));
     });
 };

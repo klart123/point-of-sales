@@ -48,7 +48,6 @@ export const registerUser: any = ({
         password: password,
       })
       .then(response => {
-        console.log('response', response);
         const {data, error} = response;
         if (response.data.user) {
           dispatch(authSlice.registerSuccess(data?.user));
@@ -60,7 +59,6 @@ export const registerUser: any = ({
         }
 
         if (error) {
-          console.log(error);
           dispatch(
             authSlice.registerFailure({
               message: error.message,

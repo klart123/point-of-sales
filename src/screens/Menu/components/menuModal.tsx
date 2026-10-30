@@ -140,14 +140,12 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
         return 0;
       }),
     );
-
-    console.log('selected Items', selectedItems);
   };
 
-  const handleDeleteItem = (temp: string, size: string) => {
+  const handleDeleteItem = (item: SelectedItem, itemIndex: number) => {
     Alert.alert(
       'Remove Item',
-      `Are you sure you want to remove ${temp} - ${size}?`,
+      `Are you sure you want to remove ${item.temp} - ${item.size}?`,
       [
         {
           text: 'Cancel',
@@ -157,21 +155,9 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
-            setSelectedItems(prev => {
-              const index = prev.findIndex(
-                i => i.temp === temp && i.size === size,
-              );
-
-              if (index === -1) {
-                return prev;
-              }
-
-              const updated = [...prev];
-
-              updated.splice(index, 1);
-
-              return updated;
-            });
+            setSelectedItems(prev =>
+              prev.filter((_, index) => index !== itemIndex),
+            );
           },
         },
       ],
@@ -333,8 +319,6 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
                 <Text style={styles.optionLabel}>Order Summary:</Text>
 
                 {selectedItems.map((item, index) => {
-                  console.log('item', item);
-
                   return (
                     <View
                       style={styles.itemContainer}
@@ -372,12 +356,8 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
 
                           {/* Delete */}
                           <TouchableOpacity
-                            onPress={() =>
-                              handleDeleteItem(item.temp, item.size)
-                            }
-                            style={{
-                              paddingHorizontal: 10,
-                            }}>
+                            onPress={() => handleDeleteItem(item, index)}
+                            style={{paddingHorizontal: 10}}>
                             <Text style={styles.removeVariantBtn}>×</Text>
                           </TouchableOpacity>
                         </View>
@@ -392,7 +372,6 @@ const MenuModal: React.FC<Props> = ({visible, onClose, onSubmit, item}) => {
                             const isSelected = item.addOns.some(
                               (selected: any) => selected.name === addOn.name,
                             );
-                            console.log('addOn', addOn);
 
                             return (
                               <TouchableOpacity
